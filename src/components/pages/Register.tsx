@@ -3,7 +3,7 @@ import {FaXTwitter} from "react-icons/fa6";
 import Home from "./Home.tsx";
 import Select, {GroupBase, SingleValue, StylesConfig} from 'react-select'
 import {useNavigate} from "react-router-dom";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 interface Month {
     value: string
@@ -13,6 +13,14 @@ interface Month {
 interface Day extends Month {}
 
 interface Year extends Month {}
+
+interface User {
+    name: string
+    email: string
+    password: string
+    password_confirmation: string
+    date_birth: Date
+}
 
 
 function Register()  {
@@ -34,15 +42,63 @@ function Register()  {
 
     const [nameCount, setNameCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true)
-    const [formIsVisible, setFormIsVisible] = useState(true)
-    const [isLoadingPassword, setIsLoadingPassword] = useState(false);
-    const [showPasswordForm, setShowPasswordForm] = useState(false);
     const [selectedDay, setSelectedDay] = useState<Day | null>(null)
     const [selectedMonth, setSelectedMonth] = useState<Month | null>(null)
     const [selectedYear, setSelectedYear] = useState<Year | null>(null)
+    const [userCredentials, setUserCredentials] = useState<User>({
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        date_birth: new Date()
+    })
+    const [isDisabled, setIsDisabled] = useState(true)
+
+
+    useEffect(() => {
+        const areFieldsValid = [
+            userCredentials.name,
+            userCredentials.email,
+            userCredentials.password,
+            userCredentials.password_confirmation,
+            selectedDay?.value,
+            selectedMonth?.value,
+            selectedYear?.value
+        ].every(field => field && field.length > 0);
+
+        setIsDisabled(!areFieldsValid);
+    }, [selectedDay, selectedMonth, selectedYear, userCredentials.name, userCredentials.email, userCredentials.password, userCredentials.password_confirmation]);
 
     // Handle Next button
-    const [isDisabled, setIsDisabled] = useState(true)
+
+    const handleSubmitBtn = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+    }
+
+
+
+    // Handle Name count
+    useEffect( () => {
+        setNameCount(userCredentials?.name?.length)
+    }, [userCredentials.name] )
+
+    // Convert selectedDate to real date
+    useEffect(() => {
+        if(selectedDay && selectedMonth && selectedYear){
+            const date = new Date(`${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`);
+            setUserCredentials(prevUserCredentials => ({
+                ...prevUserCredentials,
+                date_birth: date
+            }));
+        }
+    }, [selectedDay, selectedMonth, selectedYear]);
+
+    const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setUserCredentials(prevUserCredentials => ({
+            ...(prevUserCredentials || {}),
+            [e.target.name]: e.target.value
+        }))
+    }
 
     // React Select
     const styles: StylesConfig<Month, false, GroupBase<Month>> = {
@@ -119,7 +175,6 @@ function Register()  {
         })
 
     }
-    // End React Select
 
     // Handle selected options
     const handleSelectedChange = (selectedOption: SingleValue<Month>): void => {
@@ -196,8 +251,8 @@ function Register()  {
         <>
             <Home/>
             <div className={`absolute h-[90%] md:w-[42rem] w-fit px-3 md:px-0 flex items-center z-50 animate-slide-down`}>
-                <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl relative min-h-[40rem] md:w-[42rem]`}>
-                    <form className={`${isLoading ? 'invisible' : 'visible'}`}>
+                <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl relative  md:w-[42rem]`}>
+                    <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'}`}>
                         <header className="flex justify-center">
                             <div className="absolute left-0 top-2 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
                                 onClick={handleClick}
@@ -210,10 +265,10 @@ function Register()  {
                                 <FaXTwitter/>
                             </div>
                         </header>
-                        <div className={`${formIsVisible && !isLoading ? 'visible ' : 'invisible'} relative min-h-[33rem]`}>
-                            <main className={`${showPasswordForm ? 'absolute' : ''} mt-10 px-4 sm:px-16 text-gray-200`}>
+                        <div className={`${!isLoading ? 'visible ' : 'invisible'} relative `}>
+                            <main className={`mt-7 sm:mt-10 px-4 sm:px-16 text-gray-200`}>
                                 <h1 className={`text-3xl font-semibold`}>Create your account</h1>
-                                <div className={`mt-7 flex flex-col gap-y-8`}>
+                                <div className={`mt-5 sm:mt-7 flex flex-col gap-y-2 sm:gap-y-8`}>
                                     <div className={`relative`}>
                                         <div className={`flex gap-x-1 absolute right-2 top-2 text-sm text-[#52525b]`}>
                                             <span>{nameCount}</span>
@@ -222,20 +277,50 @@ function Register()  {
                                         </div>
                                         <input
                                            maxLength={50}
+                                           name={`name`}
+                                           value={userCredentials?.name}
+                                           onChange={handleInputsChange}
                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                           type="text" placeholder="Name" disabled={isLoading}
+                                           type="text"
+                                           placeholder="Name"
+                                           disabled={isLoading}
                                         />
+
                                     </div>
-                                    <div>
                                         <input
                                            className={`w-full registerInputs h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                           type="text" placeholder="Email" disabled={isLoading}
+                                           name={`email`}
+                                           value={userCredentials?.email}
+                                           type="email"
+                                           onChange={handleInputsChange}
+                                           placeholder="Email"
+                                           disabled={isLoading}
                                         />
-                                    </div>
+                                        <input
+                                            maxLength={30}
+                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            name={`password`}
+                                            value={userCredentials?.password}
+                                            type="password"
+                                            onChange={handleInputsChange}
+                                            placeholder="Password"
+                                            disabled={isLoading}
+                                        />
+                                        <input
+                                            maxLength={30}
+                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            name={`password_confirmation`}
+                                            value={userCredentials?.password_confirmation}
+                                            type="password"
+                                            onChange={handleInputsChange}
+                                            placeholder="Confirm Password"
+                                            disabled={isLoading}
+                                        />
+
 
                                 </div>
 
-                                <h4 className="mt-11 font-semibold">Date of birth</h4>
+                                <h4 className="mt-7 sm:mt-11 font-semibold">Date of birth</h4>
                                 <p className={`text-[#71767b] leading-4`}>This will not be shown publicly. Confirm your own
                                     age, even if this account is for a business, a pet, or something else.</p>
 
@@ -273,45 +358,10 @@ function Register()  {
                                 </div>
                                 <button disabled={isDisabled} className={`bg-white w-full mt-10 sm:mt-20 py-3 rounded-full text-black font-semibold text-lg ${isDisabled ? 'bg-white/40 cursor-not-allowed' : ''}`}>Next</button>
                             </main>
-
-                            {(showPasswordForm && !isLoadingPassword) &&
-                                <main className={`${showPasswordForm && !isLoadingPassword ? 'visible' : 'invisible'} mt-10 px-4 sm:px-16 py-6 flex flex-col gap-y-8 text-gray-200`}>
-                                    <div className={`flex flex-col gap-y-2`}>
-                                        <input
-                                            maxLength={30}
-                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                            type="password"
-                                            placeholder="Password"
-                                        />
-                                    </div>
-                                    <div className={`flex flex-col gap-y-2`}>
-                                        <input
-                                            maxLength={30}
-                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                            type="password"
-                                            placeholder="Password confirmation"
-                                        />
-                                    </div>
-                                </main>
-                            }
                         </div>
                     </form>
 
                     {isLoading &&
-                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}>
-                            <svg aria-hidden="true"
-                                 className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-[#0284c7]"
-                                 viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                                    fill="currentColor"/>
-                                <path
-                                    d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                                    fill="currentFill"/>
-                            </svg>
-                        </div>
-                    }
-                    {isLoadingPassword &&
                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}>
                             <svg aria-hidden="true"
                                  className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-[#0284c7]"
