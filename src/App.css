@@ -1,0 +1,45 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Global Styling */
+* {
+    font-family: 'Rubik', sans-serif; /* Apply Rubik font to all elements */
+    user-select: none; /* Disable user selection */
+}
+
+/* Animation: Slide Down */
+.animate-slide-down {
+    transform: translateY(-10rem); /* Initial position */
+    opacity: 0; /* Initial opacity */
+    animation: slideDown 0.5s forwards ease; /* Animation definition */
+}
+
+@keyframes slideDown {
+    to {
+        opacity: 1; /* Target opacity */
+        transform: translateY(0); /* Target position */
+    }
+}
+
+/* React Select Styling */
+
+/* Adjust container height */
+.register-select__value-container {
+    height: 100%; /* Set container height */
+}
+
+/* Focus effect for name input */
+.registerInputs:focus::placeholder {
+    transform: translateY(-75%); /* Move placeholder */
+    font-size: 13px; /* Change font size */
+    opacity: 1; /* Adjust opacity */
+    transition: all 0.3s ease-in-out; /* Apply transition */
+}
+
+/* Remove background color of autofill */
+input:-webkit-autofill {
+
+    -webkit-text-fill-color: #e5e7eb; /* Text color */
+    -webkit-box-shadow: 0 0 0 30px transparent inset !important; /* Transparent background */
+    transition: background-color 5000s ease-in-out 0s; /* Transition background */
+}
