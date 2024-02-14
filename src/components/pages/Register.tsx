@@ -112,7 +112,7 @@ function Register()  {
             border: '2px solid transparent',
             outline: isFocused ? '2px solid #0284c7' : '1px solid #52525b',
             '&:hover': {
-                borderColor: isDisabled ? 'transparent' : 'none', // Disable border color change on hover when disabled
+                borderColor: isDisabled ? 'transparent' : 'none',
             },
         }),
 
@@ -256,15 +256,24 @@ function Register()  {
     }
 
 
-    console.log(formErrors)
+    // Function to determine whether to apply "mt-3" or "mt-10 sm:mt-20" class
+    const determineButtonMargin = () => {
+        const hasErrors =
+            (formErrors.password && formErrors.password.length > 0) ||
+            (formErrors.username && formErrors.username.length > 0) ||
+            (formErrors.password_confirmation && formErrors.password_confirmation.length > 0) ||
+            (formErrors.email && formErrors.email.length > 0) ||
+            (formErrors.birth_date && formErrors.birth_date.length > 0);
+        return hasErrors ? 'mt-3' : 'mt-5 md:mt-10';
+    };
 
     return (
         <>
             <Home/>
-            <div className={`absolute h-[90%] md:w-[42rem] w-fit px-3 md:px-0 flex items-center z-50 animate-slide-down`}>
-                <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl relative  md:w-[42rem]`}>
+            <div className={`absolute max-h-[87%] md:w-[42rem] w-[85%] z-50`}>
+                <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl relative md:w-[42rem]`}>
                     <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'}`}>
-                        <header className="flex justify-center">
+                        <header className="hidden md:flex justify-center">
                             <div className="absolute left-0 top-2 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
                                 onClick={handleClick}
                             >
@@ -277,8 +286,17 @@ function Register()  {
                             </div>
                         </header>
                         <div className={`${!isLoading ? 'visible ' : 'invisible'} relative `}>
-                            <main className={`mt-7 sm:mt-10 px-4 sm:px-16 text-gray-200`}>
-                                <h1 className={`text-3xl font-semibold`}>Create your account</h1>
+                            <main className={`mt-3 sm:mt-10 px-4 md:px-16 text-gray-200`}>
+                                <div className={`flex items-center justify-between`}>
+                                    <h1 className={`sm:text-3xl text-xl font-semibold`}>Create your account</h1>
+                                    <div className="flex md:hidden cursor-pointer hover:bg-neutral-600/30 text-2xl justify-center items-center rounded-full h-9 w-9 transition"
+                                         onClick={handleClick}
+                                    >
+                                        <div className={``}>
+                                            <HiMiniXMark/>
+                                        </div>
+                                    </div>
+                                </div>
                                 <div className={`mt-5 sm:mt-7 flex flex-col gap-y-2 sm:gap-y-3`}>
                                     <div className={`relative`}>
                                         <div className={`flex gap-x-1 absolute right-2 top-2 text-sm text-[#52525b]`}>
@@ -291,33 +309,32 @@ function Register()  {
                                            name={`username`}
                                            value={userCredentials?.username}
                                            onChange={handleInputsChange}
-                                           className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                           className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                            type="text"
                                            placeholder="Username"
                                            disabled={isLoading}
                                            autoComplete="one-time-code"
                                         />
-                                        {formErrors?.username && <p className={'text-red-700 font-semibold'}>{formErrors.username[0]}</p>}
+                                        {formErrors?.username && <p className={'text-red-500 font-semibold'}>{formErrors.username[0]}</p>}
 
                                     </div>
                                         <div>
                                             <input
-                                                className={`w-full registerInputs h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                                className={`w-full registerInputs h-12 sm:h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                                 name={`email`}
                                                 value={userCredentials?.email}
-                                                type="email"
                                                 onChange={handleInputsChange}
                                                 placeholder="Email"
                                                 disabled={isLoading}
                                                 autoComplete="one-time-code"
                                             />
-                                            {formErrors?.email && <p className={'text-red-700 font-semibold'}>{formErrors.email[0]}</p>}
+                                            {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email[0]}</p>}
                                         </div>
 
                                         <div>
                                             <input
                                                 maxLength={30}
-                                                className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                                className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                                 name={`password`}
                                                 value={userCredentials?.password}
                                                 type="password"
@@ -326,13 +343,13 @@ function Register()  {
                                                 disabled={isLoading}
                                                 autoComplete="one-time-code"
                                             />
-                                            {formErrors?.password && <p className={'text-red-700 font-semibold'}>{formErrors?.password[0]}</p>}
+                                            {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors?.password[0]}</p>}
                                         </div>
 
                                         <div>
                                             <input
                                                 maxLength={30}
-                                                className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                                className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                                 name={`password_confirmation`}
                                                 value={userCredentials?.password_confirmation}
                                                 type="password"
@@ -341,7 +358,7 @@ function Register()  {
                                                 disabled={isLoading}
                                                 autoComplete="one-time-code"
                                             />
-                                            {formErrors?.password_confirmation && <p className={'text-red-700 font-semibold'}>{formErrors?.password_confirmation[0]}</p>}
+                                            {formErrors?.password_confirmation && <p className={'text-red-500 font-semibold'}>{formErrors?.password_confirmation[0]}</p>}
                                         </div>
 
 
@@ -350,13 +367,11 @@ function Register()  {
 
                                 </div>
 
-                                <h4 className="mt-7 sm:mt-11 font-semibold">Date of birth</h4>
-                                <p className={`text-[#71767b] leading-4`}>This will not be shown publicly. Confirm your own
-                                    age, even if this account is for a business, a pet, or something else.</p>
+                                <h4 className="mt-3 sm:mt-6 font-semibold">Date of birth</h4>
 
-                                <div className={`flex sm:flex-row flex-col justify-center items-center sm:justify-start sm:items-start gap-y-4 sm:gap-y-0 gap-x-3 mt-6`}>
+                                <div className={`flex sm:flex-row flex-col gap-y-4 sm:gap-y-0 gap-x-3 mt-3`}>
                                     <Select
-                                        className={`sm:w-1/2 w-3/4`}
+                                        className={`sm:w-1/2 w-full`}
                                         options={months}
                                         isDisabled={isLoading}
                                         placeholder={'Month'}
@@ -365,7 +380,7 @@ function Register()  {
                                     />
 
 
-                                    <div className={`sm:w-1/2 w-3/4 flex sm:flex-row flex-col gap-y-4 sm:gap-y-0 gap-x-3`}>
+                                    <div className={`sm:w-1/2 w-full flex sm:flex-row flex-col gap-y-4 sm:gap-y-0 gap-x-3`}>
                                         <Select
                                             options={days}
                                             isDisabled={isLoading}
@@ -385,10 +400,11 @@ function Register()  {
                                             styles={styles}
                                         />
                                     </div>
+                                    {/*{formErrors?.birth_date && <p className={'text-red-500 font-semibold block sm:hidden'}>{formErrors?.birth_date[0]}</p>}*/}
                                 </div>
-                                {formErrors?.birth_date && <p className={'text-red-700 font-semibold'}>{formErrors?.birth_date[0]}</p>}
+                                {formErrors?.birth_date && <p className={'text-red-500 font-semibold'}>{formErrors?.birth_date[0]}</p>}
 
-                                <button type={"submit"} className={`bg-white w-full mt-10 sm:mt-20 py-3 rounded-full text-black font-semibold text-lg`}>Create</button>
+                                <button type={"submit"} className={`bg-white w-full ${determineButtonMargin()}  py-2 rounded-full text-black font-semibold text-lg`}>Create</button>
                             </main>
                         </div>
                     </form>
