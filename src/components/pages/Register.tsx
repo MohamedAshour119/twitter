@@ -4,6 +4,7 @@ import Home from "./Home.tsx";
 import Select, {GroupBase, SingleValue, StylesConfig} from 'react-select'
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
+import ApiClient from "../services/ApiClient.tsx";
 
 interface Month {
     value: string
@@ -15,11 +16,19 @@ interface Day extends Month {}
 interface Year extends Month {}
 
 interface User {
-    name: string
+    username: string
     email: string
     password: string
     password_confirmation: string
-    date_birth: Date
+    date_birth: string
+}
+
+interface FormError {
+    username: string[]
+    email: string[]
+    password: string[]
+    password_confirmation: string[]
+    birth_date: string[]
 }
 
 
@@ -45,53 +54,45 @@ function Register()  {
     const [selectedDay, setSelectedDay] = useState<Day | null>(null)
     const [selectedMonth, setSelectedMonth] = useState<Month | null>(null)
     const [selectedYear, setSelectedYear] = useState<Year | null>(null)
+    const [formErrors, setFormErrors] = useState<FormError>({
+        username: [],
+        email: [],
+        password: [],
+        password_confirmation: [],
+        birth_date: [],
+    })
     const [userCredentials, setUserCredentials] = useState<User>({
-        name: '',
+        username: '',
         email: '',
         password: '',
         password_confirmation: '',
-        date_birth: new Date()
+        date_birth: ``
     })
-    const [isDisabled, setIsDisabled] = useState(true)
 
-
-    useEffect(() => {
-        const areFieldsValid = [
-            userCredentials.name,
-            userCredentials.email,
-            userCredentials.password,
-            userCredentials.password_confirmation,
-            selectedDay?.value,
-            selectedMonth?.value,
-            selectedYear?.value
-        ].every(field => field && field.length > 0);
-
-        setIsDisabled(!areFieldsValid);
-    }, [selectedDay, selectedMonth, selectedYear, userCredentials.name, userCredentials.email, userCredentials.password, userCredentials.password_confirmation]);
-
-    // Handle Next button
-
+    // Handle Submit button (Next btn)
     const handleSubmitBtn = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        ApiClient().post('/register', {
+            'username': userCredentials.username,
+            'email': userCredentials.email,
+            'password': userCredentials.password,
+            'password_confirmation': userCredentials.password_confirmation,
+            'birth_date': userCredentials.date_birth
+        })
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                setFormErrors(err.response.data.errors)
+            })
     }
 
 
 
     // Handle Name count
     useEffect( () => {
-        setNameCount(userCredentials?.name?.length)
-    }, [userCredentials.name] )
-
-    // Convert selectedDate to real date
-    useEffect(() => {
-        if(selectedDay && selectedMonth && selectedYear){
-            const date = new Date(`${selectedYear.value}-${selectedMonth.value}-${selectedDay.value}`);
-            setUserCredentials(prevUserCredentials => ({
-                ...prevUserCredentials,
-                date_birth: date
-            }));
-        }
-    }, [selectedDay, selectedMonth, selectedYear]);
+        setNameCount(userCredentials?.username?.length)
+    }, [userCredentials.username] )
 
     const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserCredentials(prevUserCredentials => ({
@@ -234,6 +235,14 @@ function Register()  {
         })
     }
 
+    // Set the three selected values to 'birth_date' in the userCredentials state
+    useEffect( () => {
+        setUserCredentials(prevUserCredentials => ({
+            ...prevUserCredentials,
+            date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
+        }))
+    }, [selectedDay, selectedMonth, selectedYear] )
+
     // Handle form loading
     setTimeout( ()=>{
         setIsLoading(false)
@@ -246,6 +255,8 @@ function Register()  {
         setIsLoading(true)
     }
 
+
+    console.log(formErrors)
 
     return (
         <>
@@ -268,7 +279,7 @@ function Register()  {
                         <div className={`${!isLoading ? 'visible ' : 'invisible'} relative `}>
                             <main className={`mt-7 sm:mt-10 px-4 sm:px-16 text-gray-200`}>
                                 <h1 className={`text-3xl font-semibold`}>Create your account</h1>
-                                <div className={`mt-5 sm:mt-7 flex flex-col gap-y-2 sm:gap-y-8`}>
+                                <div className={`mt-5 sm:mt-7 flex flex-col gap-y-2 sm:gap-y-3`}>
                                     <div className={`relative`}>
                                         <div className={`flex gap-x-1 absolute right-2 top-2 text-sm text-[#52525b]`}>
                                             <span>{nameCount}</span>
@@ -277,45 +288,64 @@ function Register()  {
                                         </div>
                                         <input
                                            maxLength={50}
-                                           name={`name`}
-                                           value={userCredentials?.name}
+                                           name={`username`}
+                                           value={userCredentials?.username}
                                            onChange={handleInputsChange}
                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                            type="text"
-                                           placeholder="Name"
+                                           placeholder="Username"
                                            disabled={isLoading}
+                                           autoComplete="one-time-code"
                                         />
+                                        {formErrors?.username && <p className={'text-red-700 font-semibold'}>{formErrors.username[0]}</p>}
 
                                     </div>
-                                        <input
-                                           className={`w-full registerInputs h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                           name={`email`}
-                                           value={userCredentials?.email}
-                                           type="email"
-                                           onChange={handleInputsChange}
-                                           placeholder="Email"
-                                           disabled={isLoading}
-                                        />
-                                        <input
-                                            maxLength={30}
-                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                            name={`password`}
-                                            value={userCredentials?.password}
-                                            type="password"
-                                            onChange={handleInputsChange}
-                                            placeholder="Password"
-                                            disabled={isLoading}
-                                        />
-                                        <input
-                                            maxLength={30}
-                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                            name={`password_confirmation`}
-                                            value={userCredentials?.password_confirmation}
-                                            type="password"
-                                            onChange={handleInputsChange}
-                                            placeholder="Confirm Password"
-                                            disabled={isLoading}
-                                        />
+                                        <div>
+                                            <input
+                                                className={`w-full registerInputs h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                                name={`email`}
+                                                value={userCredentials?.email}
+                                                type="email"
+                                                onChange={handleInputsChange}
+                                                placeholder="Email"
+                                                disabled={isLoading}
+                                                autoComplete="one-time-code"
+                                            />
+                                            {formErrors?.email && <p className={'text-red-700 font-semibold'}>{formErrors.email[0]}</p>}
+                                        </div>
+
+                                        <div>
+                                            <input
+                                                maxLength={30}
+                                                className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                                name={`password`}
+                                                value={userCredentials?.password}
+                                                type="password"
+                                                onChange={handleInputsChange}
+                                                placeholder="Password"
+                                                disabled={isLoading}
+                                                autoComplete="one-time-code"
+                                            />
+                                            {formErrors?.password && <p className={'text-red-700 font-semibold'}>{formErrors?.password[0]}</p>}
+                                        </div>
+
+                                        <div>
+                                            <input
+                                                maxLength={30}
+                                                className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                                name={`password_confirmation`}
+                                                value={userCredentials?.password_confirmation}
+                                                type="password"
+                                                onChange={handleInputsChange}
+                                                placeholder="Confirm Password"
+                                                disabled={isLoading}
+                                                autoComplete="one-time-code"
+                                            />
+                                            {formErrors?.password_confirmation && <p className={'text-red-700 font-semibold'}>{formErrors?.password_confirmation[0]}</p>}
+                                        </div>
+
+
+
 
 
                                 </div>
@@ -356,7 +386,9 @@ function Register()  {
                                         />
                                     </div>
                                 </div>
-                                <button disabled={isDisabled} className={`bg-white w-full mt-10 sm:mt-20 py-3 rounded-full text-black font-semibold text-lg ${isDisabled ? 'bg-white/40 cursor-not-allowed' : ''}`}>Next</button>
+                                {formErrors?.birth_date && <p className={'text-red-700 font-semibold'}>{formErrors?.birth_date[0]}</p>}
+
+                                <button type={"submit"} className={`bg-white w-full mt-10 sm:mt-20 py-3 rounded-full text-black font-semibold text-lg`}>Create</button>
                             </main>
                         </div>
                     </form>
