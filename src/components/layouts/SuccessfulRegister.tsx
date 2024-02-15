@@ -30,9 +30,15 @@ function SuccessfulRegister() {
             <div className={`bg-green-600 mt-8 p-6 rounded-full`}>
                 <MdOutlineDoneOutline className={`size-16`}/>
             </div>
-            <Link to={'/login'} className={`mt-8 bg-neutral-100 text-sky-600 py-3 px-10 text-xl font-bold rounded-lg hover:bg-sky-600 hover:text-neutral-100 transition`}>
-                <span>Login</span>
-            </Link>
+            <div className={`flex gap-x-4`}>
+                <Link to={'/login'} className={`mt-8 bg-neutral-100 text-sky-600 py-3 px-10 text-xl font-bold rounded-lg hover:bg-sky-600 hover:text-neutral-100 transition`}>
+                    <span>Login</span>
+                </Link>
+                <Link to={'/'} className={`mt-8 bg-neutral-100 text-sky-600 py-3 px-10 text-xl font-bold rounded-lg hover:bg-sky-600 hover:text-neutral-100 transition`}>
+                    <span>Home</span>
+                </Link>
+            </div>
+
         </div>
     )
 }

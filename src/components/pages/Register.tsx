@@ -76,10 +76,8 @@ function Register() {
         date_birth: ``
     })
 
-    // Handle Submit button (Next btn)
-    const handleSubmitBtn = (e: React.FormEvent<HTMLFormElement>) => {
-        setCreateBtnLoading(true)
-        e.preventDefault();
+    // Send request with register data
+    const sendRequest = () => {
         ApiClient().post('/register', {
             'username': userCredentials.username,
             'email': userCredentials.email,
@@ -87,16 +85,22 @@ function Register() {
             'password_confirmation': userCredentials.password_confirmation,
             'birth_date': userCredentials.date_birth
         })
-            .then(res => {
+            .then(() => {
                 setCreateBtnLoading(false)
                 setSuccessfulRegister(true)
-                console.log(res.data)
             })
             .catch(err => {
                 setCreateBtnLoading(false)
                 setSuccessfulRegister(false)
                 setFormErrors(err.response.data.errors)
             })
+    }
+
+    // Handle Submit button (Next btn)
+    const handleSubmitBtn = (e: React.FormEvent<HTMLFormElement>) => {
+        setCreateBtnLoading(true)
+        e.preventDefault();
+        sendRequest();
     }
 
 
@@ -270,11 +274,11 @@ function Register() {
     // Function to determine whether to apply "mt-3" or "mt-10 sm:mt-20" class
     const determineButtonMargin = () => {
         const hasErrors =
-            (formErrors.password && formErrors.password.length > 0) ||
-            (formErrors.username && formErrors.username.length > 0) ||
-            (formErrors.password_confirmation && formErrors.password_confirmation.length > 0) ||
-            (formErrors.email && formErrors.email.length > 0) ||
-            (formErrors.birth_date && formErrors.birth_date.length > 0);
+            (formErrors?.password && formErrors?.password.length > 0) ||
+            (formErrors?.username && formErrors?.username.length > 0) ||
+            (formErrors?.password_confirmation && formErrors?.password_confirmation.length > 0) ||
+            (formErrors?.email && formErrors?.email.length > 0) ||
+            (formErrors?.birth_date && formErrors?.birth_date.length > 0);
         return hasErrors ? 'mt-3' : 'mt-5 md:mt-10';
     };
 
