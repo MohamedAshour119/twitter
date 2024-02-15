@@ -5,15 +5,20 @@ import Select, {GroupBase, SingleValue, StylesConfig} from 'react-select'
 import {useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import ApiClient from "../services/ApiClient.tsx";
+import {CgSpinnerTwoAlt} from "react-icons/cg";
+import SuccessfulRegister from "../layouts/SuccessfulRegister.tsx";
 
 interface Month {
     value: string
     label: string
     days: number
 }
-interface Day extends Month {}
 
-interface Year extends Month {}
+interface Day extends Month {
+}
+
+interface Year extends Month {
+}
 
 interface User {
     username: string
@@ -32,25 +37,27 @@ interface FormError {
 }
 
 
-function Register()  {
+function Register() {
 
     const months: Month[] = [
-        { value: "january", label: "January", days: 31 },
-        { value: "february", label: "February", days: 28 },
-        { value: "march", label: "March", days: 31 },
-        { value: "april", label: "April", days: 30 },
-        { value: "may", label: "May", days: 31 },
-        { value: "june", label: "June", days: 30 },
-        { value: "july", label: "July", days: 31 },
-        { value: "august", label: "August", days: 31 },
-        { value: "september", label: "September", days: 30 },
-        { value: "october", label: "October", days: 31 },
-        { value: "november", label: "November", days: 30 },
-        { value: "december", label: "December", days: 31 },
+        {value: "january", label: "January", days: 31},
+        {value: "february", label: "February", days: 28},
+        {value: "march", label: "March", days: 31},
+        {value: "april", label: "April", days: 30},
+        {value: "may", label: "May", days: 31},
+        {value: "june", label: "June", days: 30},
+        {value: "july", label: "July", days: 31},
+        {value: "august", label: "August", days: 31},
+        {value: "september", label: "September", days: 30},
+        {value: "october", label: "October", days: 31},
+        {value: "november", label: "November", days: 30},
+        {value: "december", label: "December", days: 31},
     ]
 
     const [nameCount, setNameCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true)
+    const [createBtnLoading, setCreateBtnLoading] = useState(false)
+    const [successfulRegister, setSuccessfulRegister] = useState(false)
     const [selectedDay, setSelectedDay] = useState<Day | null>(null)
     const [selectedMonth, setSelectedMonth] = useState<Month | null>(null)
     const [selectedYear, setSelectedYear] = useState<Year | null>(null)
@@ -71,6 +78,7 @@ function Register()  {
 
     // Handle Submit button (Next btn)
     const handleSubmitBtn = (e: React.FormEvent<HTMLFormElement>) => {
+        setCreateBtnLoading(true)
         e.preventDefault();
         ApiClient().post('/register', {
             'username': userCredentials.username,
@@ -80,19 +88,22 @@ function Register()  {
             'birth_date': userCredentials.date_birth
         })
             .then(res => {
-                console.log(res)
+                setCreateBtnLoading(false)
+                setSuccessfulRegister(true)
+                console.log(res.data)
             })
             .catch(err => {
+                setCreateBtnLoading(false)
+                setSuccessfulRegister(false)
                 setFormErrors(err.response.data.errors)
             })
     }
 
 
-
     // Handle Name count
-    useEffect( () => {
+    useEffect(() => {
         setNameCount(userCredentials?.username?.length)
-    }, [userCredentials.username] )
+    }, [userCredentials.username])
 
     const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setUserCredentials(prevUserCredentials => ({
@@ -123,12 +134,12 @@ function Register()  {
             color: isFocused ? '#0284c7' : '#52525b',
         }),
 
-        indicatorSeparator: (defaultStyles)=> ({
+        indicatorSeparator: (defaultStyles) => ({
             ...defaultStyles,
             backgroundColor: 'transparent'
         }),
 
-        dropdownIndicator: (defaultStyles, { isFocused }) => ({
+        dropdownIndicator: (defaultStyles, {isFocused}) => ({
             ...defaultStyles,
             color: isFocused ? '#0284c7' : '#52525b',
             '&:hover': {
@@ -211,8 +222,8 @@ function Register()  {
     // Handle number of days based on the selected month
     const days: Day[] = [];
 
-    if (selectedMonth?.days){
-        for (let i: number = 1; i <= selectedMonth.days; i++){
+    if (selectedMonth?.days) {
+        for (let i: number = 1; i <= selectedMonth.days; i++) {
             days.push({
                 value: `${i}`,
                 label: `${i}`,
@@ -227,7 +238,7 @@ function Register()  {
 
     const years: Year[] = []
 
-    for (let i: number = currentYear; i >= startYear; i--){
+    for (let i: number = currentYear; i >= startYear; i--) {
         years.push({
             value: `${i}`,
             label: `${i}`,
@@ -236,15 +247,15 @@ function Register()  {
     }
 
     // Set the three selected values to 'birth_date' in the userCredentials state
-    useEffect( () => {
+    useEffect(() => {
         setUserCredentials(prevUserCredentials => ({
             ...prevUserCredentials,
             date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
         }))
-    }, [selectedDay, selectedMonth, selectedYear] )
+    }, [selectedDay, selectedMonth, selectedYear])
 
     // Handle form loading
-    setTimeout( ()=>{
+    setTimeout(() => {
         setIsLoading(false)
     }, 1000)
 
@@ -270,11 +281,12 @@ function Register()  {
     return (
         <>
             <Home/>
-            <div className={`absolute max-h-[87%] md:w-[42rem] w-[85%] z-50`}>
+            <div className={`absolute max-h-[87%] ${successfulRegister ? 'mt-40' : 'mt-0'} md:w-[42rem] w-[85%] z-50`}>
                 <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl relative md:w-[42rem]`}>
-                    <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'}`}>
+                    <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'} ${successfulRegister ? 'hidden' : 'block'}`}>
                         <header className="hidden md:flex justify-center">
-                            <div className="absolute left-0 top-2 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
+                            <div
+                                className="absolute left-0 top-2 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
                                 onClick={handleClick}
                             >
                                 <div className={``}>
@@ -289,8 +301,9 @@ function Register()  {
                             <main className={`mt-3 sm:mt-10 px-4 md:px-16 text-gray-200`}>
                                 <div className={`flex items-center justify-between`}>
                                     <h1 className={`sm:text-3xl text-xl font-semibold`}>Create your account</h1>
-                                    <div className="flex md:hidden cursor-pointer hover:bg-neutral-600/30 text-2xl justify-center items-center rounded-full h-9 w-9 transition"
-                                         onClick={handleClick}
+                                    <div
+                                        className="flex md:hidden cursor-pointer hover:bg-neutral-600/30 text-2xl justify-center items-center rounded-full h-9 w-9 transition"
+                                        onClick={handleClick}
                                     >
                                         <div className={``}>
                                             <HiMiniXMark/>
@@ -305,64 +318,65 @@ function Register()  {
                                             <span>50</span>
                                         </div>
                                         <input
-                                           maxLength={50}
-                                           name={`username`}
-                                           value={userCredentials?.username}
-                                           onChange={handleInputsChange}
-                                           className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                           type="text"
-                                           placeholder="Username"
-                                           disabled={isLoading}
-                                           autoComplete="one-time-code"
+                                            maxLength={50}
+                                            name={`username`}
+                                            value={userCredentials?.username}
+                                            onChange={handleInputsChange}
+                                            className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            type="text"
+                                            placeholder="Username"
+                                            disabled={isLoading}
+                                            autoComplete="one-time-code"
                                         />
-                                        {formErrors?.username && <p className={'text-red-500 font-semibold'}>{formErrors.username[0]}</p>}
+                                        {formErrors?.username &&
+                                            <p className={'text-red-500 font-semibold'}>{formErrors.username[0]}</p>}
 
                                     </div>
-                                        <div>
-                                            <input
-                                                className={`w-full registerInputs h-12 sm:h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                                name={`email`}
-                                                value={userCredentials?.email}
-                                                onChange={handleInputsChange}
-                                                placeholder="Email"
-                                                disabled={isLoading}
-                                                autoComplete="one-time-code"
-                                            />
-                                            {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email[0]}</p>}
-                                        </div>
+                                    <div>
+                                        <input
+                                            className={`w-full registerInputs h-12 sm:h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                            name={`email`}
+                                            value={userCredentials?.email}
+                                            onChange={handleInputsChange}
+                                            placeholder="Email"
+                                            disabled={isLoading}
+                                            autoComplete="one-time-code"
+                                        />
+                                        {formErrors?.email &&
+                                            <p className={'text-red-500 font-semibold'}>{formErrors.email[0]}</p>}
+                                    </div>
 
-                                        <div>
-                                            <input
-                                                maxLength={30}
-                                                className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                                name={`password`}
-                                                value={userCredentials?.password}
-                                                type="password"
-                                                onChange={handleInputsChange}
-                                                placeholder="Password"
-                                                disabled={isLoading}
-                                                autoComplete="one-time-code"
-                                            />
-                                            {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors?.password[0]}</p>}
-                                        </div>
+                                    <div>
+                                        <input
+                                            maxLength={30}
+                                            className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            name={`password`}
+                                            value={userCredentials?.password}
+                                            type="password"
+                                            onChange={handleInputsChange}
+                                            placeholder="Password"
+                                            disabled={isLoading}
+                                            autoComplete="one-time-code"
+                                        />
+                                        {formErrors?.password &&
+                                            <p className={'text-red-500 font-semibold'}>{formErrors?.password[0]}</p>}
+                                    </div>
 
-                                        <div>
-                                            <input
-                                                maxLength={30}
-                                                className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
-                                                name={`password_confirmation`}
-                                                value={userCredentials?.password_confirmation}
-                                                type="password"
-                                                onChange={handleInputsChange}
-                                                placeholder="Confirm Password"
-                                                disabled={isLoading}
-                                                autoComplete="one-time-code"
-                                            />
-                                            {formErrors?.password_confirmation && <p className={'text-red-500 font-semibold'}>{formErrors?.password_confirmation[0]}</p>}
-                                        </div>
-
-
-
+                                    <div>
+                                        <input
+                                            maxLength={30}
+                                            className={`registerInputs h-12 sm:h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            name={`password_confirmation`}
+                                            value={userCredentials?.password_confirmation}
+                                            type="password"
+                                            onChange={handleInputsChange}
+                                            placeholder="Confirm Password"
+                                            disabled={isLoading}
+                                            autoComplete="one-time-code"
+                                        />
+                                        {formErrors?.password_confirmation &&
+                                            <p className={'text-red-500 font-semibold'}>{formErrors?.password_confirmation[0]}</p>}
+                                    </div>
 
 
                                 </div>
@@ -380,13 +394,14 @@ function Register()  {
                                     />
 
 
-                                    <div className={`sm:w-1/2 w-full flex sm:flex-row flex-col gap-y-4 sm:gap-y-0 gap-x-3`}>
+                                    <div
+                                        className={`sm:w-1/2 w-full flex sm:flex-row flex-col gap-y-4 sm:gap-y-0 gap-x-3`}>
                                         <Select
                                             options={days}
                                             isDisabled={isLoading}
                                             placeholder={'Day'}
                                             className={`sm:w-1/2 w-full`}
-                                            noOptionsMessage={()=> 'Select Month'}
+                                            noOptionsMessage={() => 'Select Month'}
                                             onChange={handleDaySelectedChange}
                                             styles={styles}
                                         />
@@ -400,14 +415,21 @@ function Register()  {
                                             styles={styles}
                                         />
                                     </div>
-                                    {/*{formErrors?.birth_date && <p className={'text-red-500 font-semibold block sm:hidden'}>{formErrors?.birth_date[0]}</p>}*/}
                                 </div>
-                                {formErrors?.birth_date && <p className={'text-red-500 font-semibold'}>{formErrors?.birth_date[0]}</p>}
+                                {formErrors?.birth_date &&
+                                    <p className={'text-red-500 font-semibold'}>{formErrors?.birth_date[0]}</p>}
 
-                                <button type={"submit"} className={`bg-white w-full ${determineButtonMargin()}  py-2 rounded-full text-black font-semibold text-lg`}>Create</button>
+                                <button type={"submit"}
+                                        className={`bg-white w-full relative ${determineButtonMargin()} flex justify-center items-center gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
+                                        <span>Create</span>
+                                        <CgSpinnerTwoAlt className={`animate-spin size-6 ${createBtnLoading ? 'visible' : 'invisible'}`}/>
+                                </button>
                             </main>
                         </div>
                     </form>
+
+                    {/* Show successful component */}
+                    {successfulRegister && <SuccessfulRegister/>}
 
                     {isLoading &&
                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}>

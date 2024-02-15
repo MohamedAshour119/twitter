@@ -1,9 +1,8 @@
-import {JSX} from 'react'
 import {FaXTwitter} from "react-icons/fa6";
 import {Link} from "react-router-dom";
 import {FcGoogle} from "react-icons/fc";
 
-function Home(): JSX.Element {
+function Home() {
 
     return (
         <div className="flex md:flex-row flex-col px-10 w-full md: items-center justify-between text-zinc-200 mt-24">
