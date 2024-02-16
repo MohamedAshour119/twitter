@@ -6,12 +6,11 @@ import Footer from "../partials/Footer.tsx";
 function Home() {
 
     return (
-        <>
-            <div className="flex md:flex-row flex-col px-10 w-full md: items-center justify-between text-zinc-200 mt-24">
+        <div className="grid grid-cols-1 bg-black w-full h-screen items-end justify-center text-zinc-200">
+            <div className={` flex flex-col md:flex-row justify-around`}>
                 <div className="text-[3rem] md:text-[23.5rem] w-full md:w-auto flex justify-center">
                     <FaXTwitter/>
                 </div>
-
                 <div className="w-full md:w-auto flex flex-col items-center md:block">
                     <h1 className="text-4xl mt-12 md:mt-0 md:text-5xl lg:text-7xl font-bold">Happening now</h1>
 
@@ -48,10 +47,9 @@ function Home() {
                         <Link to={`/login`} className="block text-center border border-gray-500 hover:bg-sky-500/10 w-full py-3 rounded-3xl text-sky-600 mt-4 font-semibold transition">Sign in</Link>
                     </div>
                 </div>
-
             </div>
             <Footer/>
-        </>
+        </div>
 
 
     )

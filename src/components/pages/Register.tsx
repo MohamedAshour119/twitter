@@ -25,6 +25,7 @@ interface User {
     password: string
     password_confirmation: string
     date_birth: string
+    avatar: string
 }
 
 interface FormError {
@@ -36,11 +37,8 @@ interface FormError {
     avatar: []
 }
 
-interface Prop {
-    setErrorsExist: (value: boolean) => void
-}
 
-function Register(props: Prop) {
+function Register() {
 
     const months: Month[] = [
         {value: "january", label: "January", days: 31},
@@ -77,7 +75,8 @@ function Register(props: Prop) {
         email: '',
         password: '',
         password_confirmation: '',
-        date_birth: ``
+        date_birth: ``,
+        avatar: '',
     })
 
     // Send request with register data
@@ -97,7 +96,6 @@ function Register(props: Prop) {
                 setCreateBtnLoading(false)
                 setSuccessfulRegister(false)
                 setFormErrors(err.response.data.errors)
-                props.setErrorsExist(true)
             })
     }
 
@@ -117,10 +115,22 @@ function Register(props: Prop) {
 
     // Handle Inputs changes
     const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserCredentials(prevUserCredentials => ({
-            ...(prevUserCredentials || {}),
-            [e.target.name]: e.target.value
-        }))
+
+        const {name, value, files} = e.target;
+
+        if(name !== 'avatar'){
+            setUserCredentials(prevUserCredentials => ({
+                ...(prevUserCredentials || {}),
+                [name]: value
+            }))
+        } else {
+            if(files && files.length > 0){
+                const file = files[0]
+                console.log(file)
+            }
+        }
+
+
     }
 
     // React Select
@@ -289,12 +299,12 @@ function Register(props: Prop) {
 
     return (
         <>
-            <div className={`${successfulRegister ? 'mt-40' : 'mt-0'} md:w-[42rem] w-[85%] z-50`}>
-                <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl relative md:w-[42rem]`}>
+            <div className={`${successfulRegister ? 'mt-40' : 'mt-0'} md:w-full h-screen flex items-baseline justify-center py-6 px-4 overflow-y-scroll bg-gradient-to-br from-blue-600 to-[#a8dbf9] z-50`}>
+                <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl md:w-[42rem] w-full`}>
                     <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'} ${successfulRegister ? 'hidden' : 'block'}`}>
-                        <header className="flex justify-center">
+                        <header className="flex justify-center relative">
                             <div
-                                className="absolute left-0 top-2 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
+                                className="absolute left-0 top-0 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
                                 onClick={handleClick}
                             >
                                 <div className={``}>
@@ -381,9 +391,9 @@ function Register(props: Prop) {
 
                                 </div>
 
-                                <h4 className="mt-3 sm:mt-6 font-semibold">Date of birth</h4>
+                                <h4 className="mt-8 font-semibold">Date of birth</h4>
 
-                                <div className={`grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr] gap-y-4 md:gap-y-0 gap-x-3 mt-6`}>
+                                <div className={`grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr] gap-y-4 md:gap-y-0 gap-x-3 mt-3`}>
                                     <Select
                                         options={months}
                                         isDisabled={isLoading}
@@ -411,30 +421,31 @@ function Register(props: Prop) {
                                 {formErrors?.birth_date &&
                                     <p className={'text-red-500 font-semibold'}>{formErrors?.birth_date[0]}</p>}
 
-                                <div className={``}>
-                                    <h1>Profile picture</h1>
+                                <div className={`mt-8`}>
+                                    <h1 className={`font-semibold`}>Profile picture</h1>
 
-                                    <div className="flex items-center w-full">
-                                        <label htmlFor="dropzone-file"
-                                               className="flex flex-col items-center justify-center w-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
-                                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                                                <svg className="w-8 h-8 mb-4 text-gray-500 dark:text-gray-400"
+                                    <div className="flex items-center w-full mt-3">
+                                        <label
+                                               className="flex flex-col items-center justify-center w-full bg-gray-700 text-neutral-100 border-2 border-gray-500 border-dashed rounded-lg cursor-pointer hover:bg-gray-600 hover:border-gray-400 transition">
+                                            <div className="flex flex-col items-center justify-center pt-5 pb-6 ">
+                                                <svg className="w-8 h-8 mb-4 "
                                                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                                                      viewBox="0 0 20 16">
                                                     <path stroke="currentColor" stroke-linecap="round"
                                                           stroke-linejoin="round" stroke-width="2"
                                                           d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                                 </svg>
-                                                <p className="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
+                                                <p className="mb-2 text-sm "><span
                                                     className="font-semibold">Click to upload</span> or drag and drop
                                                 </p>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or
+                                                <p className="text-xs ">SVG, PNG, JPG or
                                                     GIF (MAX. 800x400px)</p>
                                             </div>
-                                            <input id="dropzone-file" type="file" className="hidden"/>
+                                            <input name={`avatar`} value={userCredentials?.avatar} type="file" className="hidden"/>
                                         </label>
                                     </div>
-
+                                    {formErrors?.avatar &&
+                                        <p className={`text-red-500 font-semibold`}>{formErrors?.avatar}</p>}
                                 </div>
 
                                 <button type={"submit"}
@@ -446,7 +457,7 @@ function Register(props: Prop) {
                         </div>
                     </form>
 
-                    {/* Show successful component */}
+                    {/* Show successful registration component */}
                     {successfulRegister && <SuccessfulRegister/>}
 
                     {isLoading &&
