@@ -36,7 +36,11 @@ interface FormError {
     avatar: []
 }
 
-function Register() {
+interface Prop {
+    setErrorsExist: (value: boolean) => void
+}
+
+function Register(props: Prop) {
 
     const months: Month[] = [
         {value: "january", label: "January", days: 31},
@@ -93,6 +97,7 @@ function Register() {
                 setCreateBtnLoading(false)
                 setSuccessfulRegister(false)
                 setFormErrors(err.response.data.errors)
+                props.setErrorsExist(true)
             })
     }
 
