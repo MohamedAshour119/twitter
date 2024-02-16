@@ -7,7 +7,7 @@ import AppProvider from "./components/appContext/AppContext.tsx";
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
         <AppProvider>
-            <App />
+                <App />
         </AppProvider>
     </BrowserRouter>
 )
