@@ -1,16 +1,24 @@
 import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
-import {useState} from "react";
+import {useContext, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
+import {AppContext} from "../appContext/AppContext.tsx";
 
 interface User {
     email: string
     password: string
 }
 
+interface FormError {
+    email: string[]
+    password: string[]
+}
+
 function Login() {
+
+    const {setUser} = useContext(AppContext)
 
     const [isLoading, setIsLoading] = useState(true)
     const [loginBtnLoading, setLoginBtnLoading] = useState(false)
@@ -18,6 +26,11 @@ function Login() {
         email: '',
         password: '',
     })
+    const [formErrors, setFormErrors] = useState<FormError>({
+        email: [],
+        password: [],
+    })
+    const [wrongCredentialsMsg, setWrongCredentialsMsg] = useState("")
 
     // Handle collapse form
     const navigate = useNavigate();
@@ -35,11 +48,17 @@ function Login() {
 
         setLoginBtnLoading(true)
 
-        ApiClient().get('/login', formData)
-            .then( ()=> {
+        ApiClient().post('/login', formData)
+            .then(res=> {
                 setLoginBtnLoading(false)
+                setUser(res.data.data.data)
+                localStorage.setItem('token', res.data.data.token)
+                navigate('/home')
             })
-            .catch(err => {
+            .catch((err) => {
+                setFormErrors(err.response.data.errors)
+                setWrongCredentialsMsg(err.response.data.message)
+
                 setLoginBtnLoading(false)
             })
     }
@@ -105,8 +124,7 @@ function Login() {
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {/*{formErrors?.email &&*/}
-                                    {/*    <p className={'text-red-500 font-semibold'}>{formErrors.email[0]}</p>}*/}
+                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
                                 </div>
 
                                 <div>
@@ -121,11 +139,11 @@ function Login() {
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {/*{formErrors?.password &&*/}
-                                    {/*    <p className={'text-red-500 font-semibold'}>{formErrors?.password[0]}</p>}*/}
+                                    {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors?.password}</p>}
                                 </div>
-
                             </div>
+                            {!(formErrors.email && formErrors.password) && <p className={'text-red-500 font-semibold'}>{wrongCredentialsMsg}</p>}
+
 
                             <button type={"submit"}
                                     className={`${loginBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
