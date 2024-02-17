@@ -10,9 +10,6 @@ import Login from "./components/pages/Login.tsx";
 
 function App() {
 
-    // const appContext = useContext(AppContext)
-
-
     return (
         <Routes>
             <Route path={`/`} element={<Home />}/>

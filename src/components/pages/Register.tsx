@@ -13,19 +13,20 @@ interface Month {
     days: number
 }
 
-interface Day extends Month {
+interface Day extends Month{
+
 }
 
-interface Year extends Month {
-}
+interface Year extends Month{}
 
 interface User {
     username: string
     email: string
     password: string
     password_confirmation: string
+    gender: string
     date_birth: string
-    avatar: string
+    avatar: string | File | null | undefined
 }
 
 interface FormError {
@@ -33,8 +34,14 @@ interface FormError {
     email: string[]
     password: string[]
     password_confirmation: string[]
+    gender: string[]
     birth_date: string[]
     avatar: []
+}
+
+interface Gender {
+    value: string
+    label: string
 }
 
 
@@ -55,6 +62,11 @@ function Register() {
         {value: "december", label: "December", days: 31},
     ]
 
+    const genders: Gender[] = [
+        {value: "male", label: "Male"},
+        {value: "female", label: "Female"}
+    ]
+
     const [nameCount, setNameCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true)
     const [createBtnLoading, setCreateBtnLoading] = useState(false)
@@ -62,11 +74,13 @@ function Register() {
     const [selectedDay, setSelectedDay] = useState<Day | null>(null)
     const [selectedMonth, setSelectedMonth] = useState<Month | null>(null)
     const [selectedYear, setSelectedYear] = useState<Year | null>(null)
+    const [selectedGender, setSelectedGender] = useState<Gender | null>(null)
     const [formErrors, setFormErrors] = useState<FormError>({
         username: [],
         email: [],
         password: [],
         password_confirmation: [],
+        gender: [],
         birth_date: [],
         avatar: [],
     })
@@ -75,19 +89,27 @@ function Register() {
         email: '',
         password: '',
         password_confirmation: '',
-        date_birth: ``,
+        gender: '',
+        date_birth: '',
         avatar: '',
     })
 
     // Send request with register data
     const sendRequest = () => {
-        ApiClient().post('/register', {
-            'username': userCredentials.username,
-            'email': userCredentials.email,
-            'password': userCredentials.password,
-            'password_confirmation': userCredentials.password_confirmation,
-            'birth_date': userCredentials.date_birth
-        })
+
+        const formData = new FormData();
+        formData.append('username', userCredentials.username);
+        formData.append('email', userCredentials.email);
+        formData.append('password', userCredentials.password);
+        formData.append('password_confirmation', userCredentials.password_confirmation);
+        formData.append('gender', userCredentials.gender);
+        formData.append('birth_date', userCredentials.date_birth);
+
+        if(userCredentials.avatar instanceof File){
+            formData.append('avatar', userCredentials.avatar as Blob)
+        }
+
+        ApiClient().post('/register', formData)
             .then(() => {
                 setCreateBtnLoading(false)
                 setSuccessfulRegister(true)
@@ -126,7 +148,10 @@ function Register() {
         } else {
             if(files && files.length > 0){
                 const file = files[0]
-                console.log(file)
+                setUserCredentials(prevUserCredentials => ({
+                    ...prevUserCredentials,
+                    avatar: file
+                }));
             }
         }
 
@@ -134,7 +159,9 @@ function Register() {
     }
 
     // React Select
-    const styles: StylesConfig<Month, false, GroupBase<Month>> = {
+    type OptionType = Month | Gender;
+
+    const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
         control: (styles, {isFocused, isDisabled}) => ({
             ...styles,
             height: '3.5rem',
@@ -210,30 +237,37 @@ function Register() {
     }
 
     // Handle selected options
-    const handleSelectedChange = (selectedOption: SingleValue<Month>): void => {
+    const handleSelectedChange = (selectedOption: SingleValue<OptionType>): void => {
         if (selectedOption) {
-            const selectedMonth: Month = selectedOption as Month;
-            setSelectedMonth(selectedMonth);
+            setSelectedMonth(selectedOption as Month);
         } else {
             setSelectedMonth(null);
         }
     }
 
-    const handleDaySelectedChange = (selectedOption: SingleValue<Day>): void => {
+    const handleDaySelectedChange = (selectedOption: SingleValue<OptionType>): void => {
         if (selectedOption) {
-            const selectedDay: Day = selectedOption as Day;
-            setSelectedDay(selectedDay);
+            setSelectedDay(selectedOption as Day);
         } else {
             setSelectedDay(null);
         }
     }
 
-    const handleYearSelectedChange = (selectedOption: SingleValue<Year>): void => {
+    const handleYearSelectedChange = (selectedOption: SingleValue<OptionType>): void => {
         if (selectedOption) {
-            const selectedYear: Year = selectedOption as Year;
-            setSelectedYear(selectedYear);
+            setSelectedYear(selectedOption as Year);
         } else {
             setSelectedYear(null);
+        }
+    }
+
+
+    const handleGenderSelectedChange = (selectedOption: SingleValue<Gender>): void => {
+        if(selectedOption) {
+            const selectedGender: Gender = selectedOption as Gender;
+            setSelectedGender(selectedGender);
+        } else {
+            setSelectedGender(null)
         }
     }
 
@@ -269,6 +303,7 @@ function Register() {
     useEffect(() => {
         setUserCredentials(prevUserCredentials => ({
             ...prevUserCredentials,
+            gender: `${selectedGender?.value}`,
             date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
         }))
     }, [selectedDay, selectedMonth, selectedYear])
@@ -286,20 +321,9 @@ function Register() {
     }
 
 
-    // Function to determine whether to apply "mt-3" or "mt-10 sm:mt-20" class
-    const determineButtonMargin = () => {
-        const hasErrors =
-            (formErrors?.password && formErrors?.password.length > 0) ||
-            (formErrors?.username && formErrors?.username.length > 0) ||
-            (formErrors?.password_confirmation && formErrors?.password_confirmation.length > 0) ||
-            (formErrors?.email && formErrors?.email.length > 0) ||
-            (formErrors?.birth_date && formErrors?.birth_date.length > 0);
-        return hasErrors ? 'mt-3' : 'mt-5 md:mt-10';
-    };
-
     return (
         <>
-            <div className={`${successfulRegister ? 'mt-40' : 'mt-0'} md:w-full h-screen flex items-baseline justify-center py-6 px-4 overflow-y-scroll bg-gradient-to-br from-blue-600 to-[#a8dbf9] z-50`}>
+            <div className={`md:w-full h-screen flex ${successfulRegister ? 'items-center' : 'items-baseline'}  justify-center py-6 px-4 overflow-y-scroll bg-gradient-to-br from-blue-600 to-[#a8dbf9] z-50`}>
                 <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl md:w-[42rem] w-full`}>
                     <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'} ${successfulRegister ? 'hidden' : 'block'}`}>
                         <header className="flex justify-center relative">
@@ -339,7 +363,7 @@ function Register() {
                                             autoComplete="one-time-code"
                                         />
                                         {formErrors?.username &&
-                                            <p className={'text-red-500 font-semibold'}>{formErrors.username[0]}</p>}
+                                            <p className={'text-red-500 font-semibold'}>{formErrors.username}</p>}
 
                                     </div>
                                     <div>
@@ -353,7 +377,7 @@ function Register() {
                                             autoComplete="one-time-code"
                                         />
                                         {formErrors?.email &&
-                                            <p className={'text-red-500 font-semibold'}>{formErrors.email[0]}</p>}
+                                            <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
                                     </div>
 
                                     <div>
@@ -369,7 +393,7 @@ function Register() {
                                             autoComplete="one-time-code"
                                         />
                                         {formErrors?.password &&
-                                            <p className={'text-red-500 font-semibold'}>{formErrors?.password[0]}</p>}
+                                            <p className={'text-red-500 font-semibold'}>{formErrors?.password}</p>}
                                     </div>
 
                                     <div>
@@ -385,10 +409,23 @@ function Register() {
                                             autoComplete="one-time-code"
                                         />
                                         {formErrors?.password_confirmation &&
-                                            <p className={'text-red-500 font-semibold'}>{formErrors?.password_confirmation[0]}</p>}
+                                            <p className={'text-red-500 font-semibold'}>{formErrors?.password_confirmation}</p>}
                                     </div>
 
 
+                                </div>
+
+                                <h4 className={`mt-8 font-semibold`}>Gender</h4>
+                                <div className={`mt-3`}>
+                                    <Select
+                                        options={genders}
+                                        isDisabled={isLoading}
+                                        placeholder={'Gender'}
+                                        onChange={handleGenderSelectedChange}
+                                        styles={styles}
+                                    />
+                                    {formErrors?.gender &&
+                                        <p className={`text-red-500 font-semibold`}>{formErrors?.gender}</p>}
                                 </div>
 
                                 <h4 className="mt-8 font-semibold">Date of birth</h4>
@@ -419,37 +456,39 @@ function Register() {
                                     />
                                 </div>
                                 {formErrors?.birth_date &&
-                                    <p className={'text-red-500 font-semibold'}>{formErrors?.birth_date[0]}</p>}
+                                    <p className={'text-red-500 font-semibold'}>{formErrors?.birth_date}</p>}
 
                                 <div className={`mt-8`}>
                                     <h1 className={`font-semibold`}>Profile picture</h1>
 
-                                    <div className="flex items-center w-full mt-3">
+                                    <div className="flex gap-x-2 mt-3">
                                         <label
-                                               className="flex flex-col items-center justify-center w-full bg-gray-700 text-neutral-100 border-2 border-gray-500 border-dashed rounded-lg cursor-pointer hover:bg-gray-600 hover:border-gray-400 transition">
-                                            <div className="flex flex-col items-center justify-center pt-5 pb-6 ">
-                                                <svg className="w-8 h-8 mb-4 "
+                                               className={`flex flex-col items-center justify-center w-36 h-36 rounded-full text-neutral-100 ${userCredentials?.avatar ? 'border-0 bg-transparent' : 'border-2 bg-gray-700 hover:bg-gray-600'} border-gray-500 border-dashed cursor-pointer transition`}>
+                                            <div className={`absolute ${!userCredentials?.avatar ? 'invisible' : 'visible'}`}>
+                                                <img className={`w-36 h-36 rounded-full border-2 border-dashed border-gray-500 hover:border-gray-400 transition object-cover`} src={userCredentials?.avatar ? URL.createObjectURL(userCredentials?.avatar as File) : ''} alt=""/>
+                                            </div>
+                                            <div className="flex flex-col items-center justify-center">
+                                                <svg className="w-8 h-8"
                                                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                                                      viewBox="0 0 20 16">
                                                     <path stroke="currentColor" stroke-linecap="round"
                                                           stroke-linejoin="round" stroke-width="2"
                                                           d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                                 </svg>
-                                                <p className="mb-2 text-sm "><span
+                                                <p className="mb-2 text-center text-sm "><span
                                                     className="font-semibold">Click to upload</span> or drag and drop
                                                 </p>
-                                                <p className="text-xs ">SVG, PNG, JPG or
-                                                    GIF (MAX. 800x400px)</p>
                                             </div>
-                                            <input name={`avatar`} value={userCredentials?.avatar} type="file" className="hidden"/>
+                                            <input name={`avatar`} value={userCredentials?.avatar ? '' : undefined} onChange={handleInputsChange} type="file" className="hidden"/>
                                         </label>
+                                        <p className="text-xs ">SVG, PNG, JPG or GIF (Max size: 1 mb)</p>
                                     </div>
                                     {formErrors?.avatar &&
                                         <p className={`text-red-500 font-semibold`}>{formErrors?.avatar}</p>}
                                 </div>
 
                                 <button type={"submit"}
-                                        className={`bg-white w-full relative ${determineButtonMargin()} flex justify-center items-center gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
+                                        className={`bg-gray-200 hover:bg-gray-100 transition w-full relative flex justify-center items-center gap-x-2 py-2 mt-6 rounded-full text-black font-semibold text-lg`}>
                                     <span>Create</span>
                                     <CgSpinnerTwoAlt className={`animate-spin size-6 ${createBtnLoading ? 'visible' : 'invisible'}`}/>
                                 </button>
