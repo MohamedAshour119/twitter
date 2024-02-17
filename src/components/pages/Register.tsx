@@ -13,11 +13,13 @@ interface Month {
     days: number
 }
 
-interface Day extends Month{
-
+interface Day {
+    value: string;
+    label: string;
 }
 
-interface Year extends Month{}
+interface Year extends Day{}
+
 
 interface User {
     username: string
@@ -122,7 +124,7 @@ function Register() {
     }
 
 
-    // Handle Submit button (Next btn)
+    // Handle Submit button
     const handleSubmitBtn = (e: React.FormEvent<HTMLFormElement>) => {
         setCreateBtnLoading(true)
         e.preventDefault();
@@ -142,7 +144,7 @@ function Register() {
 
         if(name !== 'avatar'){
             setUserCredentials(prevUserCredentials => ({
-                ...(prevUserCredentials || {}),
+                ...prevUserCredentials,
                 [name]: value
             }))
         } else {
@@ -237,7 +239,7 @@ function Register() {
     }
 
     // Handle selected options
-    const handleSelectedChange = (selectedOption: SingleValue<OptionType>): void => {
+    const handleSelectedMonthChange = (selectedOption: SingleValue<OptionType>): void => {
         if (selectedOption) {
             setSelectedMonth(selectedOption as Month);
         } else {
@@ -280,7 +282,6 @@ function Register() {
             days.push({
                 value: `${i}`,
                 label: `${i}`,
-                days: i,
             })
         }
     }
@@ -295,7 +296,6 @@ function Register() {
         years.push({
             value: `${i}`,
             label: `${i}`,
-            days: i,
         })
     }
 
@@ -435,7 +435,7 @@ function Register() {
                                         options={months}
                                         isDisabled={isLoading}
                                         placeholder={'Month'}
-                                        onChange={handleSelectedChange}
+                                        onChange={handleSelectedMonthChange}
                                         styles={styles}
                                     />
                                     <Select
@@ -488,9 +488,11 @@ function Register() {
                                 </div>
 
                                 <button type={"submit"}
-                                        className={`bg-gray-200 hover:bg-gray-100 transition w-full relative flex justify-center items-center gap-x-2 py-2 mt-6 rounded-full text-black font-semibold text-lg`}>
-                                    <span>Create</span>
-                                    <CgSpinnerTwoAlt className={`animate-spin size-6 ${createBtnLoading ? 'visible' : 'invisible'}`}/>
+                                        className={`${createBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
+                                <span className={`flex gap-x-2`}>
+                                    {createBtnLoading ? 'Creating' :  'Create'}
+                                    <CgSpinnerTwoAlt className={`animate-spin size-6 ${createBtnLoading ? 'block' : 'hidden'}`}/>
+                                </span>
                                 </button>
                             </main>
                         </div>
