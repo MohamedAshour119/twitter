@@ -2,7 +2,7 @@ import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
 import {useContext, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 
@@ -152,6 +152,10 @@ function Login() {
                                     <CgSpinnerTwoAlt className={`animate-spin size-6 ${loginBtnLoading ? 'block' : 'hidden'}`}/>
                                 </span>
                             </button>
+
+                            <div className={`sm:translate-x-1/2 sm:w-1/2 w-full block mt-4 text-center`}>
+                                Don't have account? <Link to={'/register'} className={`text-sky-600 font-semibold hover:text-sky-400 transition`}>Create one</Link>
+                            </div>
                         </main>
                     </div>
                 </form>

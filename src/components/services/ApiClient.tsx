@@ -6,7 +6,7 @@ const instance = () => {
         baseURL: "http://api.twitter.test/api",
         headers: {
             'Accept': 'application/json',
-            'Authorization':'Bearer ' +localStorage.getItem('token',)
+            'Authorization':'Bearer ' + localStorage.getItem('token')
         }
     });
 }

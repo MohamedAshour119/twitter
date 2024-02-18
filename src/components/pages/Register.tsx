@@ -1,7 +1,7 @@
 import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import Select, {GroupBase, SingleValue, StylesConfig} from 'react-select'
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 import ApiClient from "../services/ApiClient.tsx";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
@@ -489,11 +489,15 @@ function Register() {
 
                                 <button type={"submit"}
                                         className={`${createBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
-                                <span className={`flex gap-x-2`}>
-                                    {createBtnLoading ? 'Creating' :  'Create'}
-                                    <CgSpinnerTwoAlt className={`animate-spin size-6 ${createBtnLoading ? 'block' : 'hidden'}`}/>
-                                </span>
+                                    <span className={`flex gap-x-2`}>
+                                        {createBtnLoading ? 'Creating' :  'Create'}
+                                        <CgSpinnerTwoAlt className={`animate-spin size-6 ${createBtnLoading ? 'block' : 'hidden'}`}/>
+                                    </span>
                                 </button>
+
+                                <div className={`sm:translate-x-1/2 sm:w-1/2 w-full block mt-4 text-center`}>
+                                    Already have account? <Link to={'/login'} className={`text-sky-600 font-semibold hover:text-sky-400 transition`}>Sign in</Link>
+                                </div>
                             </main>
                         </div>
                     </form>

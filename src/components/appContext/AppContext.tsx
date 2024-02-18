@@ -6,8 +6,8 @@ import * as React from "react";
 export const AppContext = createContext<{
     isRegisterOpen: boolean;
     location: Pathname | null;
-    user: User;
-    setUser: React.Dispatch<React.SetStateAction<User>>;
+    user: User | null;
+    setUser: React.Dispatch<React.SetStateAction<User | null>>;
 }>({
     isRegisterOpen: false,
     location: null,
@@ -49,7 +49,7 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
     const location: Pathname = useLocation();
-    const [user, setUser] = useState<User>({
+    const [user, setUser] = useState<User | null>({
         id: null,
         username: '',
         email: '',
