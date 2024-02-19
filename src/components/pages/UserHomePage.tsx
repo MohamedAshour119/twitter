@@ -4,12 +4,13 @@ import {MdOutlinePermMedia} from "react-icons/md";
 import {CiFaceSmile} from "react-icons/ci";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
 import Post from "../layouts/Post.tsx";
+import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 
 function UserHomePage() {
 
     const [textAreaValue, setTextAreaValue] = useState('')
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
-
+    console.log(setIsPostBtnDisabled)
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setTextAreaValue(e.target.value)
     }
@@ -26,11 +27,11 @@ function UserHomePage() {
 
     return (
         <div className={`bg-black w-screen h-screen flex justify-center overflow-x-hidden`}>
-            <div className={`container grid grid-cols-[2fr,3fr,2fr] px-20`}>
+            <div className={`container grid grid-cols-[2fr,3fr,2fr] gap-x-6 px-20`}>
+
                 <div>
                     <Sidebar/>
                 </div>
-
 
                 <div className={`text-neutral-100 border border-t-0 border-zinc-700/70`}>
                     <header className={`w-full grid grid-cols-2 border-b border-zinc-700/70`}>
@@ -82,6 +83,9 @@ function UserHomePage() {
                     </div>
 
                 </div>
+
+                <TrendingSidebar/>
+
             </div>
         </div>
     )
