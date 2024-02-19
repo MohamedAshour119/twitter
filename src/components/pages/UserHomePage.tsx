@@ -3,10 +3,12 @@ import {FaRegCircleUser} from "react-icons/fa6";
 import {MdOutlinePermMedia} from "react-icons/md";
 import {CiFaceSmile} from "react-icons/ci";
 import {ChangeEvent, useEffect, useRef, useState} from "react";
+import Post from "../layouts/Post.tsx";
 
 function UserHomePage() {
 
     const [textAreaValue, setTextAreaValue] = useState('')
+    const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
 
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setTextAreaValue(e.target.value)
@@ -23,14 +25,17 @@ function UserHomePage() {
     }, [textAreaValue] )
 
     return (
-        <div className={`bg-black w-screen h-screen flex justify-center`}>
-            <div className={`container grid grid-cols-[1fr,3fr,2fr]`}>
-                <Sidebar/>
+        <div className={`bg-black w-screen h-screen flex justify-center overflow-x-hidden`}>
+            <div className={`container grid grid-cols-[2fr,3fr,2fr] px-20`}>
+                <div>
+                    <Sidebar/>
+                </div>
+
 
                 <div className={`text-neutral-100 border border-t-0 border-zinc-700/70`}>
                     <header className={`w-full grid grid-cols-2 border-b border-zinc-700/70`}>
-                        <button className={`bg-transparent hover:bg-neutral-600/30 py-3`}>For you</button>
-                        <button className={`bg-transparent hover:bg-neutral-600/30 py-3`}>Following</button>
+                        <button className={`hover:bg-neutral-600/30 py-4 transition`}>For you</button>
+                        <button className={`hover:bg-neutral-600/30 py-4 transition`}>Following</button>
                     </header>
 
                     {/* Post Section */}
@@ -52,23 +57,30 @@ function UserHomePage() {
 
                                 <div className={`flex justify-between w-full`}>
                                     <div className={`flex text-2xl text-sky-600`}>
-                                        <div className={`bg-transparent hover:bg-sky-600/20 p-2 rounded-full cursor-pointer`}>
+                                        <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
                                             <MdOutlinePermMedia />
                                         </div>
-                                        <div className={`bg-transparent hover:bg-sky-600/20 p-2 rounded-full cursor-pointer`}>
+                                        <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
                                             <CiFaceSmile />
                                         </div>
                                     </div>
 
-                                    <div className={`bg-sky-600 px-6 flex justify-center items-center rounded-full cursor-pointer`}>
+                                    <div className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full cursor-pointer ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : ''}`}>
                                         Post
                                     </div>
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
+
+                    {/*  All Posts  */}
+                    <div>
+                        <Post/>
+                        <Post/>
+                        <Post/>
+                        <Post/>
+                    </div>
+
                 </div>
             </div>
         </div>
