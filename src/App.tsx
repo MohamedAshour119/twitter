@@ -33,6 +33,24 @@ function App() {
             })
     }, [])
 
+    useEffect(() => {
+        const handleScroll = () => {
+
+            if (window.scrollY >= 191) {
+                console.log('Reached')
+            } else {
+                console.log('reached')
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
+
 
 
     useEffect(() => {

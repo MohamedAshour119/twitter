@@ -49,9 +49,9 @@ function Sidebar() {
             </ul>
             <div className={`flex items-center gap-x-9 hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
                 <div className={`flex items-center gap-x-4`}>
-                    <div className={`w-1/3 text-4xl`}>
-                        <FaRegCircleUser />
-                    </div>
+
+                    <FaRegCircleUser className={`size-10`}/>
+
                     <div>
                         <div className={`font-semibold`}>Mohamed Ashour</div>
                         <div className={`text-neutral-500`}>@MohamedAsh119</div>

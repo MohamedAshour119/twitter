@@ -7,8 +7,8 @@ import {TbBrandGoogleAnalytics} from "react-icons/tb";
 function Post() {
     return (
         <div className={`py-3 px-6 flex gap-x-2 border-b border-zinc-700/70`}>
-            <div className={`text-4xl cursor-pointer`}>
-                <FaRegCircleUser/>
+            <div>
+                <FaRegCircleUser className={`size-10 cursor-pointer`}/>
             </div>
 
             <div>

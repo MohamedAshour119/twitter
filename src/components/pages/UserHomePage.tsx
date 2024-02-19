@@ -10,7 +10,7 @@ function UserHomePage() {
 
     const [textAreaValue, setTextAreaValue] = useState('')
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
-    console.log(setIsPostBtnDisabled)
+    // console.log(setIsPostBtnDisabled)
     const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         setTextAreaValue(e.target.value)
     }
@@ -25,6 +25,7 @@ function UserHomePage() {
         }
     }, [textAreaValue] )
 
+
     return (
         <div className={`bg-black w-screen h-screen flex justify-center overflow-x-hidden`}>
             <div className={`container grid grid-cols-[2fr,3fr,2fr] gap-x-6 px-20`}>
@@ -33,18 +34,18 @@ function UserHomePage() {
                     <Sidebar/>
                 </div>
 
-                <div className={`text-neutral-100 border border-t-0 border-zinc-700/70`}>
-                    <header className={`w-full grid grid-cols-2 border-b border-zinc-700/70`}>
-                        <button className={`hover:bg-neutral-600/30 py-4 transition`}>For you</button>
-                        <button className={`hover:bg-neutral-600/30 py-4 transition`}>Following</button>
-                    </header>
+                <div className={`text-neutral-100 border border-t-0 border-zinc-700/70 w-full relative`}>
+                        <header className={`w-full grid grid-cols-2 border-b border-zinc-700/70 fixed max-w-[35.5rem]  backdrop-blur-md`}>
+                            <button className={`hover:bg-neutral-600/30 py-4 transition`}>For you</button>
+                            <button className={`hover:bg-neutral-600/30 py-4 transition`}>Following</button>
+                        </header>
 
                     {/* Post Section */}
-                    <div className={`flex flex-col py-3 px-6 border-b border-zinc-700/70`}>
+                    <div className={`flex flex-col py-3 px-6 mt-16 border-b border-zinc-700/70`}>
                         <div className={`flex gap-x-3`}>
-                            <div className={`text-4xl`}>
-                                <FaRegCircleUser />
-                            </div>
+
+                            <FaRegCircleUser className={`size-10`}/>
+
                             <div className={`flex flex-wrap w-full gap-y-5`}>
                                 <textarea
                                     ref={textAreaRef}
@@ -66,7 +67,7 @@ function UserHomePage() {
                                         </div>
                                     </div>
 
-                                    <div className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full cursor-pointer ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : ''}`}>
+                                    <div className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
                                         Post
                                     </div>
                                 </div>
