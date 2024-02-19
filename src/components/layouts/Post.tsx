@@ -6,16 +6,18 @@ import {TbBrandGoogleAnalytics} from "react-icons/tb";
 
 function Post() {
     return (
-        <div className={`py-3 px-6 flex gap-x-2 border-b border-zinc-700/70`}>
+        <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
             <div>
                 <FaRegCircleUser className={`size-10 cursor-pointer`}/>
             </div>
 
             <div>
                 <div className={`flex gap-x-2 justify-between`}>
-                    <div className={`flex gap-x-2`}>
-                        <h1 className={`font-semibold cursor-pointer`}>Mohamed Ashour</h1>
-                        <h1 className={`font-light text-[#71767b] cursor-pointer`}>@MohamedAsh119 .</h1>
+                    <div className={`flex  sm:gap-x-2`}>
+                        <div className={`xxs:flex gap-x-2`}>
+                            <h1 className={`font-semibold cursor-pointer`}>Mohamed Ashour</h1>
+                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@MohamedAsh119 .</h1>
+                        </div>
                         <span className={`font-light text-[#71767b] cursor-pointer`}>Feb 17</span>
                     </div>
 
@@ -32,7 +34,7 @@ function Post() {
                     </div>
                 </div>
 
-                <div className={`flex gap-x-14 mt-2 text-zinc-400/70`}>
+                <div className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
                     <div className={`flex items-center cursor-pointer group`}>
                         <div className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
                             <FaRegComment />

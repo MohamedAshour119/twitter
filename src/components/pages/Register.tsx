@@ -335,9 +335,7 @@ function Register() {
                                     <HiMiniXMark/>
                                 </div>
                             </div>
-                            <div className={`text-4xl`}>
-                                <FaXTwitter/>
-                            </div>
+                            <FaXTwitter className={`size-10`}/>
                         </header>
                         <div className={`${!isLoading ? 'visible ' : 'invisible'} relative `}>
                             <main className={`mt-8 px-6 text-gray-200`}>
