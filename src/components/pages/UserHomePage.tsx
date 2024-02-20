@@ -36,16 +36,16 @@ function UserHomePage() {
                     <LuArrowBigUp className={`size-7 text-white/90`}/>
                 </div>
 
-                <div className={`justify-end hidden sm:flex`}>
+                <div className={`justify-end hidden sm:flex relative`}>
                     <Sidebar/>
                 </div>
 
-                <div className={`text-neutral-100 border border-t-0 border-zinc-700/70 w-full relative`}>
+                <div className={`text-neutral-100 border border-t-0 border-zinc-700/70 w-full relative animate-slide-down`}>
                         <header className={`w-full grid grid-cols-1 border-b border-zinc-700/70 fixed 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-md`}>
                             <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
-                                <FaRegCircleUser className={`size-10`}/>
-                                <FaXTwitter className={`size-10`}/>
-                                <IoSettingsOutline className={`size-10 text-white`}/>
+                                <FaRegCircleUser className={`size-9`}/>
+                                <FaXTwitter className={`size-9`}/>
+                                <IoSettingsOutline className={`size-9`}/>
                             </div>
                             <div className={`w-full`}>
                                 <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
@@ -54,7 +54,7 @@ function UserHomePage() {
                         </header>
 
                     {/* Post Section */}
-                    <div className={`flex flex-col py-3 px-6 sm:mt-16 mt-36 border-b border-zinc-700/70`}>
+                    <div className={`flex flex-col py-3 px-6 sm:mt-16 mt-36 border-b border-zinc-700/70 z-10`}>
                         <div className={`flex gap-x-3`}>
 
                             <FaRegCircleUser className={`size-10`}/>
