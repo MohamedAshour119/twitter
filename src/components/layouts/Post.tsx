@@ -1,24 +1,40 @@
-import {FaRegCircleUser} from "react-icons/fa6";
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
 import {TbBrandGoogleAnalytics} from "react-icons/tb";
+import {useContext} from "react";
+import {AppContext} from "../appContext/AppContext.tsx";
 
-function Post() {
+interface TweetInfo{
+    title: string
+    image: string
+    video: string
+    updated_at: string
+    created_at: string
+    id: number
+}
+function Post(props: TweetInfo) {
+
+    const {user, baseUrl} = useContext(AppContext);
+
+    const formatDate = (originalDate:string) => {
+        const date = new Date(originalDate)
+        const options: Intl.DateTimeFormatOptions = {day: '2-digit', month: 'short'}
+        return date.toLocaleDateString('en-US', options)
+    }
+
     return (
         <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
-            <div>
-                <FaRegCircleUser className={`size-10 cursor-pointer`}/>
-            </div>
+            <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
 
-            <div>
+            <div className={`w-full`}>
                 <div className={`flex gap-x-2 justify-between`}>
-                    <div className={`flex  sm:gap-x-2`}>
-                        <div className={`xxs:flex gap-x-2`}>
-                            <h1 className={`font-semibold cursor-pointer`}>Mohamed Ashour</h1>
-                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@MohamedAsh119 .</h1>
+                    <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
+                        <div className={`xs:flex gap-x-2`}>
+                            <h1 className={`font-semibold cursor-pointer`}>{user?.username}</h1>
+                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{user?.username}</h1>
                         </div>
-                        <span className={`font-light text-[#71767b] cursor-pointer`}>Feb 17</span>
+                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.created_at)}</span>
                     </div>
 
                     <div className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
@@ -28,13 +44,13 @@ function Post() {
 
 
                 <div className={`mt-4 grid grid-cols-1`}>
-                    <h1>Post title Post title Post title Post title Post title Post title Post title title Post titletitle Post title</h1>
+                    <h1>{props.title}</h1>
                     <div className={` mt-3`}>
-                        <img className={`w-[40rem max-h-[35rem] rounded-2xl`} src="https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d?q=80&w=1965&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt=""/>
+                        <img className={`rounded-2xl`} src={`${baseUrl}/storage/${props.image}`} alt=""/>
                     </div>
                 </div>
 
-                <div className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
+                <div className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
                     <div className={`flex items-center cursor-pointer group`}>
                         <div className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
                             <FaRegComment />

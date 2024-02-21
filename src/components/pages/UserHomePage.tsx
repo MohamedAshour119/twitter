@@ -1,21 +1,120 @@
 import Sidebar from "../partials/Sidebar.tsx";
-import {FaRegCircleUser, FaXTwitter} from "react-icons/fa6";
+import {FaXTwitter} from "react-icons/fa6";
 import {MdOutlinePermMedia} from "react-icons/md";
 import {CiFaceSmile} from "react-icons/ci";
-import {ChangeEvent, useEffect, useRef, useState} from "react";
+import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import Post from "../layouts/Post.tsx";
 import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import {LuArrowBigUp} from "react-icons/lu";
+import ApiClient from "../services/ApiClient.tsx";
+import * as React from "react";
+import {AppContext} from "../appContext/AppContext.tsx";
+
+interface Tweet {
+    title: string
+    image: string| File | null | undefined
+    video: string| File | null | undefined
+}
+
+interface TweetInfo {
+    title: string
+    image: string
+    video: string
+    updated_at: string
+    created_at: string
+    id: number
+}
 
 function UserHomePage() {
+    const {user, baseUrl} = useContext(AppContext);
 
-    const [textAreaValue, setTextAreaValue] = useState('')
+
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
-    console.log(setIsPostBtnDisabled)
-    const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        setTextAreaValue(e.target.value)
+    const [tweet, setTweet] = useState<Tweet>({
+        title: '',
+        image: null,
+        video: null
+    })
+    const [tweetInfo, setTweetInfo] = useState<TweetInfo>()
+    const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([])
+    console.log(tweetInfo)
+
+    const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setTweet(prevTweet => ({
+            ...prevTweet,
+            [name]: value
+        }));
+        setIsPostBtnDisabled(false);
+    };
+
+// Handle input file change
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.type.startsWith('image') && !tweet.video) {
+                setTweet(prevTweet => ({
+                    ...prevTweet,
+                    image: file,
+                }));
+            } else if (file.type.startsWith('video') && !tweet.image) {
+                setTweet(prevTweet => ({
+                    ...prevTweet,
+                    video: file,
+                }));
+            }
+        }
+        setIsPostBtnDisabled(false);
+    };
+
+
+
+    // Set input to empty when he successfully post
+    const makeInputEmpty = () => {
+        setTweet(prevTweet => ({
+            ...prevTweet,
+            title: "",
+            image: null,
+            video: null,
+        }))
     }
+
+
+    // Send Request with data
+    const sendRequest = () => {
+        const formData = new FormData();
+        formData.append('title', tweet.title);
+        if(tweet.image){
+            formData.append('image', tweet.image as Blob);
+        }
+        if(tweet.video){
+            formData.append('video', tweet.video as Blob)
+        }
+
+        ApiClient().post('/create-tweet', formData)
+            .then(res => {
+                setTweetInfo(res.data.data.new_tweet)
+                // Concatenate the new tweet with existing tweets and sort them based on created_at
+                setAllUserTweets(prevAllUserTweets => {
+                    const updatedTweets = [...prevAllUserTweets, res.data.data.new_tweet];
+                    // Sort tweets based on created_at in descending order
+                    updatedTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+                    return updatedTweets;
+                });
+                makeInputEmpty()
+
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+
+    const posts: React.ReactNode = allUserTweets.map((tweet) => (
+        <Post key={tweet.id} {...tweet} />
+    ));
+
 
     // Dynamic change textarea height based on the text long
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -25,12 +124,11 @@ function UserHomePage() {
             textAreaRef.current.style.height = 'auto';
             textAreaRef.current.style.height = textAreaRef.current.scrollHeight + 1 + 'px';
         }
-    }, [textAreaValue] )
-
+    }, [tweet.title] )
 
     return (
         <div className={`bg-black w-screen h-screen flex justify-center overflow-x-hidden`}>
-            <div className={`container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,2fr]`}>
+            <div className={`container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 <div className={`bg-sky-500 z-50 absolute bottom-5 left-2 p-2 rounded-full cursor-pointer block sm:hidden`}>
                     <LuArrowBigUp className={`size-7 text-white/90`}/>
@@ -43,7 +141,7 @@ function UserHomePage() {
                 <div className={`text-neutral-100 border border-t-0 border-zinc-700/70 w-full relative animate-slide-down`}>
                         <header className={`w-full grid grid-cols-1 border-b border-zinc-700/70 fixed 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-md`}>
                             <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
-                                <FaRegCircleUser className={`size-9`}/>
+                                <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
                                 <FaXTwitter className={`size-9`}/>
                                 <IoSettingsOutline className={`size-9`}/>
                             </div>
@@ -57,30 +155,37 @@ function UserHomePage() {
                     <div className={`flex flex-col py-3 px-6 sm:mt-16 mt-36 border-b border-zinc-700/70 z-10`}>
                         <div className={`flex gap-x-3`}>
 
-                            <FaRegCircleUser className={`size-10`}/>
+                            <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
 
-                            <div className={`flex flex-wrap w-full gap-y-5`}>
+                            <div className={`flex flex-wrap w-full ${!tweet.image ? 'gap-y-5' : ''}`}>
                                 <textarea
                                     ref={textAreaRef}
                                     maxLength={280}
-                                    onChange={handleChange}
+                                    onChange={handleTextAreaChange}
                                     placeholder={`What is happening?!`}
-                                    name={`textAreaValue`}
-                                    value={textAreaValue}
-                                    className={`bg-transparent overflow-x-auto resize-none border-b border-zinc-700/70 text-xl w-full pt-1 pb-3 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
+                                    name={`title`}
+                                    value={tweet.title}
+                                    className={`bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : ''}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                                 />
+                                <div className={`${!tweet.image ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70'}`}>
+                                    <img className={`w-full rounded-2xl transition object-cover`} src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''} alt=""/>
+                                </div>
 
-                                <div className={`flex justify-between w-full`}>
+                                <div className={`flex justify-between w-full ${tweet.image ? 'mt-2' : 'mt-0'}`}>
                                     <div className={`flex text-2xl text-sky-600`}>
-                                        <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                            <MdOutlinePermMedia />
-                                        </div>
+                                        <label htmlFor="uploadInput">
+                                            <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
+                                                <input name={'image'} id={`uploadInput`} type="file" className={`hidden`} onChange={handleFileChange} />
+                                                <MdOutlinePermMedia />
+                                            </div>
+                                        </label>
+
                                         <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
                                             <CiFaceSmile />
                                         </div>
                                     </div>
 
-                                    <div className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
+                                    <div onClick={sendRequest} className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
                                         Post
                                     </div>
                                 </div>
@@ -90,10 +195,7 @@ function UserHomePage() {
 
                     {/*  All Posts  */}
                     <div>
-                        <Post/>
-                        <Post/>
-                        <Post/>
-                        <Post/>
+                        {posts}
                     </div>
 
                 </div>

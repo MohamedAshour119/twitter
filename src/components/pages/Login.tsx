@@ -142,7 +142,7 @@ function Login() {
                                     {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors?.password}</p>}
                                 </div>
                             </div>
-                            {!(formErrors.email && formErrors.password) && <p className={'text-red-500 font-semibold'}>{wrongCredentialsMsg}</p>}
+                            {(!formErrors.email && !formErrors.password) && <p className={'text-red-500 font-semibold'}>{wrongCredentialsMsg}</p>}
 
 
                             <button type={"submit"}

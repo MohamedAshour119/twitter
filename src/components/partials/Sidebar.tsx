@@ -1,6 +1,6 @@
 import {Link} from "react-router-dom";
 import {MdHomeFilled} from "react-icons/md";
-import {FaFeatherPointed, FaRegCircleUser, FaXTwitter} from "react-icons/fa6";
+import {FaFeatherPointed, FaXTwitter} from "react-icons/fa6";
 import {HiMiniMagnifyingGlass} from "react-icons/hi2";
 import {BsBell} from "react-icons/bs";
 import {LuUser} from "react-icons/lu";
@@ -11,7 +11,7 @@ import ApiClient from "../services/ApiClient.tsx";
 
 function Sidebar() {
 
-    const {setUser} = useContext(AppContext)
+    const {user,setUser, baseUrl} = useContext(AppContext)
 
     const [logoutWindowOpen, setLogoutWindowOpen] = useState(false)
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -39,12 +39,15 @@ function Sidebar() {
                 setLogoutWindowOpen(false)
             }
         }
-        document.addEventListener('mousedown', handleOutside)
+        document.addEventListener('click', handleOutside)
         return () => {
-            document.removeEventListener('mousedown', handleOutside)
+            document.removeEventListener('click', handleOutside)
         }
 
     }, [] )
+
+    const disableClick = useRef<HTMLDivElement>(null)
+
 
     return (
         <div className={`text-neutral-100 xl:px-16 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container z-50 fixed max-w-fit animate-slide-right`}>
@@ -89,20 +92,20 @@ function Sidebar() {
             </ul>
 
             {/*Logout window*/}
-            <div className={`bg-black flex flex-col gap-y-3 border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
+            <div ref={disableClick} className={`bg-black flex flex-col gap-y-3 border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
                 <button disabled={!logoutWindowOpen} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Settings</button>
-                <button disabled={!logoutWindowOpen} onClick={logout} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Logout @MohamedAshour</button>
+                <button disabled={!logoutWindowOpen} onClick={logout} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Logout @{user?.username}</button>
             </div>
 
 
             <div ref={logoutRef} onClick={handleClick} className={`flex items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
                 <div className={`flex items-center gap-x-4`}>
 
-                    <FaRegCircleUser className={`size-10`}/>
+                    <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
 
                     <div className={`hidden xl:block`}>
-                        <div className={`font-semibold`}>Mohamed Ashour</div>
-                        <div className={`text-neutral-500`}>@MohamedAsh119</div>
+                        <div className={`font-semibold`}>{user?.username}</div>
+                        <div className={`text-neutral-500`}>@{user?.username}</div>
                     </div>
                 </div>
 

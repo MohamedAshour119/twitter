@@ -1,14 +1,16 @@
-import {createContext, ReactNode, useEffect, useState} from 'react'
+import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
-import * as React from "react";
 
 
-export const AppContext = createContext<{
+
+interface AppContextType {
     isRegisterOpen: boolean;
     location: Pathname | null;
     user: User | null;
-    setUser: React.Dispatch<React.SetStateAction<User | null>>;
-}>({
+    setUser: Dispatch<SetStateAction<User | null>>;
+    baseUrl: string; // Add baseUrl property to the context type
+}
+export const AppContext = createContext<AppContextType>({
     isRegisterOpen: false,
     location: null,
     user: {
@@ -21,6 +23,7 @@ export const AppContext = createContext<{
         ban_status: null,
     },
     setUser: () => {},
+    baseUrl: '',
 });
 
 interface AppProviderProps {
@@ -59,6 +62,7 @@ const AppProvider = ({children}: AppProviderProps) => {
         ban_status: null,
     })
 
+    const baseUrl = 'http://api.twitter.test'
 
     useEffect(() => {
         if( location.pathname === '/register' ){
@@ -71,7 +75,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     }, [location.pathname]);
 
     return (
-        <AppContext.Provider value={{isRegisterOpen, location, user, setUser}}>
+        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl}}>
             {children}
         </AppContext.Provider>
     )
