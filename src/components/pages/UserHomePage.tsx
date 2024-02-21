@@ -10,6 +10,7 @@ import {LuArrowBigUp} from "react-icons/lu";
 import ApiClient from "../services/ApiClient.tsx";
 import * as React from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
+import {HiMiniXMark} from "react-icons/hi2";
 
 interface Tweet {
     title: string
@@ -38,6 +39,7 @@ function UserHomePage() {
     })
     const [tweetInfo, setTweetInfo] = useState<TweetInfo>()
     const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([])
+    const [videoURL, setVideoURL] = useState<string>("");
     console.log(tweetInfo)
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -63,6 +65,7 @@ function UserHomePage() {
                     ...prevTweet,
                     video: file,
                 }));
+                setVideoURL(URL.createObjectURL(file))
             }
         }
         setIsPostBtnDisabled(false);
@@ -126,25 +129,39 @@ function UserHomePage() {
         }
     }, [tweet.title] )
 
+    // Remove uploaded image
+    const removeUploadedFile = () => {
+        setTweet(prevTweet => ({
+            ...prevTweet,
+            image: null,
+            video: null,
+        }))
+    }
+
     return (
         <div className={`bg-black w-screen h-screen flex justify-center overflow-x-hidden`}>
             <div className={`container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
+                {/* Scroll to top button */}
                 <div className={`bg-sky-500 z-50 absolute bottom-5 left-2 p-2 rounded-full cursor-pointer block sm:hidden`}>
                     <LuArrowBigUp className={`size-7 text-white/90`}/>
                 </div>
 
+                {/* Sidebar */}
                 <div className={`justify-end hidden sm:flex relative`}>
                     <Sidebar/>
                 </div>
 
+                {/* Middle content */}
                 <div className={`text-neutral-100 border border-t-0 border-zinc-700/70 w-full relative animate-slide-down`}>
                         <header className={`w-full grid grid-cols-1 border-b border-zinc-700/70 fixed 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-md`}>
+                            {/* Header but only on small screens */}
                             <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
                                 <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
                                 <FaXTwitter className={`size-9`}/>
                                 <IoSettingsOutline className={`size-9`}/>
                             </div>
+                            {/* Header for the rest of screens */}
                             <div className={`w-full`}>
                                 <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
                                 <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
@@ -167,9 +184,31 @@ function UserHomePage() {
                                     value={tweet.title}
                                     className={`bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : ''}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                                 />
-                                <div className={`${!tweet.image ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70'}`}>
-                                    <img className={`w-full rounded-2xl transition object-cover`} src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''} alt=""/>
-                                </div>
+
+                                {/* Preview uploaded image */}
+                                {(tweet.image && !tweet.video) &&
+                                    <div className={`${!tweet.image ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
+                                        <div onClick={removeUploadedFile} className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
+                                            <HiMiniXMark className={`size-6`}/>
+                                        </div>
+                                        <img className={`w-full rounded-2xl transition object-cover`}
+                                             src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''} alt=""/>
+                                    </div>
+                                }
+                                
+                                {/* Preview uploaded video */}
+                                {(tweet.video && !tweet.image) &&
+                                    <div className={`${!tweet.video ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
+                                        <div onClick={removeUploadedFile} className="absolute z-50 right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
+                                            <HiMiniXMark className={`size-6`}/>
+                                        </div>
+                                        <video
+                                            src={videoURL}
+                                            className={`w-full`}
+                                            controls
+                                        />
+                                    </div>
+                                }
 
                                 <div className={`flex justify-between w-full ${tweet.image ? 'mt-2' : 'mt-0'}`}>
                                     <div className={`flex text-2xl text-sky-600`}>

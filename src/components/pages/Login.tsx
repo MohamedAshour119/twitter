@@ -88,14 +88,10 @@ function Login() {
             <div className={`bg-black container 2xl:w-2/4 lg:w-3/4 w-full rounded-xl`}>
                 <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'} py-10 px-10`}>
                     <header className="hidden md:flex justify-center relative text-neutral-100">
-                        <div
-                            className="absolute -left-3 cursor-pointer hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
-                            onClick={handleClick}
-                        >
-                            <div className={``}>
-                                <HiMiniXMark/>
-                            </div>
+                        <div onClick={handleClick} className="absolute -left-3 cursor-pointer hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
+                            <HiMiniXMark/>
                         </div>
+
                         <div className={`text-4xl`}>
                             <FaXTwitter/>
                         </div>

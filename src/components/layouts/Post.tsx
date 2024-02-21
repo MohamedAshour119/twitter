@@ -23,6 +23,7 @@ function Post(props: TweetInfo) {
         return date.toLocaleDateString('en-US', options)
     }
 
+
     return (
         <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
             <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
@@ -45,8 +46,19 @@ function Post(props: TweetInfo) {
 
                 <div className={`mt-4 grid grid-cols-1`}>
                     <h1>{props.title}</h1>
-                    <div className={` mt-3`}>
-                        <img className={`rounded-2xl`} src={`${baseUrl}/storage/${props.image}`} alt=""/>
+                    <div className={`mt-3`}>
+                        {props.image && <img
+                            className={`rounded-2xl`}
+                            src={`${baseUrl}/storage/${props.image}`}
+                            alt="post_image"
+                        />}
+
+                        {props.video && <video
+                            className="mt-2 max-h-80 w-full"
+                            controls
+                            src={`${baseUrl}/storage/${props.video}`}
+                        />}
+
                     </div>
                 </div>
 
