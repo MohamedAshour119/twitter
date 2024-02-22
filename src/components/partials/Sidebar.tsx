@@ -9,7 +9,10 @@ import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 
-function Sidebar() {
+interface Prop {
+    handleModelOpen: () => void
+}
+function Sidebar({handleModelOpen}: Prop) {
 
     const {user,setUser, baseUrl} = useContext(AppContext)
 
@@ -84,10 +87,10 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li>
-                    <Link className={`flex items-end justify-center w-fit px-4 py-4 xl:py-3 xl:px-0 xl:w-auto rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`} to={`/create-post`}>
+                    <div onClick={handleModelOpen} className={`flex items-end justify-center cursor-pointer w-fit px-4 py-4 xl:py-3 xl:px-0 xl:w-auto rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
                         <span className={`hidden xl:block`}>Post</span>
                         <FaFeatherPointed className={`block xl:hidden`}/>
-                    </Link>
+                    </div>
                 </li>
             </ul>
 

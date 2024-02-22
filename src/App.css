@@ -46,7 +46,7 @@ input:-webkit-autofill {
 
 /* Animations */
 
-/* Animation: Slide Down */
+/* Slide Down */
 .animate-slide-down {
     transform: translateY(-10rem); /* Initial position */
     opacity: 0; /* Initial opacity */
@@ -59,6 +59,21 @@ input:-webkit-autofill {
         transform: translateY(0); /* Target position */
     }
 }
+
+/* Close Slide Down animation */
+.close-slide-down {
+    transform: translateY(0);
+    opacity: 1;
+    animation: closeSlideDown 0.3s forwards;
+}
+
+@keyframes closeSlideDown {
+    to {
+        opacity: 0;
+        transform: translateY(-10rem);
+    }
+}
+
 
 /* Slide Up */
 .animate-slide-up{
