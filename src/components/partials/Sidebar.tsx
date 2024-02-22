@@ -49,8 +49,6 @@ function Sidebar({handleModelOpen}: Prop) {
 
     }, [] )
 
-    const disableClick = useRef<HTMLDivElement>(null)
-
 
     return (
         <div className={`text-neutral-100 xl:px-16 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container z-50 fixed max-w-fit animate-slide-right`}>
@@ -95,7 +93,7 @@ function Sidebar({handleModelOpen}: Prop) {
             </ul>
 
             {/*Logout window*/}
-            <div ref={disableClick} className={`bg-black flex flex-col gap-y-3 border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
+            <div className={`bg-black flex flex-col gap-y-3 border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
                 <button disabled={!logoutWindowOpen} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Settings</button>
                 <button disabled={!logoutWindowOpen} onClick={logout} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Logout @{user?.username}</button>
             </div>

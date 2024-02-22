@@ -11,6 +11,11 @@ import ApiClient from "../services/ApiClient.tsx";
 import * as React from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
+import EmojiPicker from 'emoji-picker-react';
+import { EmojiData } from 'emoji-picker-react'
+import { Theme } from 'emoji-picker-react';
+import { EmojiStyle } from 'emoji-picker-react';
+
 
 interface Tweet {
     title: string
@@ -27,6 +32,10 @@ interface TweetInfo {
     id: number
 }
 
+const emojiPickerTheme: Theme | string | undefined= "dark";
+const emojiPickerStyle: EmojiStyle | string | undefined = "twitter";
+
+
 function UserHomePage() {
     const {user, baseUrl} = useContext(AppContext);
 
@@ -39,8 +48,8 @@ function UserHomePage() {
     })
     const [tweetInfo, setTweetInfo] = useState<TweetInfo>()
     const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([])
-    const [videoURL, setVideoURL] = useState<string>("");
-    console.log(tweetInfo)
+    const [videoURL, setVideoURL] = useState("");
+    const [showEmojiPicker, setShowEmojiPicker] = useState(false)
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -48,8 +57,17 @@ function UserHomePage() {
             ...prevTweet,
             [name]: value
         }));
-        setIsPostBtnDisabled(false);
     };
+
+    const onEmojiClick = (emojiObject: EmojiData) => {
+        setTweet(prevTweet => ({
+            ...prevTweet,
+            title: prevTweet.title + emojiObject.emoji
+        }))
+    };
+
+
+
 
 // Handle input file change
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -68,9 +86,16 @@ function UserHomePage() {
                 setVideoURL(URL.createObjectURL(file))
             }
         }
-        setIsPostBtnDisabled(false);
     };
 
+    // Change the disabled post btn if the tweet.title not empty
+    useEffect( () => {
+        if(tweet.title.length > 0 || tweet.image || tweet.video){
+            setIsPostBtnDisabled(false)
+        }else {
+            setIsPostBtnDisabled(true)
+        }
+    }, [tweet.title, tweet.image, tweet.video] )
 
 
     // Set input to empty when he successfully post
@@ -81,7 +106,7 @@ function UserHomePage() {
             image: null,
             video: null,
         }))
-   }
+    }
 
 
     // Send Request with data
@@ -107,6 +132,11 @@ function UserHomePage() {
                     return updatedTweets;
                 });
                 makeInputEmpty()
+
+                const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
+                if (inputElement) {
+                    inputElement.value = ''; // Reset the value to empty string
+                }
 
             })
             .catch(err => {
@@ -162,6 +192,25 @@ function UserHomePage() {
         }, 0);
     }, [] )
 
+    // Close model post when clicked outside it
+    useEffect( () => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if(!model.current?.contains(e.target as Node)){
+                setIsModelOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+
+    }, [] )
+
+    // Show the emoji picker when click on the smile btn
+    const displayEmojiPicker = () => {
+        setShowEmojiPicker(!showEmojiPicker)
+    }
 
 
     return (
@@ -180,19 +229,19 @@ function UserHomePage() {
 
                 {/* Middle content */}
                 <div className={`text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative animate-slide-down`}>
-                        <header className={`w-full grid grid-cols-1 border-b border-zinc-700/70 fixed 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-md`}>
-                            {/* Header but only on small screens */}
-                            <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
-                                <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
-                                <FaXTwitter className={`size-9`}/>
-                                <IoSettingsOutline className={`size-9`}/>
-                            </div>
-                            {/* Header for the rest of screens */}
-                            <div className={`w-full`}>
-                                <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
-                                <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
-                            </div>
-                        </header>
+                    <header className={`w-full grid grid-cols-1 border-b border-zinc-700/70 fixed 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-md`}>
+                        {/* Header but only on small screens */}
+                        <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
+                            <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
+                            <FaXTwitter className={`size-9`}/>
+                            <IoSettingsOutline className={`size-9`}/>
+                        </div>
+                        {/* Header for the rest of screens */}
+                        <div className={`w-full`}>
+                            <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
+                            <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
+                        </div>
+                    </header>
 
                     {/* Post Section */}
                     <div className={`flex flex-col py-3 px-6 sm:mt-16 mt-36 border-b border-zinc-700/70 z-10`}>
@@ -205,7 +254,7 @@ function UserHomePage() {
                                     ref={textAreaRef}
                                     maxLength={255}
                                     onChange={handleTextAreaChange}
-                                    placeholder={`What is happening?!`}
+                                    placeholder={!tweet.title ? 'What is happening?!' : ''}
                                     name={`title`}
                                     value={tweet.title}
                                     className={`bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : ''}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
@@ -221,7 +270,7 @@ function UserHomePage() {
                                              src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''} alt=""/>
                                     </div>
                                 }
-                                
+
                                 {/* Preview uploaded video */}
                                 {(tweet.video && !tweet.image && !isModelOpen) &&
                                     <div className={`${!tweet.video ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
@@ -246,7 +295,18 @@ function UserHomePage() {
                                         </label>
 
                                         <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                            <CiFaceSmile />
+                                            <CiFaceSmile onClick={displayEmojiPicker}/>
+                                            {showEmojiPicker &&
+                                                <EmojiPicker
+                                                    theme={emojiPickerTheme}
+                                                    emojiStyle={emojiPickerStyle}
+                                                    width={320}
+                                                    height={400}
+                                                    className={`bg-sky-500`}
+                                                    onEmojiClick={onEmojiClick}
+                                                />
+                                            }
+
                                         </div>
                                     </div>
 
@@ -268,7 +328,7 @@ function UserHomePage() {
                 <TrendingSidebar/>
 
             </div>
-        {/*  Post model  */}
+            {/* Post model  */}
             <div ref={model} className={`absolute bg-black text-neutral-200 top-16 w-[37rem] p-3 rounded-2xl flex flex-col gap-y-3 ${isModelOpen ? 'animate-slide-down' : 'close-slide-down'} `}>
                 <div
                     onClick={handleModelOpen}
@@ -285,7 +345,7 @@ function UserHomePage() {
                         placeholder={`What is happening?!`}
                         name={`title`}
                         value={tweet.title}
-                        className={`bg-transparent overflow-x-auto resize-none text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
+                        className={`bg-transparent overflow-x-auto resize-none text-xl w-full pt-1 pb-16 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                     />
                 </div>
 
@@ -325,7 +385,17 @@ function UserHomePage() {
                         </label>
 
                         <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                            <CiFaceSmile/>
+                            <CiFaceSmile onClick={displayEmojiPicker}/>
+                            {showEmojiPicker &&
+                                <EmojiPicker
+                                    theme={emojiPickerTheme}
+                                    emojiStyle={emojiPickerStyle}
+                                    width={320}
+                                    height={400}
+                                    className={`bg-sky-500`}
+                                    onEmojiClick={onEmojiClick}
+                                />
+                            }
                         </div>
                     </div>
 

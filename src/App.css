@@ -133,3 +133,9 @@ input:-webkit-autofill {
     0% { opacity: 1; }
      100% { opacity: 0; }
 }
+
+.epr-main.EmojiPickerReact.epr_mw4zr1{
+    position: absolute;
+    background-color: black;
+    box-shadow: 0 3px 12px #ffffff73;
+}

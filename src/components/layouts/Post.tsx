@@ -45,7 +45,7 @@ function Post(props: TweetInfo) {
 
 
                 <div className={`mt-4 grid grid-cols-1`}>
-                    <h1>{props.title}</h1>
+                    <p className={`w-fit break-all`}>{props.title}</p>
                     <div className={`mt-3`}>
                         {props.image && <img
                             className={`rounded-2xl`}
