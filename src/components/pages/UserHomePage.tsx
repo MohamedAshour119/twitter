@@ -13,9 +13,6 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import EmojiPicker from 'emoji-picker-react';
 import { EmojiData } from 'emoji-picker-react'
-import { Theme } from 'emoji-picker-react';
-import { EmojiStyle } from 'emoji-picker-react';
-
 
 interface Tweet {
     title: string
@@ -32,10 +29,6 @@ interface TweetInfo {
     id: number
 }
 
-const emojiPickerTheme: Theme | string | undefined= "dark";
-const emojiPickerStyle: EmojiStyle | string | undefined = "twitter";
-
-
 function UserHomePage() {
     const {user, baseUrl} = useContext(AppContext);
 
@@ -46,15 +39,30 @@ function UserHomePage() {
         image: null,
         video: null
     })
-    const [tweetInfo, setTweetInfo] = useState<TweetInfo>()
+    const [tweetInModel, setTweetInModel] = useState<Tweet>({
+        title: '',
+        image: null,
+        video: null
+    })
+
     const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([])
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+    const [showModelEmojiPicker, setShowModelEmojiPicker] = useState(false)
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setTweet(prevTweet => ({
             ...prevTweet,
+            [name]: value
+        }));
+    };
+
+    // Handle textArea change in post model
+    const handleTextAreaChangePostModel = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        const { name, value } = e.target;
+        setTweetInModel(prevTweetInModel => ({
+            ...prevTweetInModel,
             [name]: value
         }));
     };
@@ -66,27 +74,28 @@ function UserHomePage() {
         }))
     };
 
-
+    const handleFileChangeDynamic = (file: File, type: 'image' | 'video', setState: React.Dispatch<React.SetStateAction<Tweet>>) => {
+        setState(prevState => ({
+            ...prevState,
+            [type]: file,
+        }));
+        setVideoURL(URL.createObjectURL(file));
+    };
 
 
 // Handle input file change
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>, _: 'image' | 'video', setState: React.Dispatch<React.SetStateAction<Tweet>>) => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.type.startsWith('image') && !tweet.video) {
-                setTweet(prevTweet => ({
-                    ...prevTweet,
-                    image: file,
-                }));
+                handleFileChangeDynamic(file, 'image', setState);
+
             } else if (file.type.startsWith('video') && !tweet.image) {
-                setTweet(prevTweet => ({
-                    ...prevTweet,
-                    video: file,
-                }));
-                setVideoURL(URL.createObjectURL(file))
+                handleFileChangeDynamic(file, 'video', setState);
             }
         }
     };
+
 
     // Change the disabled post btn if the tweet.title not empty
     useEffect( () => {
@@ -95,8 +104,18 @@ function UserHomePage() {
         }else {
             setIsPostBtnDisabled(true)
         }
+
     }, [tweet.title, tweet.image, tweet.video] )
 
+    // Change the disabled post btn if the tweet.title not empty
+    useEffect( () => {
+        if(tweetInModel.title.length > 0 || tweetInModel.image || tweetInModel.video){
+            setIsPostBtnDisabled(false)
+        }else {
+            setIsPostBtnDisabled(true)
+        }
+
+    }, [tweetInModel.title, tweetInModel.image, tweetInModel.video] )
 
     // Set input to empty when he successfully post
     const makeInputEmpty = () => {
@@ -106,24 +125,37 @@ function UserHomePage() {
             image: null,
             video: null,
         }))
+
+        setTweetInModel(prevTweetInModel => ({
+            ...prevTweetInModel,
+            title: "",
+            image: null,
+            video: null,
+        }))
     }
 
+    const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
+    const inputElementInModel = document.getElementById('uploadInputInModel') as HTMLInputElement;
 
     // Send Request with data
     const sendRequest = () => {
         const formData = new FormData();
-        formData.append('title', tweet.title);
+        formData.append('title', tweet.title || tweetInModel.title);
         if(tweet.image){
             formData.append('image', tweet.image as Blob);
+        } else if(tweetInModel.image){
+            formData.append('image', tweetInModel.image as Blob);
         }
         if(tweet.video){
             formData.append('video', tweet.video as Blob)
+        } else if(tweetInModel.video){
+            formData.append('video', tweetInModel.video as Blob)
         }
 
         ApiClient().post('/create-tweet', formData)
             .then(res => {
                 setIsModelOpen(false)
-                setTweetInfo(res.data.data.new_tweet)
+
                 // Concatenate the new tweet with existing tweets and sort them based on created_at
                 setAllUserTweets(prevAllUserTweets => {
                     const updatedTweets = [...prevAllUserTweets, res.data.data.new_tweet];
@@ -133,9 +165,9 @@ function UserHomePage() {
                 });
                 makeInputEmpty()
 
-                const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
-                if (inputElement) {
-                    inputElement.value = ''; // Reset the value to empty string
+                if (inputElement || inputElementInModel) {
+                    inputElement.value = '';
+                    inputElementInModel.value = '';
                 }
 
             })
@@ -173,9 +205,18 @@ function UserHomePage() {
             image: null,
             video: null,
         }))
-        const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
+
+        setTweetInModel(prevTweetInModel => ({
+            ...prevTweetInModel,
+            image: null,
+            video: null,
+        }))
+
         if (inputElement) {
             inputElement.value = ''; // Reset the value to empty string
+        }
+        if (inputElementInModel) {
+            inputElementInModel.value = ''; // Reset the value to empty string
         }
     }
 
@@ -197,6 +238,13 @@ function UserHomePage() {
         const handleClickOutside = (e: MouseEvent) => {
             if(!model.current?.contains(e.target as Node)){
                 setIsModelOpen(false)
+
+                setTweetInModel(prevTweetInModel => ({
+                    ...prevTweetInModel,
+                    title: "",
+                    image: null,
+                    video: null,
+                }))
             }
         }
 
@@ -208,9 +256,45 @@ function UserHomePage() {
     }, [] )
 
     // Show the emoji picker when click on the smile btn
-    const displayEmojiPicker = () => {
+    const displayMainEmojiPicker = () => {
         setShowEmojiPicker(!showEmojiPicker)
     }
+
+    // Show the emoji picker when click on the smile btn
+    const displayModelEmojiPicker = () => {
+        setShowModelEmojiPicker(!showModelEmojiPicker)
+    }
+
+    // Handle close emoji picker when clicked
+    const mainEmojiPickerRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (!mainEmojiPickerRef.current?.contains(e.target as Node)) {
+                setShowEmojiPicker(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClick);
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+        };
+    }, []);
+
+    // Handle close emoji picker when clicked
+    const modelEmojiPickerRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            if (!modelEmojiPickerRef.current?.contains(e.target as Node)) {
+                setShowModelEmojiPicker(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClick);
+        return () => {
+            document.removeEventListener('mousedown', handleClick);
+        };
+    }, []);
+
 
 
     return (
@@ -289,21 +373,28 @@ function UserHomePage() {
                                     <div className={`flex text-2xl text-sky-600`}>
                                         <label htmlFor="uploadInput">
                                             <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                                <input name={'image'} id={`uploadInput`} type="file" className={`hidden`} onChange={handleFileChange} />
+                                                <input name={'image'} id={`uploadInput`} type="file" className={`hidden`} onChange={(e) => handleFileChange(e, 'image', setTweet)}  />
                                                 <MdOutlinePermMedia />
                                             </div>
                                         </label>
 
-                                        <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                            <CiFaceSmile onClick={displayEmojiPicker}/>
+                                        <div ref={mainEmojiPickerRef} className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
+                                            <CiFaceSmile onClick={displayMainEmojiPicker}/>
                                             {showEmojiPicker &&
                                                 <EmojiPicker
-                                                    theme={emojiPickerTheme}
-                                                    emojiStyle={emojiPickerStyle}
+                                                    theme={'dark'}
+                                                    emojiStyle={'twitter'}
                                                     width={320}
                                                     height={400}
-                                                    className={`bg-sky-500`}
                                                     onEmojiClick={onEmojiClick}
+                                                    className={`main-emoji-picker`}
+                                                    style={{
+                                                        position: 'absolute',
+                                                        backgroundColor: 'black',
+                                                        boxShadow: '0 3px 12px #ffffff73',
+                                                        borderRadius: '8px',
+                                                        padding: '10px',
+                                                    }}
                                                 />
                                             }
 
@@ -328,6 +419,7 @@ function UserHomePage() {
                 <TrendingSidebar/>
 
             </div>
+
             {/* Post model  */}
             <div ref={model} className={`absolute bg-black text-neutral-200 top-16 w-[37rem] p-3 rounded-2xl flex flex-col gap-y-3 ${isModelOpen ? 'animate-slide-down' : 'close-slide-down'} `}>
                 <div
@@ -341,28 +433,28 @@ function UserHomePage() {
                     <textarea
                         ref={textAreaModelRef}
                         maxLength={255}
-                        onChange={handleTextAreaChange}
+                        onChange={handleTextAreaChangePostModel}
                         placeholder={`What is happening?!`}
                         name={`title`}
-                        value={tweet.title}
+                        value={tweetInModel.title}
                         className={`bg-transparent overflow-x-auto resize-none text-xl w-full pt-1 pb-16 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                     />
                 </div>
 
                 {/* Preview uploaded image */}
-                {(tweet.image && !tweet.video) &&
-                    <div className={`${!tweet.image ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
+                {(tweetInModel.image && !tweetInModel.video) &&
+                    <div className={`${!tweetInModel.image ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
                         <div onClick={removeUploadedFile} className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                             <HiMiniXMark className={`size-6`}/>
                         </div>
                         <img className={`w-full rounded-2xl transition object-cover`}
-                             src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''} alt=""/>
+                             src={tweetInModel?.image ? URL.createObjectURL(tweetInModel?.image as File) : ''} alt=""/>
                     </div>
                 }
 
                 {/* Preview uploaded video */}
-                {(tweet.video && !tweet.image) &&
-                    <div className={`${!tweet.video ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
+                {(tweetInModel.video && !tweetInModel.image) &&
+                    <div className={`${!tweetInModel.video ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
                         <div onClick={removeUploadedFile} className="absolute z-50 right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                             <HiMiniXMark className={`size-6`}/>
                         </div>
@@ -374,25 +466,31 @@ function UserHomePage() {
                     </div>
                 }
 
-                <div className={`flex justify-between w-full ${tweet.image ? 'mt-2' : 'mt-0'}`}>
+                <div className={`flex justify-between w-full ${tweetInModel.image ? 'mt-2' : 'mt-0'}`}>
                     <div className={`flex text-2xl text-sky-600`}>
-                        <label htmlFor="uploadInput">
+                        <label htmlFor="uploadInputInModel">
                             <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                <input name={'image'} id={`uploadInput`} type="file" className={`hidden`}
-                                       onChange={handleFileChange}/>
+                                <input id={`uploadInputInModel`} type="file" className={`hidden`}
+                                       onChange={(e) => handleFileChange(e, 'image', setTweetInModel)}/>
                                 <MdOutlinePermMedia/>
                             </div>
                         </label>
 
-                        <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                            <CiFaceSmile onClick={displayEmojiPicker}/>
-                            {showEmojiPicker &&
+                        <div ref={modelEmojiPickerRef} className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
+                            <CiFaceSmile onClick={displayModelEmojiPicker}/>
+                            {showModelEmojiPicker &&
                                 <EmojiPicker
-                                    theme={emojiPickerTheme}
-                                    emojiStyle={emojiPickerStyle}
+                                    theme={'dark'}
+                                    emojiStyle={'twitter'}
                                     width={320}
                                     height={400}
-                                    className={`bg-sky-500`}
+                                    style={{
+                                        position: 'absolute',
+                                        backgroundColor: 'black',
+                                        boxShadow: '0 3px 12px #ffffff73',
+                                        borderRadius: '8px',
+                                        padding: '10px',
+                                    }}
                                     onEmojiClick={onEmojiClick}
                                 />
                             }
