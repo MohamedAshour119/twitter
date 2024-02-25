@@ -5,14 +5,21 @@ import {TbBrandGoogleAnalytics} from "react-icons/tb";
 import {useContext} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 
-interface TweetInfo{
-    title: string
-    image: string
-    video: string
-    updated_at: string
-    created_at: string
-    id: number
+interface TweetInfo {
+    new_tweet: {
+        title: string;
+        user_id: number;
+        image: string;
+        video: string;
+        updated_at: string;
+        created_at: string;
+        id: number;
+    };
+    reactions: {
+        likes: number;
+    };
 }
+
 function Post(props: TweetInfo) {
 
     const {user, baseUrl} = useContext(AppContext);
@@ -22,7 +29,6 @@ function Post(props: TweetInfo) {
         const options: Intl.DateTimeFormatOptions = {day: '2-digit', month: 'short'}
         return date.toLocaleDateString('en-US', options)
     }
-
 
     return (
         <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
@@ -35,7 +41,7 @@ function Post(props: TweetInfo) {
                             <h1 className={`font-semibold cursor-pointer`}>{user?.username}</h1>
                             <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{user?.username}</h1>
                         </div>
-                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.created_at)}</span>
+                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.new_tweet.created_at)}</span>
                     </div>
 
                     <div className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
@@ -45,18 +51,18 @@ function Post(props: TweetInfo) {
 
 
                 <div className={`mt-4 grid grid-cols-1`}>
-                    <p className={`w-fit break-all`}>{props.title}</p>
+                    <p className={`w-fit break-all`}>{props.new_tweet.title}</p>
                     <div className={`mt-3`}>
-                        {props.image && <img
+                        {props.new_tweet.image && <img
                             className={`rounded-2xl`}
-                            src={`${baseUrl}/storage/${props.image}`}
+                            src={`${baseUrl}/storage/${props.new_tweet.image}`}
                             alt="post_image"
                         />}
 
-                        {props.video && <video
+                        {props.new_tweet.video && <video
                             className="mt-2 max-h-80 w-full"
                             controls
-                            src={`${baseUrl}/storage/${props.video}`}
+                            src={`${baseUrl}/storage/${props.new_tweet.video}`}
                         />}
 
                     </div>
@@ -81,7 +87,7 @@ function Post(props: TweetInfo) {
                         <div className={`text-xl flex justify-center items-center group-hover:text-rose-500 transition group-hover:bg-rose-500/20 rounded-full p-2`}>
                             <FaRegHeart />
                         </div>
-                        <span className={`group-hover:text-rose-500 transition`}>12k</span>
+                        <span className={`group-hover:text-rose-500 transition`}>{props.reactions.likes}</span>
                     </div>
 
                     <div className={`flex items-center cursor-pointer group`}>

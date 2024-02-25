@@ -1,19 +1,70 @@
-import {FaRegCircleUser} from "react-icons/fa6";
+import {useContext, useState} from "react";
+import {AppContext} from "../appContext/AppContext.tsx";
+import ApiClient from "../services/ApiClient.tsx";
 
-function FollowUser() {
+interface SuggestedUsersToFollow {
+    avatar: string | null
+    ban_status: number | null
+    birth_date: string
+    email: string
+    gender: string
+    id: number | null
+    username: string
+}
+interface Prop {
+    suggestedUsersToFollow: SuggestedUsersToFollow
+}
+function FollowUser({suggestedUsersToFollow}: Prop) {
+
+    const {baseUrl} = useContext(AppContext)
+
+    const [followUser, setFollowUser] = useState(false)
+    const [isFollowed, setIsFollowed] = useState(false)
+    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
+
+    const handleFollow = () => {
+        setFollowUser(prevFollowUser => !prevFollowUser);
+        setIsFollowedBtnDisabled(true)
+
+        if(!isFollowed){
+            ApiClient().post(`/users/${suggestedUsersToFollow.id}/follow`)
+                .then(() => {
+                    setIsFollowed(true)
+                    setIsFollowedBtnDisabled(false);
+                })
+                .catch(error => {
+                    console.error('Follow request failed:', error);
+                    setIsFollowedBtnDisabled(false);
+                });
+        } else {
+
+            ApiClient().post(`/users/${suggestedUsersToFollow.id}/unfollow`)
+                .then(() => {
+                    setIsFollowed(false)
+                    setIsFollowedBtnDisabled(false);
+                })
+                .catch(error => {
+                    console.error('Follow request failed:', error);
+                    setIsFollowedBtnDisabled(false);
+                });
+        }
+
+    };
+
+
     return (
         <div className={`flex justify-between hover:bg-[#25323f30] px-4 py-3 cursor-pointer`}>
             <div className={`flex gap-x-2`}>
 
-                <FaRegCircleUser className={`size-10`}/>
+                <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${suggestedUsersToFollow?.avatar}`} alt=""/>
 
                 <div className={`flex flex-col`}>
-                    <span>Mohamed Ashour</span>
-                    <span className={`text-[#71767b]`}>@MohamedAsh</span>
+                    <span>{suggestedUsersToFollow?.username}</span>
+                <span className={`text-[#71767b]`}>@{suggestedUsersToFollow?.username}</span>
                 </div>
             </div>
 
-            <button className={`bg-neutral-100 text-black px-6 max-h-10 hover:bg-gray-200 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>Follow</button>
+            <button disabled={isFollowedBtnDisabled} onClick={handleFollow} className={`${followUser ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} text-black px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{followUser ? 'Following' : 'Follow'}</button>
 
         </div>
     )

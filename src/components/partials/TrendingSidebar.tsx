@@ -1,9 +1,34 @@
 import {HiMiniMagnifyingGlass} from "react-icons/hi2";
 import TrendingTag from "../layouts/TrendingTag.tsx";
 import FollowUser from "../layouts/FollowUser.tsx";
+import {useEffect, useState} from "react";
+import ApiClient from "../services/ApiClient.tsx";
 
+
+interface SuggestedUsersToFollow {
+    avatar: string | null
+    ban_status: number | null
+    birth_date: string
+    email: string
+    gender: string
+    id: number | null
+    username: string
+}
 function TrendingSidebar() {
 
+    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<SuggestedUsersToFollow[]>([])
+
+    // Suggested users to follow
+    useEffect( () => {
+        ApiClient().get('/home')
+            .then(res => {
+               const users = res.data.data.suggested_users
+                setSuggestedUsersToFollow(users)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }, [])
 
 
     return (
@@ -32,9 +57,17 @@ function TrendingSidebar() {
             <div className={`bg-[#2a2d32b3] rounded-2xl`}>
                 <h1 className={`font-bold text-2xl p-4`}>Who to follow</h1>
                 <div className={`flex flex-col gap-y-2`}>
-                    <FollowUser/>
-                    <FollowUser/>
-                    <FollowUser/>
+                    {suggestedUsersToFollow.length === 0 &&
+                        <div role="status" className="max-w-sm animate-pulse px-4 py-3 flex flex-col gap-y-8">
+                            <div className="h-12 bg-zinc-800 rounded-full w-full"></div>
+                            <div className="h-12 bg-zinc-800 rounded-full w-full"></div>
+                            <div className="h-12 bg-zinc-800 rounded-full w-full"></div>
+                        </div>
+                    }
+
+                    {suggestedUsersToFollow?.map(user => (
+                        <FollowUser key={user.id} suggestedUsersToFollow={user}/>
+                    ))}
                 </div>
             </div>
 
