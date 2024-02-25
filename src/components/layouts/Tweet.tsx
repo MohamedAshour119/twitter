@@ -20,7 +20,7 @@ interface TweetInfo {
     };
 }
 
-function Post(props: TweetInfo) {
+function Tweet(props: TweetInfo) {
 
     const {user, baseUrl} = useContext(AppContext);
 
@@ -105,4 +105,4 @@ function Post(props: TweetInfo) {
     )
 }
 
-export default Post
+export default Tweet

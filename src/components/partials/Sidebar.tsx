@@ -9,12 +9,10 @@ import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 
-interface Prop {
-    handleModelOpen: () => void
-}
-function Sidebar({handleModelOpen}: Prop) {
 
-    const {user,setUser, baseUrl} = useContext(AppContext)
+function Sidebar() {
+
+    const {user,setUser, baseUrl, handleModelOpen} = useContext(AppContext)
 
     const [logoutWindowOpen, setLogoutWindowOpen] = useState(false)
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {

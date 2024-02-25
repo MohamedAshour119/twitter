@@ -8,7 +8,10 @@ interface AppContextType {
     location: Pathname | null;
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
-    baseUrl: string; // Add baseUrl property to the context type
+    baseUrl: string;
+    handleModelOpen: () => void;
+    isModelOpen: boolean;
+    setIsModelOpen: Dispatch<SetStateAction<boolean>>;
 }
 export const AppContext = createContext<AppContextType>({
     isRegisterOpen: false,
@@ -23,6 +26,9 @@ export const AppContext = createContext<AppContextType>({
         ban_status: null,
     },
     setUser: () => {},
+    handleModelOpen: () => null,
+    isModelOpen: false,
+    setIsModelOpen: () => null,
     baseUrl: '',
 });
 
@@ -50,6 +56,7 @@ interface User {
 
 const AppProvider = ({children}: AppProviderProps) => {
 
+    const [isModelOpen, setIsModelOpen] = useState(false)
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
     const location: Pathname = useLocation();
     const [user, setUser] = useState<User | null>({
@@ -74,8 +81,13 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     }, [location.pathname]);
 
+    // Handle model open state
+    const handleModelOpen = () => {
+        setIsModelOpen(prev => !prev)
+    }
+
     return (
-        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl}}>
+        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl, handleModelOpen, isModelOpen, setIsModelOpen}}>
             {children}
         </AppContext.Provider>
     )

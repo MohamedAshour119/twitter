@@ -10,6 +10,7 @@ import {AppContext} from "./components/appContext/AppContext.tsx";
 import AuthRoute from "./components/auth/AuthRoute.tsx";
 import {useLocation} from "react-router";
 import UserHomePage from "./components/pages/UserHomePage.tsx";
+import Profile from "./components/pages/Profile.tsx";
 
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
 
             <Route element={<AuthRoute />}>
                 <Route path={`/home`} element={<UserHomePage />}/>
+                <Route path={`/profile`} element={<Profile/>}/>
             </Route>
 
             <Route path={`/`} element={<Home />}/>
