@@ -3,7 +3,6 @@ import {MdOutlinePermMedia} from "react-icons/md";
 import {CiFaceSmile} from "react-icons/ci";
 import EmojiPicker, {EmojiData} from "emoji-picker-react";
 import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
-import * as React from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 
@@ -13,33 +12,9 @@ interface Tweet{
     video: string| File | null | undefined
 }
 
-interface TweetInfo {
-    new_tweet: {
-        title: string;
-        user_id: number;
-        image: string;
-        video: string;
-        updated_at: string;
-        created_at: string;
-        id: number;
-    };
-    reactions: {
-        likes: number;
-    };
-}
-interface Prop {
-    isModelOpen: boolean;
-    setIsModelOpen: React.Dispatch<React.SetStateAction<boolean>>;
-    onEmojiClick: (emojiObject: EmojiData) => void;
-    handleModelOpen: () => void;
-    isPostBtnDisabled: boolean;
-    setIsPostBtnDisabled: React.Dispatch<React.SetStateAction<boolean>>;
-    setAllUserTweets: React.Dispatch<React.SetStateAction<TweetInfo[]>>
+function TweetModel() {
 
-}
-function TweetModel({isModelOpen, setIsModelOpen, handleModelOpen, isPostBtnDisabled, setIsPostBtnDisabled, setAllUserTweets}: Prop) {
-
-    const {user ,baseUrl} = useContext(AppContext);
+    const {user ,baseUrl, isModelOpen, setIsModelOpen, setAllUserTweets, handleModelOpen} = useContext(AppContext);
 
     const [tweetInModel, setTweetInModel] = useState<Tweet>({
         title: '',
@@ -47,8 +22,9 @@ function TweetModel({isModelOpen, setIsModelOpen, handleModelOpen, isPostBtnDisa
         video: null
     })
     const [videoURL, setVideoURL] = useState("");
-    const [tweetInfo, setTweetInfo] = useState({})
+    // const [tweetInfo, setTweetInfo] = useState({})
     const [showModelEmojiPicker, setShowModelEmojiPicker] = useState(false)
+    const [isBtnDisabled, setIsBtnDisabled] = useState(true)
 
 
     // Show the model emoji picker when click on the smile btn
@@ -120,22 +96,12 @@ function TweetModel({isModelOpen, setIsModelOpen, handleModelOpen, isPostBtnDisa
 
         ApiClient().post('/create-tweet', formData)
             .then(res => {
-                setTweetInfo({
-                    new_tweet: res.data.data,
-                    reactions: {
-                        likes: 0 // You might need to adjust this based on your data structure
-                    }
-                });
-
                 setIsModelOpen(false)
 
                 // Concatenate the new tweet with existing tweets and sort them based on created_at
-                setAllUserTweets(prevAllUserTweets => {
-                    const updatedTweets = [...prevAllUserTweets, res.data.data];
-                    // Sort tweets based on created_at in descending order
-                    updatedTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-                    return updatedTweets;
-                });
+                setAllUserTweets(prevAllUserTweets => (
+                    [...prevAllUserTweets, res.data.data]
+                ));
                 makeInputEmpty()
 
                 if (inputElementInModel) {
@@ -151,9 +117,9 @@ function TweetModel({isModelOpen, setIsModelOpen, handleModelOpen, isPostBtnDisa
     // Change the disabled post btn if the tweetModel.title not empty
     useEffect( () => {
         if(tweetInModel.title.length > 0 || tweetInModel.image || tweetInModel.video){
-            setIsPostBtnDisabled(false)
+            setIsBtnDisabled(false)
         }else {
-            setIsPostBtnDisabled(true)
+            setIsBtnDisabled(true)
         }
 
     }, [tweetInModel.title, tweetInModel.image, tweetInModel.video] )
@@ -231,7 +197,7 @@ function TweetModel({isModelOpen, setIsModelOpen, handleModelOpen, isPostBtnDisa
     }, []);
 
     return (
-        <div ref={model} className={`absolute bg-black text-neutral-200 top-16 w-[37rem] p-3 rounded-2xl flex flex-col gap-y-3 ${isModelOpen ? 'animate-slide-down' : 'close-slide-down'} `}>
+        <div ref={model} className={`z-50 absolute bg-black text-neutral-200 top-16 w-[37rem] p-3 rounded-2xl flex flex-col gap-y-3 ${isModelOpen ? 'animate-slide-down' : 'close-slide-down'} `}>
             <div
                 onClick={handleModelOpen}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">
@@ -308,7 +274,7 @@ function TweetModel({isModelOpen, setIsModelOpen, handleModelOpen, isPostBtnDisa
                 </div>
 
                 <div onClick={sendRequest}
-                     className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
+                     className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
                     Post
                 </div>
             </div>

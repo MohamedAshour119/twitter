@@ -21,36 +21,19 @@ interface Tweet {
     video: string| File | null | undefined
 }
 
-interface TweetInfo {
-    new_tweet: {
-        title: string;
-        user_id: number;
-        image: string;
-        video: string;
-        updated_at: string;
-        created_at: string;
-        id: number;
-    };
-    reactions: {
-        likes: number;
-    };
-}
-
 
 function UserHomePage() {
-    const {user, baseUrl, handleModelOpen, isModelOpen, setIsModelOpen} = useContext(AppContext);
+    const {user, baseUrl, isModelOpen, setIsModelOpen, allUserTweets, setAllUserTweets} = useContext(AppContext);
 
-    const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
     const [tweet, setTweet] = useState<Tweet>({
         title: '',
         image: null,
         video: null
     })
 
-    const [tweetInfo, setTweetInfo] = useState({})
-    const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([])
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+    const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -128,14 +111,11 @@ function UserHomePage() {
         ApiClient().post('/create-tweet', formData)
             .then(res => {
                 setIsModelOpen(false)
-                setTweetInfo(res.data.data)
+
                 // Concatenate the new tweet with existing tweets and sort them based on created_at
-                setAllUserTweets(prevAllUserTweets => {
-                    const updatedTweets = [...prevAllUserTweets, res.data.data];
-                    // Sort tweets based on created_at in descending order
-                    updatedTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-                    return updatedTweets;
-                });
+                setAllUserTweets(prevAllUserTweets => (
+                    [...prevAllUserTweets, res.data.data]
+                ));
                 makeInputEmpty()
 
                 if (inputElement) {
@@ -324,15 +304,7 @@ function UserHomePage() {
             </div>
 
             {/* Tweet model  */}
-            <TweetModel
-                isModelOpen={isModelOpen}
-                setIsModelOpen={setIsModelOpen}
-                onEmojiClick={onEmojiClick}
-                handleModelOpen={handleModelOpen}
-                isPostBtnDisabled={isPostBtnDisabled}
-                setIsPostBtnDisabled={setIsPostBtnDisabled}
-                setAllUserTweets={setAllUserTweets}
-            />
+            <TweetModel/>
         </div>
     )
 }
