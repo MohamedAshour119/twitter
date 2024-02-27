@@ -1,5 +1,6 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
+import ApiClient from "../services/ApiClient.tsx";
 
 interface TweetInfo {
     new_tweet: {
@@ -26,6 +27,7 @@ interface AppContextType {
     setIsModelOpen: Dispatch<SetStateAction<boolean>>;
     allUserTweets: TweetInfo[]
     setAllUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
+    suggestedUsersToFollow: SuggestedUsersToFollow[]
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -39,6 +41,7 @@ export const AppContext = createContext<AppContextType>({
         avatar: '',
         birth_date: '',
         ban_status: null,
+        created_at: ''
     },
     setUser: () => {},
     handleModelOpen: () => null,
@@ -59,7 +62,18 @@ export const AppContext = createContext<AppContextType>({
         reactions: {
             likes: 0
         }
-    }]
+    }],
+    suggestedUsersToFollow: [
+        {
+            avatar: '',
+            ban_status: null,
+            birth_date: '',
+            email: '',
+            gender: '',
+            id: null,
+            username: '',
+        }
+    ]
 
 });
 
@@ -83,9 +97,18 @@ interface User {
     avatar: string
     birth_date: string
     ban_status: number | null
+    created_at: string
 }
 
-
+interface SuggestedUsersToFollow {
+    avatar: string | null
+    ban_status: number | null
+    birth_date: string
+    email: string
+    gender: string
+    id: number | null
+    username: string
+}
 
 const AppProvider = ({children}: AppProviderProps) => {
 
@@ -99,9 +122,11 @@ const AppProvider = ({children}: AppProviderProps) => {
         gender: '',
         avatar: '',
         birth_date: '',
+        created_at: '',
         ban_status: null,
     })
-    const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([] as TweetInfo[]);
+    const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([]);
+    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<SuggestedUsersToFollow[]>([])
 
     const baseUrl = 'http://api.twitter.test'
 
@@ -124,8 +149,20 @@ const AppProvider = ({children}: AppProviderProps) => {
         setIsModelOpen(prev => !prev)
     }
 
+    // Suggested users to follow
+    useEffect( () => {
+        ApiClient().get('/home')
+            .then(res => {
+                const users = res.data.data.suggested_users
+                setSuggestedUsersToFollow(users)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }, [])
+
     return (
-        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl, handleModelOpen, isModelOpen, setIsModelOpen, allUserTweets, setAllUserTweets}}>
+        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl, handleModelOpen, isModelOpen, setIsModelOpen, allUserTweets, setAllUserTweets, suggestedUsersToFollow}}>
             {children}
         </AppContext.Provider>
     )

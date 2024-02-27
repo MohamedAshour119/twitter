@@ -72,7 +72,7 @@ function App() {
 
             <Route element={<AuthRoute />}>
                 <Route path={`/home`} element={<UserHomePage />}/>
-                <Route path={`/profile`} element={<Profile/>}/>
+                <Route path={`users/:username`} element={<Profile/>}/>
             </Route>
 
             <Route path={`/`} element={<Home />}/>

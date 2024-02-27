@@ -128,8 +128,7 @@ function UserHomePage() {
             })
     }
 
-    console.log(allUserTweets)
-    const posts: React.ReactNode = allUserTweets.map((tweet) => (
+    const tweets: React.ReactNode = allUserTweets.map((tweet) => (
         <Tweet key={tweet.new_tweet.id} {...tweet} />
     ));
 
@@ -181,7 +180,7 @@ function UserHomePage() {
 
 
     return (
-        <div className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
+        <div className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
             <div className={`${isModelOpen ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Scroll to top button */}
@@ -292,9 +291,9 @@ function UserHomePage() {
                         </div>
                     </div>
 
-                    {/*  All Posts  */}
+                    {/*  All Tweets  */}
                     <div>
-                        {posts}
+                        {tweets}
                     </div>
 
                 </div>

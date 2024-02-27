@@ -1,6 +1,7 @@
 import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
+import {Link} from "react-router-dom";
 
 interface SuggestedUsersToFollow {
     avatar: string | null
@@ -27,7 +28,7 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
         setIsFollowedBtnDisabled(true)
 
         if(!isFollowed){
-            ApiClient().post(`/users/${suggestedUsersToFollow.id}/follow`)
+            ApiClient().post(`/${suggestedUsersToFollow.id}/follow`)
                 .then(() => {
                     setIsFollowed(true)
                     setIsFollowedBtnDisabled(false);
@@ -38,7 +39,7 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
                 });
         } else {
 
-            ApiClient().post(`/users/${suggestedUsersToFollow.id}/unfollow`)
+            ApiClient().post(`/${suggestedUsersToFollow.id}/unfollow`)
                 .then(() => {
                     setIsFollowed(false)
                     setIsFollowedBtnDisabled(false);
@@ -53,8 +54,8 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
 
 
     return (
-        <div className={`flex justify-between hover:bg-[#25323f30] px-4 py-3 cursor-pointer`}>
-            <div className={`flex gap-x-2`}>
+        <div className={`flex justify-between hover:bg-[#25323f30] px-4 py-3`}>
+            <Link to={`/users/${suggestedUsersToFollow.username}`} className={`flex gap-x-2 cursor-pointer`}>
 
                 <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${suggestedUsersToFollow?.avatar}`} alt=""/>
 
@@ -62,9 +63,9 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
                     <span>{suggestedUsersToFollow?.username}</span>
                 <span className={`text-[#71767b]`}>@{suggestedUsersToFollow?.username}</span>
                 </div>
-            </div>
+            </Link>
 
-            <button disabled={isFollowedBtnDisabled} onClick={handleFollow} className={`${followUser ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} text-black px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{followUser ? 'Following' : 'Follow'}</button>
+            <button disabled={isFollowedBtnDisabled} onClick={handleFollow} className={`${followUser ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} z-50 text-black px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{followUser ? 'Following' : 'Follow'}</button>
 
         </div>
     )

@@ -6,6 +6,17 @@ import {useContext} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 
 interface TweetInfo {
+    user: {
+        id: number;
+        username: string;
+        email: string,
+        gender: string,
+        avatar: string,
+        birth_date: string,
+        ban_status: number,
+        created_at: string,
+        updated_at: string,
+    }
     new_tweet: {
         title: string;
         user_id: number;
@@ -22,7 +33,7 @@ interface TweetInfo {
 
 function Tweet(props: TweetInfo) {
 
-    const {user, baseUrl} = useContext(AppContext);
+    const {baseUrl} = useContext(AppContext);
 
     const formatDate = (originalDate:string) => {
         const date = new Date(originalDate)
@@ -32,16 +43,16 @@ function Tweet(props: TweetInfo) {
 
     return (
         <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
-            <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
+            <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user.avatar}`} alt=""/>
 
             <div className={`w-full`}>
                 <div className={`flex gap-x-2 justify-between`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
                         <div className={`xs:flex gap-x-2`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{user?.username}</h1>
-                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{user?.username}</h1>
+                            <h1 className={`font-semibold cursor-pointer`}>{props.user.username}</h1>
+                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user.username}</h1>
                         </div>
-                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.new_tweet.created_at)}</span>
+                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.new_tweet?.created_at)}</span>
                     </div>
 
                     <div className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
@@ -51,18 +62,18 @@ function Tweet(props: TweetInfo) {
 
 
                 <div className={`mt-4 grid grid-cols-1`}>
-                    <p className={`w-fit break-all`}>{props.new_tweet.title}</p>
+                    <p className={`w-fit break-all`}>{props.new_tweet?.title}</p>
                     <div className={`mt-3`}>
-                        {props.new_tweet.image && <img
+                        {props.new_tweet?.image && <img
                             className={`rounded-2xl`}
-                            src={`${baseUrl}/storage/${props.new_tweet.image}`}
+                            src={`${baseUrl}/storage/${props.new_tweet?.image}`}
                             alt="post_image"
                         />}
 
-                        {props.new_tweet.video && <video
+                        {props.new_tweet?.video && <video
                             className="mt-2 max-h-80 w-full"
                             controls
-                            src={`${baseUrl}/storage/${props.new_tweet.video}`}
+                            src={`${baseUrl}/storage/${props.new_tweet?.video}`}
                         />}
 
                     </div>
@@ -87,7 +98,7 @@ function Tweet(props: TweetInfo) {
                         <div className={`text-xl flex justify-center items-center group-hover:text-rose-500 transition group-hover:bg-rose-500/20 rounded-full p-2`}>
                             <FaRegHeart />
                         </div>
-                        <span className={`group-hover:text-rose-500 transition`}>{props.reactions.likes}</span>
+                        <span className={`group-hover:text-rose-500 transition`}>{props.reactions?.likes}</span>
                     </div>
 
                     <div className={`flex items-center cursor-pointer group`}>

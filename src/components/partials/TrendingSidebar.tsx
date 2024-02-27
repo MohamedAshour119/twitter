@@ -1,35 +1,12 @@
 import {HiMiniMagnifyingGlass} from "react-icons/hi2";
 import TrendingTag from "../layouts/TrendingTag.tsx";
 import FollowUser from "../layouts/FollowUser.tsx";
-import {useEffect, useState} from "react";
-import ApiClient from "../services/ApiClient.tsx";
+import {useContext} from "react";
+import {AppContext} from "../appContext/AppContext.tsx";
 
-
-interface SuggestedUsersToFollow {
-    avatar: string | null
-    ban_status: number | null
-    birth_date: string
-    email: string
-    gender: string
-    id: number | null
-    username: string
-}
 function TrendingSidebar() {
 
-    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<SuggestedUsersToFollow[]>([])
-
-    // Suggested users to follow
-    useEffect( () => {
-        ApiClient().get('/home')
-            .then(res => {
-               const users = res.data.data.suggested_users
-                setSuggestedUsersToFollow(users)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }, [])
-
+    const {suggestedUsersToFollow} = useContext(AppContext)
 
     return (
         <div className={`text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed animate-slide-left`}>

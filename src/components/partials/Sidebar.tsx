@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {MdHomeFilled} from "react-icons/md";
 import {FaFeatherPointed, FaXTwitter} from "react-icons/fa6";
 import {HiMiniMagnifyingGlass} from "react-icons/hi2";
@@ -77,7 +77,7 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li>
-                    <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`} to={`/profile`}>
+                    <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`} to={`/users/${user?.username}`}>
                         <LuUser className={`size-8`}/>
                         <span className={`hidden xl:block`}>Profile</span>
                     </Link>
