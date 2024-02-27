@@ -63,11 +63,11 @@ function Profile() {
     })
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo>()
-    console.log(username)
     // Get all user tweets
     useEffect( () => {
         ApiClient().get(`users/${username}`)
             .then(res => {
+                console.log(res.data.data)
                 setAllProfileUserTweets(res.data.data.All_user_tweets)
                 setUserInfo(res.data.data.user)
             })

@@ -111,7 +111,6 @@ function UserHomePage() {
         ApiClient().post('/create-tweet', formData)
             .then(res => {
                 setIsModelOpen(false)
-
                 // Concatenate the new tweet with existing tweets and sort them based on created_at
                 setAllUserTweets(prevAllUserTweets => (
                     [...prevAllUserTweets, res.data.data]
@@ -129,7 +128,7 @@ function UserHomePage() {
     }
 
     const tweets: React.ReactNode = allUserTweets.map((tweet) => (
-        <Tweet key={tweet.new_tweet.id} {...tweet} />
+        <Tweet key={tweet.new_tweet?.id} {...tweet} />
     ));
 
 

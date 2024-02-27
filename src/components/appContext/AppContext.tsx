@@ -3,6 +3,11 @@ import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
 
 interface TweetInfo {
+    user: {
+        username: string
+        email: string
+        avatar: string
+    },
     new_tweet: {
         title: string;
         user_id: number;
@@ -50,6 +55,11 @@ export const AppContext = createContext<AppContextType>({
     baseUrl: '',
     setAllUserTweets: () => null,
     allUserTweets: [{
+        user: {
+            username: '',
+            email: '',
+            avatar: ''
+        },
         new_tweet: {
             title: '',
             user_id: 0,
@@ -72,6 +82,8 @@ export const AppContext = createContext<AppContextType>({
             gender: '',
             id: null,
             username: '',
+            created_at: '',
+            updated_at: '',
         }
     ]
 
@@ -108,6 +120,8 @@ interface SuggestedUsersToFollow {
     gender: string
     id: number | null
     username: string
+    created_at: string
+    updated_at: string
 }
 
 const AppProvider = ({children}: AppProviderProps) => {
@@ -153,8 +167,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     useEffect( () => {
         ApiClient().get('/home')
             .then(res => {
-                const users = res.data.data.suggested_users
-                setSuggestedUsersToFollow(users)
+                setSuggestedUsersToFollow(res.data.data.suggested_users)
             })
             .catch(err => {
                 console.log(err)
