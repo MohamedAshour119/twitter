@@ -8,11 +8,10 @@ import {AppContext} from "../appContext/AppContext.tsx";
 interface TweetInfo {
     user: {
         username: string;
-        email: string,
         avatar: string,
     }
 
-    new_tweet: {
+    tweet: {
         title: string;
         user_id: number;
         image: string;
@@ -36,6 +35,7 @@ function Tweet(props: TweetInfo) {
         const options: Intl.DateTimeFormatOptions = {day: '2-digit', month: 'short'}
         return date.toLocaleDateString('en-US', options)
     }
+    console.log(props.tweet?.created_at)
 
     return (
         <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
@@ -48,7 +48,7 @@ function Tweet(props: TweetInfo) {
                             <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
                             <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
                         </div>
-                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.new_tweet?.created_at)}</span>
+                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.tweet?.created_at)}</span>
                     </div>
 
                     <div className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
@@ -58,18 +58,18 @@ function Tweet(props: TweetInfo) {
 
 
                 <div className={`mt-4 grid grid-cols-1`}>
-                    <p className={`w-fit break-all`}>{props.new_tweet?.title}</p>
+                    <p className={`w-fit break-all`}>{props.tweet?.title}</p>
                     <div className={`mt-3`}>
-                        {props.new_tweet?.image && <img
+                        {props.tweet?.image && <img
                             className={`rounded-2xl`}
-                            src={`${baseUrl}/storage/${props.new_tweet?.image}`}
+                            src={`${baseUrl}/storage/${props.tweet?.image}`}
                             alt="post_image"
                         />}
 
-                        {props.new_tweet?.video && <video
+                        {props.tweet?.video && <video
                             className="mt-2 max-h-80 w-full"
                             controls
-                            src={`${baseUrl}/storage/${props.new_tweet?.video}`}
+                            src={`${baseUrl}/storage/${props.tweet?.video}`}
                         />}
 
                     </div>

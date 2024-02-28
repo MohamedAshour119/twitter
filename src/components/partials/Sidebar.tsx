@@ -1,4 +1,4 @@
-import {Link, useParams} from "react-router-dom";
+import {Link} from "react-router-dom";
 import {MdHomeFilled} from "react-icons/md";
 import {FaFeatherPointed, FaXTwitter} from "react-icons/fa6";
 import {HiMiniMagnifyingGlass} from "react-icons/hi2";
@@ -49,7 +49,7 @@ function Sidebar() {
 
 
     return (
-        <div className={`text-neutral-100 xl:px-16 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container fixed max-w-fit animate-slide-right`}>
+        <div className={`text-neutral-100 xl:px-16 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container fixed max-w-fit animate-slide-right z-50`}>
             <ul className={`flex flex-col gap-y-5`}>
                 <li className={`flex items-center`}>
                     <Link to={`/home`}>

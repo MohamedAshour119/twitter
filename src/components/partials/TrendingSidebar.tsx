@@ -34,7 +34,7 @@ function TrendingSidebar() {
             <div className={`bg-[#2a2d32b3] rounded-2xl`}>
                 <h1 className={`font-bold text-2xl p-4`}>Who to follow</h1>
                 <div className={`flex flex-col gap-y-2`}>
-                    {suggestedUsersToFollow.length === 0 &&
+                    {suggestedUsersToFollow?.length === 0 &&
                         <div role="status" className="max-w-sm animate-pulse px-4 py-3 flex flex-col gap-y-8">
                             <div className="h-12 bg-zinc-800 rounded-full w-full"></div>
                             <div className="h-12 bg-zinc-800 rounded-full w-full"></div>

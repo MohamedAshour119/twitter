@@ -5,10 +5,9 @@ import ApiClient from "../services/ApiClient.tsx";
 interface TweetInfo {
     user: {
         username: string
-        email: string
         avatar: string
     },
-    new_tweet: {
+    tweet: {
         title: string;
         user_id: number;
         image: string;
@@ -57,10 +56,9 @@ export const AppContext = createContext<AppContextType>({
     allUserTweets: [{
         user: {
             username: '',
-            email: '',
             avatar: ''
         },
-        new_tweet: {
+        tweet: {
             title: '',
             user_id: 0,
             image: '',
@@ -84,6 +82,7 @@ export const AppContext = createContext<AppContextType>({
             username: '',
             created_at: '',
             updated_at: '',
+            is_followed: false
         }
     ]
 
@@ -122,6 +121,7 @@ interface SuggestedUsersToFollow {
     username: string
     created_at: string
     updated_at: string
+    is_followed: boolean
 }
 
 const AppProvider = ({children}: AppProviderProps) => {
@@ -155,7 +155,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     }, [location.pathname]);
 
     // Sort tweets based on created_at in descending order
-    allUserTweets.sort((a, b) => new Date(b.new_tweet.created_at).getTime() - new Date(a.new_tweet.created_at).getTime());
+    allUserTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime());
 
 
     // Handle model open state

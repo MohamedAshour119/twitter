@@ -1,4 +1,4 @@
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {Link} from "react-router-dom";
@@ -11,6 +11,7 @@ interface SuggestedUsersToFollow {
     gender: string
     id: number | null
     username: string
+    is_followed: boolean
 }
 interface Prop {
     suggestedUsersToFollow: SuggestedUsersToFollow
@@ -19,12 +20,10 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
 
     const {baseUrl} = useContext(AppContext)
 
-    const [followUser, setFollowUser] = useState(false)
     const [isFollowed, setIsFollowed] = useState(false)
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
 
     const handleFollow = () => {
-        setFollowUser(prevFollowUser => !prevFollowUser);
         setIsFollowedBtnDisabled(true)
 
         if(!isFollowed){
@@ -52,6 +51,9 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
 
     };
 
+    useEffect( () => {
+        setIsFollowed(suggestedUsersToFollow.is_followed)
+    }, [] )
 
     return (
         <div className={`flex justify-between hover:bg-[#25323f30] px-4 py-3`}>
@@ -65,7 +67,7 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
                 </div>
             </Link>
 
-            <button disabled={isFollowedBtnDisabled} onClick={handleFollow} className={`${followUser ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} z-50 text-black px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{followUser ? 'Following' : 'Follow'}</button>
+            <button disabled={isFollowedBtnDisabled} onClick={handleFollow} className={`${isFollowed ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} z-50 text-black px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{isFollowed ? 'Following' : 'Follow'}</button>
 
         </div>
     )

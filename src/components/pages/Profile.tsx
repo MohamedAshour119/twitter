@@ -25,7 +25,7 @@ interface TweetInfo {
         created_at: string,
         updated_at: string,
     };
-    new_tweet: {
+    tweet: {
         title: string;
         user_id: number;
         image: string;
@@ -85,7 +85,7 @@ function Profile() {
 
     // All User Tweets
     const tweets: React.ReactNode = allProfileUserTweets?.map((tweet) => (
-        <Tweet key={tweet.new_tweet?.id} {...tweet} />
+        <Tweet key={tweet.tweet?.id} {...tweet} />
     ));
 
 
