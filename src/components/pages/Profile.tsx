@@ -49,6 +49,8 @@ interface UserInfo {
     ban_status: number,
     created_at: string,
     updated_at: string,
+    following_number: number,
+    followers_number: number,
 }
 
 function Profile() {
@@ -156,8 +158,18 @@ function Profile() {
                             <RiArrowLeftLine className={`size-5`}/>
                         </Link>
                         <div className={`w-full`}>
-                            <h1 className={`font-semibold text-xl`}>{userInfo?.username}</h1>
-                            <div className={`text-[#71767b] text-sm`}>{allProfileUserTweets.length <= 1 ? `${allProfileUserTweets.length} post` : `${allProfileUserTweets.length} posts`}</div>
+                            <h1 className={`font-semibold text-xl`}>
+                                {userInfo?.username}
+                                {!userInfo &&
+                                    <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
+                                }
+                            </h1>
+                            {userInfo && <div
+                                className={`text-[#71767b] text-sm`}>{allProfileUserTweets.length <= 1 ? `${allProfileUserTweets.length} post` : `${allProfileUserTweets.length} posts`}</div>
+                            }
+                            {!userInfo &&
+                                <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
+                            }
                         </div>
                     </header>
                     {/* Cover image */}
@@ -166,29 +178,59 @@ function Profile() {
                     <div className={`relative`}>
                         <div className={`px-4`}>
                             <div className={`flex justify-between`}>
-                                <img src={`${baseUrl}/storage/${userInfo?.avatar}`} alt="prfile img" className={`-translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black object-cover`}/>
+                                <div className={`-translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black ${!userInfo ? 'animate-pulse' : ''}`}>
+                                    <img src={`${baseUrl}/storage/${userInfo?.avatar}`} alt=""
+                                         className={`object-cover rounded-full`}/>
+                                    {!userInfo &&
+                                        <div
+                                            className="flex items-center justify-center w-full h-full rounded-full bg-[#2a2d32b3]">
+                                            <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
+                                                 xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                                <path
+                                                    d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                                            </svg>
+                                        </div>}
+                                </div>
+
+
                                 <Link to={'/home'} className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile</Link>
                             </div>
                             <div className={`-translate-y-12`}>
-                                <h1 className={`font-semibold text-xl`}>{userInfo?.username}</h1>
-                                <h1 className={`text-[#71767b]`}>@{userInfo?.username}</h1>
+                                <h1 className={`font-semibold text-xl`}>
+                                    {userInfo?.username}
+                                    {!userInfo &&
+                                        <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
+                                    }
+                                </h1>
+                                {userInfo && <h1 className={`text-[#71767b]`}>
+                                    @{userInfo?.username}
+                                </h1>}
+                                {!userInfo &&
+                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-40 mt-1"></div>
+                                }
 
-                                <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
-                                    <CgCalendarDates />
+                                {userInfo && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
+                                    <CgCalendarDates/>
                                     <span>Joined</span>
                                     <div>{formatedDate}</div>
-                                </div>
+                                </div>}
+                                {!userInfo &&
+                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-52 mt-6"></div>
+                                }
 
-                                <div className={`text-[#71767b] flex gap-x-6 mt-3`}>
+                                {userInfo && <div className={`text-[#71767b] flex gap-x-6 mt-3`}>
                                     <div className={`flex gap-x-1`}>
-                                        <span className={`text-neutral-200`}>3</span>
+                                        <span className={`text-neutral-200`}>{userInfo?.following_number}</span>
                                         Following
                                     </div>
                                     <div className={`flex gap-x-1`}>
-                                        <span className={`text-neutral-200`}>10</span>
+                                        <span className={`text-neutral-200`}>{userInfo?.followers_number}</span>
                                         Followers
                                     </div>
-                                </div>
+                                </div>}
+                                {!userInfo &&
+                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-52 mt-6"></div>
+                                }
                             </div>
                         </div>
 
