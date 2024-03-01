@@ -42,22 +42,26 @@ interface TweetInfo {
 interface UserInfo {
     id: number;
     username: string;
-    email: string,
-    gender: string,
-    avatar: string,
-    birth_date: string,
-    ban_status: number,
-    created_at: string,
-    updated_at: string,
-    following_number: number,
-    followers_number: number,
+    email: string;
+    gender: string;
+    avatar: string;
+    birth_date: string;
+    ban_status: number;
+    created_at: string;
+    updated_at: string;
+    following_number: number;
+    followers_number: number;
+    is_followed: boolean;
 }
+
 
 function Profile() {
 
     const {username} = useParams();
-    const {isModelOpen,baseUrl, suggestedUsersToFollow, location} = useContext(AppContext)
+    const {user, isModelOpen,baseUrl, suggestedUsersToFollow, location} = useContext(AppContext)
 
+    const [isFollowed, setIsFollowed] = useState<boolean>()
+    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
     const [isActive, setIsActive] = useState({
         posts: true,
         replies: false,
@@ -69,8 +73,7 @@ function Profile() {
     useEffect( () => {
         ApiClient().get(`users/${username}`)
             .then(res => {
-                console.log(res.data.data)
-                setAllProfileUserTweets(res.data.data.All_user_tweets)
+                setAllProfileUserTweets(([...res.data.data.All_user_tweets]))
                 setUserInfo(res.data.data.user)
             })
             .catch(err => {
@@ -84,10 +87,9 @@ function Profile() {
     const formatedDate = date.toLocaleDateString('en-US', options);
 
     // All User Tweets
-    const tweets: React.ReactNode = allProfileUserTweets?.map((tweet) => (
-        <Tweet key={tweet.tweet?.id} {...tweet} />
+    const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions} />
     ));
-
 
     // Handle active buttons
     const postsRef = useRef<HTMLLIElement>(null);
@@ -128,7 +130,7 @@ function Profile() {
 
     }, [location?.pathname])
 
-    // Reset posts btn active when the slug change
+    // Reset posts category active when the slug change
     useEffect( () => {
         setIsActive(prevIsActive => ({
             ...prevIsActive,
@@ -137,6 +139,39 @@ function Profile() {
             likes: false
         }))
     }, [username])
+
+    // Handle following user
+    const handleFollow = () => {
+        setIsFollowedBtnDisabled(true)
+
+        if(!isFollowed){
+            ApiClient().post(`/${userInfo?.id}/follow`)
+                .then(() => {
+                    setIsFollowed(true)
+                    setIsFollowedBtnDisabled(false);
+                })
+                .catch(error => {
+                    console.error('Follow request failed:', error);
+                    setIsFollowedBtnDisabled(false);
+                });
+        } else {
+
+            ApiClient().post(`/${userInfo?.id}/unfollow`)
+                .then(() => {
+                    setIsFollowed(false)
+                    setIsFollowedBtnDisabled(false);
+                })
+                .catch(error => {
+                    console.error('Follow request failed:', error);
+                    setIsFollowedBtnDisabled(false);
+                });
+        }
+
+    };
+
+    useEffect( () => {
+        setIsFollowed(userInfo?.is_followed)
+    }, [userInfo] )
 
     return (
         <div className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
@@ -176,14 +211,14 @@ function Profile() {
                     <div className={`h-[14rem] w-full bg-[#333639]`}></div>
                     {/* Personal Info */}
                     <div className={`relative`}>
-                        <div className={`px-4`}>
+                        <div className={`px-4 h-[16rem]`}>
                             <div className={`flex justify-between`}>
-                                <div className={`-translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black ${!userInfo ? 'animate-pulse' : ''}`}>
+                                <div className={`relative -translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black ${!userInfo ? 'animate-pulse' : ''}`}>
                                     <img src={`${baseUrl}/storage/${userInfo?.avatar}`} alt=""
-                                         className={`object-cover rounded-full`}/>
+                                         className={`object-cover w-full h-full rounded-full ${!userInfo ? 'invisible' : ''}`}/>
                                     {!userInfo &&
                                         <div
-                                            className="flex items-center justify-center w-full h-full rounded-full bg-[#2a2d32b3]">
+                                            className="absolute top-0 flex items-center justify-center w-full h-full rounded-full bg-[#2a2d32b3]">
                                             <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
                                                  xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                                 <path
@@ -192,8 +227,20 @@ function Profile() {
                                         </div>}
                                 </div>
 
-
-                                <Link to={'/home'} className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile</Link>
+                                {(username === user?.username && userInfo) &&
+                                    <Link to={'/home'}
+                                       className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile</Link>
+                                }
+                                {(username === user?.username || !userInfo) ||
+                                    <button
+                                        disabled={isFollowedBtnDisabled}
+                                        onClick={handleFollow}
+                                        className={`${isFollowed ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} z-50 text-black mt-4 px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{isFollowed ? 'Following' : 'Follow'}
+                                    </button>
+                                }
+                                {!userInfo &&
+                                    <div className="h-[50px] mt-4 bg-[#2a2d32b3] animate-pulse rounded-full w-40"></div>
+                                }
                             </div>
                             <div className={`-translate-y-12`}>
                                 <h1 className={`font-semibold text-xl`}>

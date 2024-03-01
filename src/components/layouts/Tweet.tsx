@@ -1,9 +1,10 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
-import {FaRegComment, FaRegHeart} from "react-icons/fa";
+import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
 import {TbBrandGoogleAnalytics} from "react-icons/tb";
-import {useContext} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
+import ApiClient from "../services/ApiClient.tsx";
 
 interface TweetInfo {
     user: {
@@ -23,6 +24,7 @@ interface TweetInfo {
     reactions: {
         likes: number;
     };
+    is_reacted: boolean;
 }
 
 
@@ -35,7 +37,25 @@ function Tweet(props: TweetInfo) {
         const options: Intl.DateTimeFormatOptions = {day: '2-digit', month: 'short'}
         return date.toLocaleDateString('en-US', options)
     }
-    console.log(props.tweet?.created_at)
+    const [isReacted, setIsReacted] = useState(props.is_reacted)
+
+    // Handle tweet reaction
+    const handleReaction = () => {
+        if(!isReacted){
+            ApiClient().post(`/reaction`, {id: props.tweet.id})
+                .then((res) => {
+                    setIsReacted(res.data.data.is_reacted)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+    }
+
+    // useEffect( () => {
+    //     setIsReacted(props.is_reacted)
+    // }, [isReacted])
+
 
     return (
         <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
@@ -61,13 +81,13 @@ function Tweet(props: TweetInfo) {
                     <p className={`w-fit break-all`}>{props.tweet?.title}</p>
                     <div className={`mt-3`}>
                         {props.tweet?.image && <img
-                            className={`rounded-2xl`}
+                            className={`rounded-2xl max-h-[40rem] w-full `}
                             src={`${baseUrl}/storage/${props.tweet?.image}`}
                             alt="post_image"
                         />}
 
                         {props.tweet?.video && <video
-                            className="mt-2 max-h-80 w-full"
+                            className="mt-2 max-h-[40rem] w-full"
                             controls
                             src={`${baseUrl}/storage/${props.tweet?.video}`}
                         />}
@@ -90,11 +110,12 @@ function Tweet(props: TweetInfo) {
                         <span className={`group-hover:text-emerald-400 transition`}>47</span>
                     </div>
 
-                    <div className={`flex items-center cursor-pointer group`}>
+                    <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
                         <div className={`text-xl flex justify-center items-center group-hover:text-rose-500 transition group-hover:bg-rose-500/20 rounded-full p-2`}>
-                            <FaRegHeart />
+                            <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
+                            <FaHeart className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
                         </div>
-                        <span className={`group-hover:text-rose-500 transition`}>{props.reactions?.likes}</span>
+                        <span className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{props.reactions?.likes || 0}</span>
                     </div>
 
                     <div className={`flex items-center cursor-pointer group`}>

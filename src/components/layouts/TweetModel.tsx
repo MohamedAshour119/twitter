@@ -223,7 +223,7 @@ function TweetModel() {
                     <div onClick={removeUploadedFile} className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                         <HiMiniXMark className={`size-6`}/>
                     </div>
-                    <img className={`w-full rounded-2xl transition object-cover`}
+                    <img className={`w-full max-h-[40rem] rounded-2xl transition`}
                          src={tweetInModel?.image ? URL.createObjectURL(tweetInModel?.image as File) : ''} alt=""/>
                 </div>
             }
@@ -236,7 +236,7 @@ function TweetModel() {
                     </div>
                     <video
                         src={videoURL}
-                        className={`w-full rounded-2xl`}
+                        className={`w-full max-h-[40rem] rounded-2xl`}
                         controls
                     />
                 </div>

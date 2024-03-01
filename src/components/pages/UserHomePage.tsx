@@ -40,6 +40,7 @@ interface TweetInfo {
     reactions: {
         likes: number;
     };
+    is_reacted: boolean;
 }
 
 function UserHomePage() {
@@ -71,10 +72,11 @@ function UserHomePage() {
             })
     }, [])
 
-    // console.log(randomTweets)
+    randomTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
+
     // Display random tweets
     const displayRandomTweets: React.ReactNode = randomTweets?.map(tweetInfo => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions}/>
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions} is_reacted={tweetInfo.is_reacted}/>
     ));
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -274,7 +276,7 @@ function UserHomePage() {
                                         <div onClick={removeUploadedFile} className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                                             <HiMiniXMark className={`size-6`}/>
                                         </div>
-                                        <img className={`w-full rounded-2xl transition object-cover`}
+                                        <img className={`w-full max-h-[40rem] rounded-2xl transition`}
                                              src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''} alt=""/>
                                     </div>
                                 }
@@ -287,7 +289,7 @@ function UserHomePage() {
                                         </div>
                                         <video
                                             src={videoURL}
-                                            className={`w-full`}
+                                            className={`w-full max-h-[40rem]`}
                                             controls
                                         />
                                     </div>
