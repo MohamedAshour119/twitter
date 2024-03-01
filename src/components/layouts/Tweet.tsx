@@ -2,7 +2,7 @@ import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
 import {TbBrandGoogleAnalytics} from "react-icons/tb";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 
@@ -21,9 +21,7 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: {
-        likes: number;
-    };
+    reactions: number;
     is_reacted: boolean;
 }
 
@@ -38,23 +36,20 @@ function Tweet(props: TweetInfo) {
         return date.toLocaleDateString('en-US', options)
     }
     const [isReacted, setIsReacted] = useState(props.is_reacted)
+    const [reactionNumber, setReactionNumber] = useState(props?.reactions)
 
     // Handle tweet reaction
     const handleReaction = () => {
-        if(!isReacted){
-            ApiClient().post(`/reaction`, {id: props.tweet.id})
-                .then((res) => {
-                    setIsReacted(res.data.data.is_reacted)
-                })
-                .catch((err) => {
-                    console.log(err)
-                })
-        }
+        ApiClient().post(`/reaction`, {id: props.tweet.id})
+            .then((res) => {
+                setIsReacted(res.data.data.is_reacted)
+                setReactionNumber(res.data.data.likes)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
 
-    // useEffect( () => {
-    //     setIsReacted(props.is_reacted)
-    // }, [isReacted])
 
 
     return (
@@ -115,7 +110,7 @@ function Tweet(props: TweetInfo) {
                             <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
                             <FaHeart className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
                         </div>
-                        <span className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{props.reactions?.likes || 0}</span>
+                        <span className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionNumber}</span>
                     </div>
 
                     <div className={`flex items-center cursor-pointer group`}>

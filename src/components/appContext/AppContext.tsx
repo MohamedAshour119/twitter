@@ -16,9 +16,7 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: {
-        likes: number;
-    };
+    reactions: number;
 }
 interface AppContextType {
     isRegisterOpen: boolean;
@@ -67,9 +65,7 @@ export const AppContext = createContext<AppContextType>({
             created_at: '',
             id: 0
         },
-        reactions: {
-            likes: 0
-        }
+        reactions: 0,
     }],
     suggestedUsersToFollow: [
         {

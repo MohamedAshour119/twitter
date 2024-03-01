@@ -37,9 +37,7 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: {
-        likes: number;
-    };
+    reactions: number;
     is_reacted: boolean;
 }
 
