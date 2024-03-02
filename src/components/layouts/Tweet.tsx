@@ -8,6 +8,7 @@ import ApiClient from "../services/ApiClient.tsx";
 
 interface TweetInfo {
     user: {
+        id: number;
         username: string;
         avatar: string,
     }
@@ -21,7 +22,9 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: number;
+    reactions: {
+        likes: number
+    };
     is_reacted: boolean;
 }
 
@@ -36,14 +39,14 @@ function Tweet(props: TweetInfo) {
         return date.toLocaleDateString('en-US', options)
     }
     const [isReacted, setIsReacted] = useState(props.is_reacted)
-    const [reactionNumber, setReactionNumber] = useState(props?.reactions)
+    const [reactionNumber, setReactionNumber] = useState(props.reactions.likes)
 
     // Handle tweet reaction
     const handleReaction = () => {
         ApiClient().post(`/reaction`, {id: props.tweet.id})
             .then((res) => {
                 setIsReacted(res.data.data.is_reacted)
-                setReactionNumber(res.data.data.likes)
+                setReactionNumber(res.data.data.reactions.likes)
             })
             .catch((err) => {
                 console.log(err)

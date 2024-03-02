@@ -4,6 +4,7 @@ import ApiClient from "../services/ApiClient.tsx";
 
 interface TweetInfo {
     user: {
+        id: number;
         username: string
         avatar: string
     },
@@ -16,7 +17,10 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: number;
+    reactions: {
+        likes: number
+    };
+    is_reacted: boolean
 }
 interface AppContextType {
     isRegisterOpen: boolean;
@@ -53,6 +57,7 @@ export const AppContext = createContext<AppContextType>({
     setAllUserTweets: () => null,
     allUserTweets: [{
         user: {
+            id: 0,
             username: '',
             avatar: ''
         },
@@ -65,7 +70,10 @@ export const AppContext = createContext<AppContextType>({
             created_at: '',
             id: 0
         },
-        reactions: 0,
+        reactions: {
+            likes: 0
+        },
+        is_reacted: false,
     }],
     suggestedUsersToFollow: [
         {

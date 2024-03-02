@@ -34,9 +34,8 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: {
-        likes: number;
-    };
+    reactions: number;
+    is_reacted: boolean;
 }
 
 interface UserInfo {
@@ -88,7 +87,7 @@ function Profile() {
 
     // All User Tweets
     const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions} />
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions} is_reacted={tweetInfo.is_reacted} />
     ));
 
     // Handle active buttons

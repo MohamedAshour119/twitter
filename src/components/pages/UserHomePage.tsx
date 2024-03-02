@@ -15,6 +15,7 @@ import EmojiPicker from 'emoji-picker-react';
 import { EmojiData } from 'emoji-picker-react'
 import TweetModel from "../layouts/TweetModel.tsx";
 import apiClient from "../services/ApiClient.tsx";
+// import {CgSpinnerTwoAlt} from "react-icons/cg";
 
 interface Tweet {
     title: string
@@ -24,6 +25,7 @@ interface Tweet {
 
 interface TweetInfo {
     user: {
+        id: number;
         username: string;
         avatar: string,
     }
@@ -37,7 +39,9 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: number;
+    reactions: {
+        likes: number
+    };
     is_reacted: boolean;
 }
 
@@ -54,27 +58,60 @@ function UserHomePage() {
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
+    const [pageURL, setPageURL] = useState<string>('')
 
 
     // Fetch random tweets
-    useEffect( () => {
-        apiClient().get('home-tweets')
+    const getHomeTweets = (pageURL: string) => {
+        apiClient().get(pageURL)
             .then(res => {
+                setPageURL(res.data.data.pagination.next_page_url)
                 setRandomTweets(prevRandomTweets  => ([
                     ...prevRandomTweets,
-                    ...res.data.data.tweets
+                    ...res.data.data.pagination.data
                 ]))
             })
             .catch(err => {
                 console.log(err)
             })
+    }
+
+    useEffect( () => {
+        getHomeTweets('home-tweets')
     }, [])
 
-    randomTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
 
+    // Detect when scroll to last element
+    const lastTweetRef = useRef<HTMLDivElement>(null)
+    useEffect( () => {
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                getHomeTweets(pageURL)
+            }
+        }, {
+            threshold: 0.5 // Trigger when 50% of the last tweet is visible
+        });
+
+
+        // Watch the last tweet
+        if(lastTweetRef.current) {
+            observer.observe(lastTweetRef.current)
+        }
+
+        // Cleanup
+        return () => {
+            if (lastTweetRef.current) {
+                observer.unobserve(lastTweetRef.current);
+            }
+        };
+    }, [pageURL])
+
+    if(randomTweets.length < 6){
+        randomTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
+    }
     // Display random tweets
-    const displayRandomTweets: React.ReactNode = randomTweets?.map(tweetInfo => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions} is_reacted={tweetInfo.is_reacted}/>
+    const displayRandomTweets: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} is_reacted={tweetInfo.is_reacted}/>
     ));
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -170,7 +207,7 @@ function UserHomePage() {
     }
 
     const tweets: React.ReactNode = allUserTweets.map(tweetInfo => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions} />
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} is_reacted={tweetInfo.is_reacted}/>
     ));
 
     console.log(allUserTweets[0]?.tweet?.created_at)
@@ -222,7 +259,7 @@ function UserHomePage() {
 
 
     return (
-        <div className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+        <div className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
             <div className={`${isModelOpen ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Scroll to top button */}
@@ -337,6 +374,11 @@ function UserHomePage() {
                     <div>
                         {tweets}
                         {displayRandomTweets}
+                        <div ref={lastTweetRef}>
+                            {randomTweets.length > 0 && (
+                                <Tweet {...randomTweets[randomTweets.length - 1]} />
+                            )}
+                        </div>
                     </div>
 
                 </div>
