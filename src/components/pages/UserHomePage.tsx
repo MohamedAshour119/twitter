@@ -42,7 +42,11 @@ interface TweetInfo {
     reactions: {
         likes: number
     };
+    retweets: {
+        retweets: 0
+    },
     is_reacted: boolean;
+    is_retweeted: boolean;
 }
 
 function UserHomePage() {
@@ -58,7 +62,7 @@ function UserHomePage() {
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
-    const [pageURL, setPageURL] = useState<string>('')
+    const [pageURL, setPageURL] = useState('')
 
 
     // Fetch random tweets
@@ -92,7 +96,6 @@ function UserHomePage() {
             threshold: 0.5 // Trigger when 50% of the last tweet is visible
         });
 
-
         // Watch the last tweet
         if(lastTweetRef.current) {
             observer.observe(lastTweetRef.current)
@@ -111,7 +114,7 @@ function UserHomePage() {
     }
     // Display random tweets
     const displayRandomTweets: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} is_reacted={tweetInfo.is_reacted}/>
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} is_reacted={tweetInfo.is_reacted} retweets={{retweets: tweetInfo.retweets?.retweets}} is_retweeted={tweetInfo.is_retweeted} />
     ));
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {

@@ -20,7 +20,11 @@ interface TweetInfo {
     reactions: {
         likes: number
     };
+    retweets: {
+        retweets: number
+    },
     is_reacted: boolean
+    is_retweeted: boolean
 }
 interface AppContextType {
     isRegisterOpen: boolean;
@@ -73,7 +77,11 @@ export const AppContext = createContext<AppContextType>({
         reactions: {
             likes: 0
         },
+        retweets: {
+            retweets: 0
+        },
         is_reacted: false,
+        is_retweeted: false,
     }],
     suggestedUsersToFollow: [
         {

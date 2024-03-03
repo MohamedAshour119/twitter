@@ -1,7 +1,6 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
-import {TbBrandGoogleAnalytics} from "react-icons/tb";
 import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
@@ -25,7 +24,11 @@ interface TweetInfo {
     reactions: {
         likes: number
     };
+    retweets: {
+        retweets: 0
+    },
     is_reacted: boolean;
+    is_retweeted: boolean;
 }
 
 
@@ -41,6 +44,9 @@ function Tweet(props: TweetInfo) {
     const [isReacted, setIsReacted] = useState(props.is_reacted)
     const [reactionNumber, setReactionNumber] = useState(props.reactions.likes)
 
+    const [retweetNumber, setRetweetNumber] = useState(props.retweets?.retweets)
+    const [isRetweeted, setIsRetweeted] = useState(props.is_retweeted)
+
     // Handle tweet reaction
     const handleReaction = () => {
         ApiClient().post(`/reaction`, {id: props.tweet.id})
@@ -53,7 +59,18 @@ function Tweet(props: TweetInfo) {
             })
     }
 
-
+    // Handle tweet retweet
+    const handleRetweet = () => {
+        ApiClient().post(`/retweet`, {id: props.tweet.id})
+            .then((res) => {
+                console.log(res.data)
+                setIsRetweeted(res.data.data.is_retweeted)
+                setRetweetNumber(res.data.data.retweets)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
 
     return (
         <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
@@ -101,11 +118,11 @@ function Tweet(props: TweetInfo) {
                         <span className={`group-hover:text-sky-500 transition`}>314</span>
                     </div>
 
-                    <div className={`flex items-center cursor-pointer group`}>
+                    <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
                         <div className={`text-xl flex justify-center items-center group-hover:text-emerald-400 transition group-hover:bg-emerald-400/20 rounded-full p-2`}>
-                            <BsRepeat />
+                            <BsRepeat className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
                         </div>
-                        <span className={`group-hover:text-emerald-400 transition`}>47</span>
+                        <span className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetNumber ? retweetNumber : 0}</span>
                     </div>
 
                     <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
@@ -114,13 +131,6 @@ function Tweet(props: TweetInfo) {
                             <FaHeart className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
                         </div>
                         <span className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionNumber}</span>
-                    </div>
-
-                    <div className={`flex items-center cursor-pointer group`}>
-                        <div className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
-                            <TbBrandGoogleAnalytics />
-                        </div>
-                        <span className={`group-hover:text-sky-500 transition`}>6M</span>
                     </div>
                 </div>
             </div>

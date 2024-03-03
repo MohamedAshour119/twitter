@@ -34,7 +34,9 @@ interface TweetInfo {
         created_at: string;
         id: number;
     };
-    reactions: number;
+    reactions: {
+        likes: number
+    };
     is_reacted: boolean;
 }
 
@@ -61,6 +63,7 @@ function Profile() {
 
     const [isFollowed, setIsFollowed] = useState<boolean>()
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
+    const [pageURL, setPageURL] = useState('')
     const [isActive, setIsActive] = useState({
         posts: true,
         replies: false,
@@ -69,15 +72,20 @@ function Profile() {
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo>()
     // Get all user tweets
-    useEffect( () => {
-        ApiClient().get(`users/${username}`)
+    const getAllUserTweets = (pageURL: string) => {
+        ApiClient().get(pageURL)
             .then(res => {
-                setAllProfileUserTweets(([...res.data.data.All_user_tweets]))
+                setAllProfileUserTweets(prevTweets => ([...prevTweets, ...res.data.data.pagination.data]))
                 setUserInfo(res.data.data.user)
+                setPageURL(res.data.data.pagination.next_page_url)
             })
             .catch(err => {
                 console.log(err)
             })
+    }
+
+    useEffect( () => {
+        getAllUserTweets(`users/${username}`)
     }, [username] )
 
     // Covert created_at to this format: October 2023
@@ -85,9 +93,11 @@ function Profile() {
     const options: Intl.DateTimeFormatOptions = {month: 'long', year: 'numeric'}
     const formatedDate = date.toLocaleDateString('en-US', options);
 
+    // Sort tweets based on created_at
+    allProfileUserTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
     // All User Tweets
-    const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={tweetInfo.reactions} is_reacted={tweetInfo.is_reacted} />
+    const tweets: React.ReactNode = allProfileUserTweets?.slice(0, allProfileUserTweets.length - 1).map((tweetInfo) => (
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} is_reacted={tweetInfo.is_reacted} />
     ));
 
     // Handle active buttons
@@ -171,6 +181,31 @@ function Profile() {
     useEffect( () => {
         setIsFollowed(userInfo?.is_followed)
     }, [userInfo] )
+
+    // Detect when scroll to last element
+    const lastTweetRef = useRef<HTMLDivElement>(null)
+    useEffect( () => {
+        const observer = new IntersectionObserver(entries => {
+            if(entries[0].isIntersecting) {
+                getAllUserTweets(pageURL)
+            }
+        }, {
+            threshold: 0.5  // Trigger when 50% of the last tweet is visible
+        })
+
+    // Watch the last tweet
+        if(lastTweetRef.current) {
+            observer.observe(lastTweetRef.current)
+        }
+
+    // cleanup
+        return () => {
+            if(lastTweetRef.current){
+                observer.unobserve(lastTweetRef.current)
+            }
+        }
+
+    }, [pageURL])
 
     return (
         <div className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
@@ -290,6 +325,11 @@ function Profile() {
 
                     {/* All user tweets */}
                     {tweets}
+                    <div ref={lastTweetRef}>
+                        {allProfileUserTweets.length > 0 && (
+                            <Tweet {...allProfileUserTweets[allProfileUserTweets.length - 1]} />
+                        )}
+                    </div>
 
                     {/* Suggested users to follow */}
                     <div className={`border-b border-zinc-700/70`}>
