@@ -85,7 +85,11 @@ function Profile() {
     const getAllUserTweets = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
-                setAllProfileUserTweets(prevTweets => ([...prevTweets, ...res.data.data.pagination.data]))
+                const userTweets = res.data.data.pagination.data.user_tweets;
+                const userRetweets = res.data.data.pagination.data.user_retweets;
+                const mergeTweetsAndRetweets = [...userTweets, ...userRetweets];
+
+                setAllProfileUserTweets(prevTweets => ([...prevTweets, ...mergeTweetsAndRetweets]))
                 setUserInfo(res.data.data.user)
                 setPageURL(res.data.data.pagination.next_page_url)
             })
