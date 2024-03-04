@@ -4,6 +4,9 @@ import {BsRepeat} from "react-icons/bs";
 import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
+import {toast, ToastContainer, Zoom} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
 
 interface TweetInfo {
     user: {
@@ -34,7 +37,7 @@ interface TweetInfo {
 
 function Tweet(props: TweetInfo) {
 
-    const {baseUrl} = useContext(AppContext);
+    const {baseUrl, user} = useContext(AppContext);
 
     const formatDate = (originalDate:string) => {
         const date = new Date(originalDate)
@@ -61,83 +64,112 @@ function Tweet(props: TweetInfo) {
 
     // Handle tweet retweet
     const handleRetweet = () => {
-        ApiClient().post(`/retweet`, {id: props.tweet.id})
-            .then((res) => {
-                console.log(res.data)
-                setIsRetweeted(res.data.data.is_retweeted)
-                setRetweetNumber(res.data.data.retweets)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
+        if(props.tweet.user_id !== user?.id && !isRetweeted) {
+            ApiClient().post(`/retweet`, {id: props.tweet.id})
+                .then((res) => {
+                    console.log(res.data)
+                    setIsRetweeted(res.data.data.is_retweeted)
+                    setRetweetNumber(res.data.data.retweets)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        } else if (props.tweet.user_id !== user?.id && isRetweeted) {
+            ApiClient().post(`/removeRetweet`, {id: props.tweet.id})
+                .then((res) => {
+                    console.log(res.data)
+                    setIsRetweeted(res.data.data.is_retweeted)
+                    setRetweetNumber(res.data.data.retweets)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        } else {
+            toast.error("You can't retweet your tweets!", {
+                className: 'custom-toast',
+                position: "top-center",
+                autoClose: 4000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+                transition: Zoom,
+            });
+        }
+
     }
 
     return (
-        <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
-            <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user?.avatar}`} alt=""/>
+        <>
+            <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
+                <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user?.avatar}`} alt=""/>
 
-            <div className={`w-full`}>
-                <div className={`flex gap-x-2 justify-between`}>
-                    <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
-                        <div className={`xs:flex gap-x-2`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
-                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
+                <div className={`w-full`}>
+                    <div className={`flex gap-x-2 justify-between`}>
+                        <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
+                            <div className={`xs:flex gap-x-2`}>
+                                <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
+                                <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
+                            </div>
+                            <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.tweet?.created_at)}</span>
                         </div>
-                        <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.tweet?.created_at)}</span>
+
+                        <div className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
+                            <HiOutlineDotsHorizontal />
+                        </div>
                     </div>
 
-                    <div className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
-                        <HiOutlineDotsHorizontal />
+
+                    <div className={`mt-4 grid grid-cols-1`}>
+                        <p className={`w-fit break-all`}>{props.tweet?.title}</p>
+                        <div className={`mt-3`}>
+                            {props.tweet?.image && <img
+                                className={`rounded-2xl max-h-[40rem] w-full `}
+                                src={`${baseUrl}/storage/${props.tweet?.image}`}
+                                alt="post_image"
+                            />}
+
+                            {props.tweet?.video && <video
+                                className="mt-2 max-h-[40rem] w-full"
+                                controls
+                                src={`${baseUrl}/storage/${props.tweet?.video}`}
+                            />}
+
+                        </div>
+                    </div>
+
+                    <div className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
+                        <div className={`flex items-center cursor-pointer group`}>
+                            <div className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
+                                <FaRegComment />
+                            </div>
+                            <span className={`group-hover:text-sky-500 transition`}>314</span>
+                        </div>
+
+                        <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
+                            <div className={`text-xl flex justify-center items-center group-hover:text-emerald-400 transition group-hover:bg-emerald-400/20 rounded-full p-2`}>
+                                <BsRepeat className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
+                            </div>
+                            <span className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetNumber ? retweetNumber : 0}</span>
+                        </div>
+
+                        <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
+                            <div className={`text-xl flex justify-center items-center group-hover:text-rose-500 transition group-hover:bg-rose-500/20 rounded-full p-2`}>
+                                <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
+                                <FaHeart className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
+                            </div>
+                            <span className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionNumber}</span>
+                        </div>
                     </div>
                 </div>
 
 
-                <div className={`mt-4 grid grid-cols-1`}>
-                    <p className={`w-fit break-all`}>{props.tweet?.title}</p>
-                    <div className={`mt-3`}>
-                        {props.tweet?.image && <img
-                            className={`rounded-2xl max-h-[40rem] w-full `}
-                            src={`${baseUrl}/storage/${props.tweet?.image}`}
-                            alt="post_image"
-                        />}
 
-                        {props.tweet?.video && <video
-                            className="mt-2 max-h-[40rem] w-full"
-                            controls
-                            src={`${baseUrl}/storage/${props.tweet?.video}`}
-                        />}
-
-                    </div>
-                </div>
-
-                <div className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
-                    <div className={`flex items-center cursor-pointer group`}>
-                        <div className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
-                            <FaRegComment />
-                        </div>
-                        <span className={`group-hover:text-sky-500 transition`}>314</span>
-                    </div>
-
-                    <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
-                        <div className={`text-xl flex justify-center items-center group-hover:text-emerald-400 transition group-hover:bg-emerald-400/20 rounded-full p-2`}>
-                            <BsRepeat className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
-                        </div>
-                        <span className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetNumber ? retweetNumber : 0}</span>
-                    </div>
-
-                    <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
-                        <div className={`text-xl flex justify-center items-center group-hover:text-rose-500 transition group-hover:bg-rose-500/20 rounded-full p-2`}>
-                            <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
-                            <FaHeart className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
-                        </div>
-                        <span className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionNumber}</span>
-                    </div>
-                </div>
             </div>
+        </>
 
-
-
-        </div>
     )
 }
 

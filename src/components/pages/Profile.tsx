@@ -38,6 +38,10 @@ interface TweetInfo {
         likes: number
     };
     is_reacted: boolean;
+    retweets: {
+        retweets: 0
+    },
+    is_retweeted: boolean;
 }
 
 interface UserInfo {
@@ -71,6 +75,12 @@ function Profile() {
     })
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo>()
+
+    // Reset allProfileUserTweets state when username changes
+    useEffect(() => {
+        setAllProfileUserTweets([]);
+    }, [username]);
+    
     // Get all user tweets
     const getAllUserTweets = (pageURL: string) => {
         ApiClient().get(pageURL)
@@ -97,7 +107,7 @@ function Profile() {
     allProfileUserTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
     // All User Tweets
     const tweets: React.ReactNode = allProfileUserTweets?.slice(0, allProfileUserTweets.length - 1).map((tweetInfo) => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} is_reacted={tweetInfo.is_reacted} />
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} retweets={{retweets: tweetInfo.retweets?.retweets}} is_reacted={tweetInfo.is_reacted} is_retweeted={tweetInfo.is_retweeted} />
     ));
 
     // Handle active buttons
