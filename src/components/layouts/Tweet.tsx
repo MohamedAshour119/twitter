@@ -4,8 +4,9 @@ import {BsRepeat} from "react-icons/bs";
 import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
-import {toast, ToastContainer, Zoom} from "react-toastify";
+import {toast, Zoom} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import {Link} from "react-router-dom";
 
 
 interface TweetInfo {
@@ -104,15 +105,17 @@ function Tweet(props: TweetInfo) {
     return (
         <>
             <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
-                <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user?.avatar}`} alt=""/>
+                <Link to={`/users/${props.user?.username}`}>
+                    <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user?.avatar}`} alt=""/>
+                </Link>
 
                 <div className={`w-full`}>
                     <div className={`flex gap-x-2 justify-between`}>
                         <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
-                            <div className={`xs:flex gap-x-2`}>
+                            <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2`}>
                                 <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
                                 <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
-                            </div>
+                            </Link>
                             <span className={`font-light text-[#71767b] cursor-pointer`}>{formatDate(props.tweet?.created_at)}</span>
                         </div>
 
