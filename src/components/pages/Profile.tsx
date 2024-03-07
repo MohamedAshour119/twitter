@@ -7,7 +7,6 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import {RiArrowLeftLine} from "react-icons/ri";
 import {Link, useParams} from "react-router-dom";
 import {CgCalendarDates} from "react-icons/cg";
-import FollowUser from "../layouts/FollowUser.tsx";
 import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import ApiClient from "../services/ApiClient.tsx";
@@ -33,6 +32,8 @@ interface TweetInfo {
         updated_at: string;
         created_at: string;
         id: number;
+        is_retweet: number;
+
     };
     reactions: {
         likes: number
@@ -63,7 +64,7 @@ interface UserInfo {
 function Profile() {
 
     const {username} = useParams();
-    const {user, isModelOpen,baseUrl, suggestedUsersToFollow, location} = useContext(AppContext)
+    const {user, isModelOpen,baseUrl, location} = useContext(AppContext)
 
     const [isFollowed, setIsFollowed] = useState<boolean>()
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
@@ -343,13 +344,6 @@ function Profile() {
                         {allProfileUserTweets.length > 0 && (
                             <Tweet {...allProfileUserTweets[allProfileUserTweets.length - 1]} />
                         )}
-                    </div>
-
-                    {/* Suggested users to follow */}
-                    <div className={`border-b border-zinc-700/70`}>
-                        {suggestedUsersToFollow?.map(user => (
-                            <FollowUser key={user.id} suggestedUsersToFollow={user}/>
-                        ))}
                     </div>
 
                 </div>

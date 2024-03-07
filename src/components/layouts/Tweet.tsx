@@ -6,7 +6,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 
 interface TweetInfo {
@@ -24,6 +24,7 @@ interface TweetInfo {
         updated_at: string;
         created_at: string;
         id: number;
+        is_retweet: number;
     };
     reactions: {
         likes: number
@@ -39,6 +40,7 @@ interface TweetInfo {
 function Tweet(props: TweetInfo) {
 
     const {baseUrl, user} = useContext(AppContext);
+    const {username} = useParams();
 
     const formatDate = (originalDate:string) => {
         const date = new Date(originalDate)
@@ -104,13 +106,18 @@ function Tweet(props: TweetInfo) {
 
     return (
         <>
-            <div className={`py-3 sm:px-6 px-2 flex gap-x-2 border-b border-zinc-700/70`}>
-                <Link to={`/users/${props.user?.username}`}>
-                    <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user?.avatar}`} alt=""/>
-                </Link>
-
-                <div className={`w-full`}>
-                    <div className={`flex gap-x-2 justify-between`}>
+            <div className={`py-3 sm:px-6 px-2 gap-x-2 grid ${props.tweet.is_retweet > 0 ? 'grid-cols-1 gap-y-2' : ''} border-b border-zinc-700/70 `}>
+                {props.tweet.is_retweet > 0 &&
+                    <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70`}>
+                        <BsRepeat/>
+                        <span className={`text-sm`}>{username === user?.username && props.tweet.is_retweet ? 'You retweeted' : `${username} retweeted`}</span>
+                    </Link>
+                }
+                <div className={`flex gap-x-2`}>
+                    <Link to={`/users/${props.user?.username}`}>
+                        <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user?.avatar}`} alt=""/>
+                    </Link>
+                    <div className={`flex gap-x-2 justify-between items-start w-full`}>
                         <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
                             <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2`}>
                                 <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
@@ -123,11 +130,13 @@ function Tweet(props: TweetInfo) {
                             <HiOutlineDotsHorizontal />
                         </div>
                     </div>
+                </div>
 
+                <div className={`w-[90%] justify-self-end`}>
 
-                    <div className={`mt-4 grid grid-cols-1`}>
+                    <div className={`${props.tweet?.title?.length > 0 ? 'mt-4' : ''} grid grid-cols-1`}>
                         <p className={`w-fit break-all`}>{props.tweet?.title}</p>
-                        <div className={`mt-3`}>
+                        <div className={`${props.tweet?.title?.length > 0 ? 'mt-4' : ''}`}>
                             {props.tweet?.image && <img
                                 className={`rounded-2xl max-h-[40rem] w-full `}
                                 src={`${baseUrl}/storage/${props.tweet?.image}`}
