@@ -30,10 +30,15 @@ interface TweetInfo {
         likes: number
     };
     retweets: {
-        retweets: 0
+        retweets: number
     },
     is_reacted: boolean;
     is_retweeted: boolean;
+    comments_count: number;
+}
+
+interface RetweetData {
+    id: number;
 }
 
 
@@ -52,10 +57,14 @@ function Tweet(props: TweetInfo) {
 
     const [retweetNumber, setRetweetNumber] = useState(props.retweets?.retweets)
     const [isRetweeted, setIsRetweeted] = useState(props.is_retweeted)
+    // const [commentCount, setCommentCount] = useState<number>()
+
+    const tweetId: number = props.tweet.id;
 
     // Handle tweet reaction
     const handleReaction = () => {
-        ApiClient().post(`/reaction`, {id: props.tweet.id})
+
+        ApiClient().post(`/reaction`, {id: tweetId})
             .then((res) => {
                 setIsReacted(res.data.data.is_reacted)
                 setReactionNumber(res.data.data.reactions.likes)
@@ -68,9 +77,8 @@ function Tweet(props: TweetInfo) {
     // Handle tweet retweet
     const handleRetweet = () => {
         if(props.tweet.user_id !== user?.id && !isRetweeted) {
-            ApiClient().post(`/retweet`, {id: props.tweet.id})
+            ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
-                    console.log(res.data)
                     setIsRetweeted(res.data.data.is_retweeted)
                     setRetweetNumber(res.data.data.retweets)
                 })
@@ -78,9 +86,8 @@ function Tweet(props: TweetInfo) {
                     console.log(err)
                 })
         } else if (props.tweet.user_id !== user?.id && isRetweeted) {
-            ApiClient().post(`/removeRetweet`, {id: props.tweet.id})
+            ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
-                    console.log(res.data)
                     setIsRetweeted(res.data.data.is_retweeted)
                     setRetweetNumber(res.data.data.retweets)
                 })
@@ -101,10 +108,23 @@ function Tweet(props: TweetInfo) {
                 transition: Zoom,
             });
         }
-
     }
 
-    console.log(location?.pathname)
+    // Handle tweet's comments
+    const getTweetComments = (pageURL: string, data: RetweetData) => {
+        ApiClient().post(pageURL, data)
+            .then(res => {
+                console.log(res.data.data.comments_count)
+                // setCommentCount(res.data.data.comments_count);
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const triggerGetComments = () => {
+        getTweetComments(`/getCommentsCount`, {id: tweetId})
+    }
 
     return (
         <>
@@ -117,7 +137,7 @@ function Tweet(props: TweetInfo) {
                 }
                 <div className={`grid gap-x-2`}>
                     <div className={`flex gap-x-2`}>
-                        <Link to={`/users/${props.user?.username}`}>
+                        <Link to={`/users/${props.user?.username}`} className={`w-[10%]`}>
                             <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${props.user?.avatar}`} alt=""/>
                         </Link>
                         <div className={`flex gap-x-2 justify-between items-start w-full`}>
@@ -156,11 +176,11 @@ function Tweet(props: TweetInfo) {
                         </div>
 
                         <div className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
-                            <div className={`flex items-center cursor-pointer group`}>
+                            <div onClick={triggerGetComments} className={`flex items-center cursor-pointer group`}>
                                 <div className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
                                     <FaRegComment />
                                 </div>
-                                <span className={`group-hover:text-sky-500 transition`}>314</span>
+                                <span className={`group-hover:text-sky-500 transition`}>{props.comments_count}</span>
                             </div>
 
                             <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>

@@ -16,6 +16,7 @@ interface TweetInfo {
         updated_at: string;
         created_at: string;
         id: number;
+        is_retweet: number;
     };
     reactions: {
         likes: number
@@ -25,6 +26,7 @@ interface TweetInfo {
     },
     is_reacted: boolean
     is_retweeted: boolean
+    comments_count: number;
 }
 interface AppContextType {
     isRegisterOpen: boolean;
@@ -82,6 +84,7 @@ export const AppContext = createContext<AppContextType>({
         },
         is_reacted: false,
         is_retweeted: false,
+        comments_count: 0,
     }],
     suggestedUsersToFollow: [
         {

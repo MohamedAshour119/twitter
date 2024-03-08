@@ -38,11 +38,12 @@ interface TweetInfo {
     reactions: {
         likes: number
     };
-    is_reacted: boolean;
     retweets: {
         retweets: 0
     },
+    is_reacted: boolean;
     is_retweeted: boolean;
+    comments_count: number;
 }
 
 interface UserInfo {
@@ -112,7 +113,7 @@ function Profile() {
     allProfileUserTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
     // All User Tweets
     const tweets: React.ReactNode = allProfileUserTweets?.slice(0, allProfileUserTweets.length - 1).map((tweetInfo) => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} retweets={{retweets: tweetInfo.retweets?.retweets}} is_reacted={tweetInfo.is_reacted} is_retweeted={tweetInfo.is_retweeted} />
+        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} retweets={{retweets: tweetInfo.retweets?.retweets}} is_reacted={tweetInfo.is_reacted} is_retweeted={tweetInfo.is_retweeted} comments_count={tweetInfo.comments_count}/>
     ));
 
     // Handle active buttons
@@ -224,6 +225,31 @@ function Profile() {
 
     return (
         <div className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+
+            <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+                <div></div>
+                <header className={`flex gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
+                    <Link to={'/home'} className={`w-[7%] hover:bg-neutral-600/30 flex justify-center items-center py-2 rounded-full transition cursor-pointer`}>
+                        <RiArrowLeftLine className={`size-5`}/>
+                    </Link>
+                    <div className={`w-full`}>
+                        <h1 className={`font-semibold text-xl`}>
+                            {userInfo?.username}
+                            {!userInfo &&
+                                <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
+                            }
+                        </h1>
+                        {userInfo && <div
+                            className={`text-[#71767b] text-sm`}>{allProfileUserTweets.length <= 1 ? `${allProfileUserTweets.length} post` : `${allProfileUserTweets.length} posts`}</div>
+                        }
+                        {!userInfo &&
+                            <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
+                        }
+                    </div>
+                </header>
+                <div></div>
+            </div>
+
             <div className={`${isModelOpen ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
 
                 {/* Scroll to top button */}
@@ -237,25 +263,7 @@ function Profile() {
                 </div>
                 {/* Middle section */}
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70 animate-slide-down`}>
-                    <header className={`flex gap-x-8 py-1 px-4 items-center`}>
-                        <Link to={'/home'} className={`w-[7%] hover:bg-neutral-600/30 flex justify-center items-center py-2 rounded-full transition cursor-pointer`}>
-                            <RiArrowLeftLine className={`size-5`}/>
-                        </Link>
-                        <div className={`w-full`}>
-                            <h1 className={`font-semibold text-xl`}>
-                                {userInfo?.username}
-                                {!userInfo &&
-                                    <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
-                                }
-                            </h1>
-                            {userInfo && <div
-                                className={`text-[#71767b] text-sm`}>{allProfileUserTweets.length <= 1 ? `${allProfileUserTweets.length} post` : `${allProfileUserTweets.length} posts`}</div>
-                            }
-                            {!userInfo &&
-                                <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
-                            }
-                        </div>
-                    </header>
+                    <div className={`h-14 bg-black z-10`}></div>
                     {/* Cover image */}
                     <div className={`h-[14rem] w-full bg-[#333639]`}></div>
                     {/* Personal Info */}
