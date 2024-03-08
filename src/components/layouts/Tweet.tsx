@@ -1,7 +1,7 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
@@ -58,6 +58,7 @@ function Tweet(props: TweetInfo) {
     const [retweetNumber, setRetweetNumber] = useState(props.retweets?.retweets)
     const [isRetweeted, setIsRetweeted] = useState(props.is_retweeted)
     // const [commentCount, setCommentCount] = useState<number>()
+    const [isCommentOpen, setIsCommentOpen] = useState(false);
 
     const tweetId: number = props.tweet.id;
 
@@ -122,8 +123,13 @@ function Tweet(props: TweetInfo) {
             })
     }
 
-    const triggerGetComments = () => {
+    useEffect( () => {
         getTweetComments(`/getCommentsCount`, {id: tweetId})
+    }, [])
+
+    // Handle click open comments
+    const handleOpenComments = () => {
+        setIsCommentOpen(!isCommentOpen)
     }
 
     return (
@@ -136,7 +142,7 @@ function Tweet(props: TweetInfo) {
                             className={`text-sm`}>{(username === user?.username && isRetweeted) ? 'You retweeted' : `${username} retweeted`}</span>
                     </Link>
                 }
-                <div className={``}>
+                <div className={`border-b border-zinc-700/70 `}>
                     <div className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
                         <div className={`flex gap-x-2`}>
                             <Link to={`/users/${props.user?.username}`} className={`w-[10%]`}>
@@ -184,7 +190,7 @@ function Tweet(props: TweetInfo) {
 
                             <div
                                 className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
-                                <div onClick={triggerGetComments} className={`flex items-center cursor-pointer group`}>
+                                <div onClick={handleOpenComments} className={`flex items-center cursor-pointer group`}>
                                     <div
                                         className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
                                         <FaRegComment/>
@@ -219,28 +225,31 @@ function Tweet(props: TweetInfo) {
 
 
                     {/*  Comments  */}
-                    <div className={`w-full border-t border-b border-zinc-700/70 sm:px-6 px-2 py-3`}>
-                        <div className={`flex items-center w-full`}>
-                            <div className={`flex gap-x-3 w-full`}>
-                                <Link to={`/users/${user?.username}`}>
-                                    <img
-                                        className={`size-11 object-cover rounded-full`}
-                                        src={`${baseUrl}/storage/${user?.avatar}`}
-                                        alt=""
-                                    />
-                                </Link>
+                    { isCommentOpen &&
+                        <div className={`w-full border-t border-b border-zinc-700/70 sm:px-6 px-2 py-3`}>
+                            <div className={`flex items-center w-full`}>
+                                <div className={`flex gap-x-3 w-full`}>
+                                    <Link to={`/users/${user?.username}`}>
+                                        <img
+                                            className={`size-11 object-cover rounded-full`}
+                                            src={`${baseUrl}/storage/${user?.avatar}`}
+                                            alt=""
+                                        />
+                                    </Link>
 
-                                <textarea
-                                    type="text"
-                                    placeholder={`Have something to say?`}
-                                    className={`w-[85%] px-3 bg-[#2a2d32b3] rounded-xl focus:outline-0 break-words overflow-x-hidden`}
-                                />
-                            </div>
-                            <div>
-                                <button className={`bg-[#16181a] px-4 py-2 rounded-xl hover:bg-[#202327] transition`}>Comment</button>
+                                    <textarea
+                                        placeholder={`Have something to say?`}
+                                        className={`w-[85%] px-3 bg-[#2a2d32b3] rounded-xl focus:outline-0 break-words overflow-x-hidden`}
+                                    />
+                                </div>
+                                <div>
+                                    <button
+                                        className={`bg-[#16181a] px-4 py-2 rounded-xl hover:bg-[#202327] transition`}>Comment
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    }
 
                 </div>
 
