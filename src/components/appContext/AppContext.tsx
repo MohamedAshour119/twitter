@@ -5,29 +5,26 @@ import ApiClient from "../services/ApiClient.tsx";
 interface TweetInfo {
     user: {
         id: number;
-        username: string
-        avatar: string
-    },
-    tweet: {
-        title: string;
-        user_id: number;
-        image: string;
-        video: string;
-        updated_at: string;
-        created_at: string;
-        id: number;
-        is_retweet: number;
-    };
-    reactions: {
-        likes: number
-    };
-    retweets: {
-        retweets: number
-    },
-    is_reacted: boolean
-    is_retweeted: boolean
+        username: string;
+        avatar: string,
+    }
+
+    title: string;
+    user_id: number;
+    image: string | null;
+    video: string | null;
+    updated_at: string;
+    created_at: string;
+    id: number;
+    retweet_to: string | null;
+
+    reactions_count: number;
+    retweets_count: number,
+    is_reacted: boolean;
+    is_retweeted: boolean;
     comments_count: number;
 }
+
 interface AppContextType {
     isRegisterOpen: boolean;
     location: Pathname | null;
@@ -67,21 +64,17 @@ export const AppContext = createContext<AppContextType>({
             username: '',
             avatar: ''
         },
-        tweet: {
-            title: '',
-            user_id: 0,
-            image: '',
-            video: '',
-            updated_at: '',
-            created_at: '',
-            id: 0
-        },
-        reactions: {
-            likes: 0
-        },
-        retweets: {
-            retweets: 0
-        },
+
+        title: '',
+        user_id: 0,
+        image: '',
+        video: '',
+        updated_at: '',
+        created_at: '',
+        id: 0,
+        retweet_to: '',
+        reactions_count: 0,
+        retweets_count: 0,
         is_reacted: false,
         is_retweeted: false,
         comments_count: 0,
@@ -170,7 +163,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     }, [location.pathname]);
 
     // Sort tweets based on created_at in descending order
-    allUserTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime());
+    allUserTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
 
     // Handle model open state

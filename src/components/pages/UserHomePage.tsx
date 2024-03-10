@@ -31,22 +31,17 @@ interface TweetInfo {
         avatar: string,
     }
 
-    tweet: {
-        title: string;
-        user_id: number;
-        image: string;
-        video: string;
-        updated_at: string;
-        created_at: string;
-        id: number;
-        is_retweet: number;
-    };
-    reactions: {
-        likes: number
-    };
-    retweets: {
-        retweets: number
-    },
+    title: string;
+    user_id: number;
+    image: string | null;
+    video: string | null;
+    updated_at: string;
+    created_at: string;
+    id: number;
+    retweet_to: string | null;
+
+    reactions_count: number;
+    retweets_count: number,
     is_reacted: boolean;
     is_retweeted: boolean;
     comments_count: number;
@@ -72,10 +67,10 @@ function UserHomePage() {
     const getHomeTweets = (pageURL: string) => {
         apiClient().get(pageURL)
             .then(res => {
-                setPageURL(res.data.data.pagination.next_page_url)
+                setPageURL(res.data.pagination?.next_page_url)
                 setRandomTweets(prevRandomTweets => ([
                     ...prevRandomTweets,
-                    ...res.data.data.pagination.data
+                    ...res.data.data.tweets
                 ]))
             })
             .catch(err => {
@@ -85,7 +80,8 @@ function UserHomePage() {
 
     useEffect(() => {
         getHomeTweets('home-tweets')
-    }, [])
+    }, [pageURL])
+
 
 
     // Detect when scroll to last element
@@ -113,17 +109,24 @@ function UserHomePage() {
     }, [pageURL])
 
     if (randomTweets.length < 6) {
-        randomTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
+        randomTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     }
     // Display random tweets
     const displayRandomTweets: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
         <Tweet
-            key={tweetInfo.tweet?.id}
+            key={tweetInfo.id}
             user={tweetInfo.user}
-            tweet={tweetInfo.tweet}
-            reactions={{likes: tweetInfo.reactions.likes}}
+            title={tweetInfo.title}
+            image={tweetInfo.image}
+            video={tweetInfo.video}
+            user_id={tweetInfo.user_id}
+            retweet_to={tweetInfo.retweet_to}
+            id={tweetInfo.id}
+            created_at={tweetInfo.created_at}
+            updated_at={tweetInfo.updated_at}
+            reactions_count={tweetInfo.reactions_count}
             is_reacted={tweetInfo.is_reacted}
-            retweets={{retweets: tweetInfo.retweets?.retweets}}
+            retweets_count={tweetInfo.retweets_count}
             is_retweeted={tweetInfo.is_retweeted}
             comments_count={tweetInfo.comments_count}
         />
@@ -146,23 +149,22 @@ function UserHomePage() {
 
 
     // Handle input file change
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>, fileType: string, setTweet: (value: Tweet) => void) => {
         const file = e.target.files?.[0];
         if (file) {
             if (file.type.startsWith('image') && !tweet.video) {
-                setTweet(prevTweet => ({
-                    ...prevTweet,
+                setTweet({
+                    ...tweet,
                     image: file,
                     video: null
-                }))
-
+                });
             } else if (file.type.startsWith('video') && !tweet.image) {
-                setTweet(prevTweet => ({
-                    ...prevTweet,
+                setTweet({
+                    ...tweet,
                     image: null,
                     video: file
-                }))
-                setVideoURL(URL.createObjectURL(file))
+                });
+                setVideoURL(URL.createObjectURL(file));
             }
         }
     };
@@ -223,18 +225,23 @@ function UserHomePage() {
 
     const tweets: React.ReactNode = allUserTweets?.map(tweetInfo => (
         <Tweet
-            key={tweetInfo.tweet?.id}
+            key={tweetInfo.id}
             user={tweetInfo.user}
-            tweet={tweetInfo.tweet}
-            reactions={{likes: tweetInfo.reactions.likes}}
-            retweets={{retweets: tweetInfo.retweets?.retweets}}
+            title={tweetInfo.title}
+            image={tweetInfo.image}
+            video={tweetInfo.video}
+            user_id={tweetInfo.user_id}
+            retweet_to={tweetInfo.retweet_to}
+            id={tweetInfo.id}
+            created_at={tweetInfo.created_at}
+            updated_at={tweetInfo.updated_at}
+            reactions_count={tweetInfo.reactions_count}
             is_reacted={tweetInfo.is_reacted}
+            retweets_count={tweetInfo.retweets_count}
             is_retweeted={tweetInfo.is_retweeted}
             comments_count={tweetInfo.comments_count}
         />
     ));
-
-    console.log(allUserTweets[0]?.tweet?.created_at)
 
     // Dynamic change textarea height based on the text long
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
