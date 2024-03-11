@@ -18,33 +18,12 @@ import apiClient from "../services/ApiClient.tsx";
 
 // import {CgSpinnerTwoAlt} from "react-icons/cg";
 
+import {TweetInfo} from "../../Interfaces.tsx";
+
 interface Tweet {
     title: string
     image: string | File | null | undefined
     video: string | File | null | undefined
-}
-
-interface TweetInfo {
-    user: {
-        id: number;
-        username: string;
-        avatar: string,
-    }
-
-    title: string;
-    user_id: number;
-    image: string | null;
-    video: string | null;
-    updated_at: string;
-    created_at: string;
-    id: number;
-    retweet_to: string | null;
-
-    reactions_count: number;
-    retweets_count: number,
-    is_reacted: boolean;
-    is_retweeted: boolean;
-    comments_count: number;
 }
 
 function UserHomePage() {
@@ -67,7 +46,7 @@ function UserHomePage() {
     const getHomeTweets = (pageURL: string) => {
         apiClient().get(pageURL)
             .then(res => {
-                setPageURL(res.data.pagination?.next_page_url)
+                setPageURL(res.data.data.pagination.next_page_url)
                 setRandomTweets(prevRandomTweets => ([
                     ...prevRandomTweets,
                     ...res.data.data.tweets
@@ -80,7 +59,7 @@ function UserHomePage() {
 
     useEffect(() => {
         getHomeTweets('home-tweets')
-    }, [pageURL])
+    }, [])
 
 
 

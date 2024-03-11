@@ -10,41 +10,8 @@ import {CgCalendarDates} from "react-icons/cg";
 import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import ApiClient from "../services/ApiClient.tsx";
+import {TweetInfo} from "../../Interfaces.tsx";
 
-
-interface TweetInfo {
-    user: {
-        id: number;
-        username: string;
-        email: string,
-        gender: string,
-        avatar: string,
-        birth_date: string,
-        ban_status: number,
-        created_at: string,
-        updated_at: string,
-    };
-    tweet: {
-        title: string;
-        user_id: number;
-        image: string;
-        video: string;
-        updated_at: string;
-        created_at: string;
-        id: number;
-        is_retweet: number;
-
-    };
-    reactions: {
-        likes: number
-    };
-    retweets: {
-        retweets: 0
-    },
-    is_reacted: boolean;
-    is_retweeted: boolean;
-    comments_count: number;
-}
 
 interface UserInfo {
     id: number;
@@ -110,10 +77,26 @@ function Profile() {
     const formatedDate = date.toLocaleDateString('en-US', options);
 
     // Sort tweets based on created_at
-    allProfileUserTweets.sort((a, b) => new Date(b.tweet.created_at).getTime() - new Date(a.tweet.created_at).getTime())
+    allProfileUserTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     // All User Tweets
     const tweets: React.ReactNode = allProfileUserTweets?.slice(0, allProfileUserTweets.length - 1).map((tweetInfo) => (
-        <Tweet key={tweetInfo.tweet?.id} user={tweetInfo.user} tweet={tweetInfo.tweet} reactions={{likes: tweetInfo.reactions.likes}} retweets={{retweets: tweetInfo.retweets?.retweets}} is_reacted={tweetInfo.is_reacted} is_retweeted={tweetInfo.is_retweeted} comments_count={tweetInfo.comments_count}/>
+        <Tweet
+            key={tweetInfo.id}
+            user={tweetInfo.user}
+            title={tweetInfo.title}
+            image={tweetInfo.image}
+            video={tweetInfo.video}
+            user_id={tweetInfo.user_id}
+            retweet_to={tweetInfo.retweet_to}
+            id={tweetInfo.id}
+            created_at={tweetInfo.created_at}
+            updated_at={tweetInfo.updated_at}
+            reactions_count={tweetInfo.reactions_count}
+            is_reacted={tweetInfo.is_reacted}
+            retweets_count={tweetInfo.retweets_count}
+            is_retweeted={tweetInfo.is_retweeted}
+            comments_count={tweetInfo.comments_count}
+        />
     ));
 
     // Handle active buttons
