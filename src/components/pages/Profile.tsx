@@ -10,23 +10,7 @@ import {CgCalendarDates} from "react-icons/cg";
 import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import ApiClient from "../services/ApiClient.tsx";
-import {TweetInfo} from "../../Interfaces.tsx";
-
-
-interface UserInfo {
-    id: number;
-    username: string;
-    email: string;
-    gender: string;
-    avatar: string;
-    birth_date: string;
-    ban_status: number;
-    created_at: string;
-    updated_at: string;
-    following_number: number;
-    followers_number: number;
-    is_followed: boolean;
-}
+import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
 
 
 function Profile() {
@@ -54,11 +38,12 @@ function Profile() {
     const getAllUserTweets = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
-                const userTweets = res.data.data.pagination.data.user_tweets;
-                const userRetweets = res.data.data.pagination.data.user_retweets;
-                const mergeTweetsAndRetweets = [...userTweets, ...userRetweets];
+                console.log(res.data.data)
+                const tweets = res.data.data.pagination.data
+                if(tweets){
 
-                setAllProfileUserTweets(prevTweets => ([...prevTweets, ...mergeTweetsAndRetweets]))
+                setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
+                }
                 setUserInfo(res.data.data.user)
                 setPageURL(res.data.data.pagination.next_page_url)
             })
@@ -71,15 +56,8 @@ function Profile() {
         getAllUserTweets(`users/${username}`)
     }, [username] )
 
-    // Covert created_at to this format: October 2023
-    const date = new Date(`${userInfo?.created_at}`);
-    const options: Intl.DateTimeFormatOptions = {month: 'long', year: 'numeric'}
-    const formatedDate = date.toLocaleDateString('en-US', options);
-
-    // Sort tweets based on created_at
-    allProfileUserTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     // All User Tweets
-    const tweets: React.ReactNode = allProfileUserTweets?.slice(0, allProfileUserTweets.length - 1).map((tweetInfo) => (
+    const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
         <Tweet
             key={tweetInfo.id}
             user={tweetInfo.user}
@@ -94,7 +72,6 @@ function Profile() {
             reactions_count={tweetInfo.reactions_count}
             is_reacted={tweetInfo.is_reacted}
             retweets_count={tweetInfo.retweets_count}
-            is_retweeted={tweetInfo.is_retweeted}
             comments_count={tweetInfo.comments_count}
         />
     ));
@@ -178,7 +155,9 @@ function Profile() {
     };
 
     useEffect( () => {
-        setIsFollowed(userInfo?.is_followed)
+        if (userInfo?.is_followed != null) {
+            setIsFollowed(userInfo.is_followed)
+        }
     }, [userInfo] )
 
     // Detect when scroll to last element
@@ -223,7 +202,7 @@ function Profile() {
                             }
                         </h1>
                         {userInfo && <div
-                            className={`text-[#71767b] text-sm`}>{allProfileUserTweets.length <= 1 ? `${allProfileUserTweets.length} post` : `${allProfileUserTweets.length} posts`}</div>
+                            className={`text-[#71767b] text-sm`}>{userInfo.tweets_count && userInfo.tweets_count <= 1 ? `${userInfo.tweets_count} post` : `${userInfo.tweets_count} posts`}</div>
                         }
                         {!userInfo &&
                             <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
@@ -299,7 +278,7 @@ function Profile() {
                                 {userInfo && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
                                     <CgCalendarDates/>
                                     <span>Joined</span>
-                                    <div>{formatedDate}</div>
+                                    <div>{userInfo.created_at}</div>
                                 </div>}
                                 {!userInfo &&
                                     <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-52 mt-6"></div>
@@ -331,9 +310,9 @@ function Profile() {
 
                     {/* All user tweets */}
                     {tweets}
-                    <div ref={lastTweetRef}>
+                    <div className={`invisible opacity-0 pointer-events-none`} ref={lastTweetRef}>
                         {allProfileUserTweets.length > 0 && (
-                            <Tweet {...allProfileUserTweets[allProfileUserTweets.length - 1]} />
+                            <Tweet {...allProfileUserTweets[allProfileUserTweets.length]} />
                         )}
                     </div>
 

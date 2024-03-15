@@ -12,11 +12,27 @@ export interface TweetInfo {
     updated_at: string;
     created_at: string;
     id: number;
-    retweet_to: string | null;
+    retweet_to: number | null;
 
     reactions_count: number;
     retweets_count: number,
     is_reacted: boolean;
-    is_retweeted: boolean;
+    // is_retweeted: boolean;
     comments_count: number;
+}
+
+export interface UserInfo {
+    id: number | null;
+    username: string;
+    email: string;
+    gender: string;
+    avatar: string;
+    birth_date: string;
+    ban_status: number | null;
+    created_at: string;
+    updated_at: string;
+    following_number: number | null;
+    followers_number: number | null;
+    is_followed: boolean | null;
+    tweets_count: number | null;
 }

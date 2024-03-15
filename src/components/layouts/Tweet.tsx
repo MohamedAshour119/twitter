@@ -24,7 +24,7 @@ function Tweet(props: TweetInfo) {
     const [reactionCount, setReactionNumber] = useState(props.reactions_count)
 
     const [retweetCount, setRetweetNumber] = useState(props.retweets_count)
-    const [isRetweeted, setIsRetweeted] = useState(props.is_retweeted)
+    const [isRetweeted, setIsRetweeted] = useState(props.retweet_to)
 
     const [commentCount, setCommentCount] = useState(props.comments_count)
 
@@ -50,13 +50,14 @@ function Tweet(props: TweetInfo) {
         if (props.user_id !== user?.id && !isRetweeted) {
             ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
+                    console.log(res.data.data)
                     setIsRetweeted(res.data.data.is_retweeted)
                     setRetweetNumber(res.data.data.retweets)
                 })
                 .catch((err) => {
                     console.log(err)
                 })
-        } else if (props.user_id !== user?.id && isRetweeted) {
+        } else if (props.user_id === user?.id && isRetweeted) {
             ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -103,9 +104,9 @@ function Tweet(props: TweetInfo) {
 
     return (
         <>
-            <div className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1 gap-y-2' : ''} border-b-1 border-zinc-700/70 `}>
+            <div className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 `}>
                 {(isRetweeted && location?.pathname === `/users/${username}`) &&
-                    <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70`}>
+                    <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
                         <span
                             className={`text-sm`}>{(username === user?.username && isRetweeted) ? 'You retweeted' : `${username} retweeted`}</span>

@@ -1,20 +1,20 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
-import {TweetInfo} from "../../Interfaces.tsx";
+import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
 
 interface AppContextType {
     isRegisterOpen: boolean;
     location: Pathname | null;
-    user: User | null;
-    setUser: Dispatch<SetStateAction<User | null>>;
+    user: UserInfo | null;
+    setUser: Dispatch<SetStateAction<UserInfo | null>>;
     baseUrl: string;
     handleModelOpen: () => void;
     isModelOpen: boolean;
     setIsModelOpen: Dispatch<SetStateAction<boolean>>;
     allUserTweets: TweetInfo[]
     setAllUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
-    suggestedUsersToFollow: SuggestedUsersToFollow[]
+    suggestedUsersToFollow: UserInfo[]
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -28,7 +28,12 @@ export const AppContext = createContext<AppContextType>({
         avatar: '',
         birth_date: '',
         ban_status: null,
-        created_at: ''
+        created_at: '',
+        updated_at: '',
+        following_number: null,
+        followers_number: null,
+        is_followed: null,
+        tweets_count: null,
     },
     setUser: () => {},
     handleModelOpen: () => null,
@@ -50,25 +55,27 @@ export const AppContext = createContext<AppContextType>({
         updated_at: '',
         created_at: '',
         id: 0,
-        retweet_to: '',
+        retweet_to: null,
         reactions_count: 0,
         retweets_count: 0,
         is_reacted: false,
-        is_retweeted: false,
         comments_count: 0,
     }],
     suggestedUsersToFollow: [
         {
-            avatar: '',
-            ban_status: null,
-            birth_date: '',
-            email: '',
-            gender: '',
             id: null,
             username: '',
+            email: '',
+            gender: '',
+            avatar: '',
+            birth_date: '',
+            ban_status: null,
             created_at: '',
             updated_at: '',
-            is_followed: false
+            following_number: null,
+            followers_number: null,
+            is_followed: null,
+            tweets_count: null,
         }
     ]
 
@@ -86,47 +93,29 @@ interface Pathname {
     state: null
 }
 
-interface User {
-    id: number | null
-    username: string
-    email: string
-    gender: string
-    avatar: string
-    birth_date: string
-    ban_status: number | null
-    created_at: string
-}
-
-interface SuggestedUsersToFollow {
-    avatar: string | null
-    ban_status: number | null
-    birth_date: string
-    email: string
-    gender: string
-    id: number | null
-    username: string
-    created_at: string
-    updated_at: string
-    is_followed: boolean
-}
 
 const AppProvider = ({children}: AppProviderProps) => {
 
     const [isModelOpen, setIsModelOpen] = useState(false)
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
     const location: Pathname = useLocation();
-    const [user, setUser] = useState<User | null>({
+    const [user, setUser] = useState<UserInfo | null>({
         id: null,
         username: '',
         email: '',
         gender: '',
         avatar: '',
         birth_date: '',
-        created_at: '',
         ban_status: null,
+        created_at: '',
+        updated_at: '',
+        following_number: null,
+        followers_number: null,
+        is_followed: null,
+        tweets_count: null,
     })
     const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([]);
-    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<SuggestedUsersToFollow[]>([])
+    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
 
     const baseUrl = 'http://api.twitter.test'
 

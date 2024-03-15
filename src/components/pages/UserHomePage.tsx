@@ -15,9 +15,6 @@ import EmojiPicker from 'emoji-picker-react';
 import {EmojiData} from 'emoji-picker-react'
 import TweetModel from "../layouts/TweetModel.tsx";
 import apiClient from "../services/ApiClient.tsx";
-
-// import {CgSpinnerTwoAlt} from "react-icons/cg";
-
 import {TweetInfo} from "../../Interfaces.tsx";
 
 interface Tweet {
