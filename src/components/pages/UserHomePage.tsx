@@ -103,8 +103,9 @@ function UserHomePage() {
             reactions_count={tweetInfo.reactions_count}
             is_reacted={tweetInfo.is_reacted}
             retweets_count={tweetInfo.retweets_count}
-            is_retweeted={tweetInfo.is_retweeted}
             comments_count={tweetInfo.comments_count}
+            main_tweet={tweetInfo.main_tweet}
+            is_retweeted={tweetInfo.is_retweeted}
         />
     ));
 
@@ -214,8 +215,9 @@ function UserHomePage() {
             reactions_count={tweetInfo.reactions_count}
             is_reacted={tweetInfo.is_reacted}
             retweets_count={tweetInfo.retweets_count}
-            is_retweeted={tweetInfo.is_retweeted}
             comments_count={tweetInfo.comments_count}
+            main_tweet={tweetInfo.main_tweet}
+            is_retweeted={tweetInfo.is_retweeted}
         />
     ));
 

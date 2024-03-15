@@ -20,13 +20,13 @@ function Tweet(props: TweetInfo) {
     const {baseUrl, user, location} = useContext(AppContext);
     const {username} = useParams();
 
-    const [isReacted, setIsReacted] = useState(props.is_reacted)
-    const [reactionCount, setReactionNumber] = useState(props.reactions_count)
+    const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
+    const [reactionCount, setReactionNumber] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
 
-    const [retweetCount, setRetweetNumber] = useState(props.retweets_count)
-    const [isRetweeted, setIsRetweeted] = useState(props.retweet_to)
+    const [retweetCount, setRetweetNumber] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
+    const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
 
-    const [commentCount, setCommentCount] = useState(props.comments_count)
+    const [commentCount, setCommentCount] = useState(!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)
 
     const [isCommentOpen, setIsCommentOpen] = useState(false);
 
@@ -50,14 +50,13 @@ function Tweet(props: TweetInfo) {
         if (props.user_id !== user?.id && !isRetweeted) {
             ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
-                    console.log(res.data.data)
                     setIsRetweeted(res.data.data.is_retweeted)
                     setRetweetNumber(res.data.data.retweets)
                 })
                 .catch((err) => {
                     console.log(err)
                 })
-        } else if (props.user_id === user?.id && isRetweeted) {
+        } else if (props.user_id === props.user.id && isRetweeted) {
             ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -105,11 +104,11 @@ function Tweet(props: TweetInfo) {
     return (
         <>
             <div className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 `}>
-                {(isRetweeted && location?.pathname === `/users/${username}`) &&
+                {(isRetweeted && props.user_id !== props.user.id) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
                         <span
-                            className={`text-sm`}>{(username === user?.username && isRetweeted) ? 'You retweeted' : `${username} retweeted`}</span>
+                            className={`text-sm`}>{(username === user?.username) ? 'You retweeted' : `${username} retweeted`}</span>
                     </Link>
                 }
                 <div className={`border-b border-zinc-700/70 `}>
@@ -129,7 +128,7 @@ function Tweet(props: TweetInfo) {
                                         <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
                                     </Link>
                                     <span
-                                        className={`font-light text-[#71767b] cursor-pointer`}>{props.created_at}</span>
+                                        className={`font-light text-[#71767b] cursor-pointer`}>{!props.main_tweet ? props.created_at : props.main_tweet.created_at}</span>
                                 </div>
 
                                 <div
@@ -141,18 +140,18 @@ function Tweet(props: TweetInfo) {
 
                         <div className={`w-[90%] justify-self-end`}>
                             <div className={`grid grid-cols-1`}>
-                                <p className={`w-fit break-all`}>{props.title}</p>
+                                <p className={`w-fit break-all`}>{!props.main_tweet ? props.title : props.main_tweet.title}</p>
                                 <div className={`${props.title?.length > 0 ? 'mt-4' : ''}`}>
-                                    {props.image && <img
+                                    {(props.image || props.main_tweet?.image) && <img
                                         className={`rounded-2xl max-h-[40rem] w-full `}
-                                        src={`${baseUrl}/storage/${props.image}`}
+                                        src={`${baseUrl}/storage/${!props.main_tweet ? props.image : props.main_tweet?.image}`}
                                         alt="post_image"
                                     />}
 
-                                    {props.video && <video
+                                    {(props.video || props.main_tweet?.video) && <video
                                         className="mt-2 max-h-[40rem] w-full"
                                         controls
-                                        src={`${baseUrl}/storage/${props.video}`}
+                                        src={`${baseUrl}/storage/${!props.main_tweet ? props.video : props.main_tweet?.video}`}
                                     />}
 
                                 </div>

@@ -32,7 +32,7 @@ function Profile() {
     // Reset allProfileUserTweets state when username changes
     useEffect(() => {
         setAllProfileUserTweets([]);
-    }, [username]);
+    }, [location?.pathname, username]);
     
     // Get all user tweets
     const getAllUserTweets = (pageURL: string) => {
@@ -41,8 +41,7 @@ function Profile() {
                 console.log(res.data.data)
                 const tweets = res.data.data.pagination.data
                 if(tweets){
-
-                setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
+                    setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
                 }
                 setUserInfo(res.data.data.user)
                 setPageURL(res.data.data.pagination.next_page_url)
@@ -73,6 +72,8 @@ function Profile() {
             is_reacted={tweetInfo.is_reacted}
             retweets_count={tweetInfo.retweets_count}
             comments_count={tweetInfo.comments_count}
+            main_tweet={tweetInfo.main_tweet}
+            is_retweeted={tweetInfo.is_retweeted}
         />
     ));
 

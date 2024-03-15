@@ -59,7 +59,24 @@ export const AppContext = createContext<AppContextType>({
         reactions_count: 0,
         retweets_count: 0,
         is_reacted: false,
+        is_retweeted: false,
         comments_count: 0,
+
+        main_tweet: {
+            title: '',
+            user_id: 0,
+            image: '',
+            video: '',
+            updated_at: '',
+            created_at: '',
+            id: 0,
+            retweet_to: null,
+            reactions_count: 0,
+            retweets_count: 0,
+            comments_count: 0,
+            is_reacted: false,
+            is_retweeted: false,
+        }
     }],
     suggestedUsersToFollow: [
         {

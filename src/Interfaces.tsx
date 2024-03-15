@@ -1,10 +1,4 @@
-export interface TweetInfo {
-    user: {
-        id: number;
-        username: string;
-        avatar: string,
-    }
-
+interface Tweet {
     title: string;
     user_id: number;
     image: string | null;
@@ -13,12 +7,21 @@ export interface TweetInfo {
     created_at: string;
     id: number;
     retweet_to: number | null;
-
     reactions_count: number;
     retweets_count: number,
-    is_reacted: boolean;
-    // is_retweeted: boolean;
     comments_count: number;
+    is_reacted: boolean;
+    is_retweeted: boolean;
+}
+
+export interface TweetInfo extends Tweet{
+    user: {
+        id: number;
+        username: string;
+        avatar: string,
+    }
+
+    main_tweet: Tweet
 }
 
 export interface UserInfo {
