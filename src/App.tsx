@@ -11,6 +11,7 @@ import AuthRoute from "./components/auth/AuthRoute.tsx";
 import {useLocation} from "react-router";
 import UserHomePage from "./components/pages/UserHomePage.tsx";
 import Profile from "./components/pages/Profile.tsx";
+import ShowTweet from "./components/pages/ShowTweet.tsx";
 
 
 function App() {
@@ -72,7 +73,8 @@ function App() {
 
             <Route element={<AuthRoute />}>
                 <Route path={`/home`} element={<UserHomePage />}/>
-                <Route path={`users/:username`} element={<Profile/>}/>
+                <Route path={`/users/:username`} element={<Profile/>}/>
+                <Route path={`/tweets/:id`} element={<ShowTweet/>}/>
             </Route>
 
             <Route path={`/`} element={<Home />}/>

@@ -12,8 +12,8 @@ interface AppContextType {
     handleModelOpen: () => void;
     isModelOpen: boolean;
     setIsModelOpen: Dispatch<SetStateAction<boolean>>;
-    allUserTweets: TweetInfo[]
-    setAllUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
+    randomTweets: TweetInfo[]
+    setRandomTweets: Dispatch<SetStateAction<TweetInfo[]>>
     suggestedUsersToFollow: UserInfo[]
 }
 
@@ -40,8 +40,8 @@ export const AppContext = createContext<AppContextType>({
     isModelOpen: false,
     setIsModelOpen: () => null,
     baseUrl: '',
-    setAllUserTweets: () => null,
-    allUserTweets: [{
+    setRandomTweets: () => null,
+    randomTweets: [{
         user: {
             id: 0,
             username: '',
@@ -131,7 +131,7 @@ const AppProvider = ({children}: AppProviderProps) => {
         is_followed: null,
         tweets_count: null,
     })
-    const [allUserTweets, setAllUserTweets] = useState<TweetInfo[]>([]);
+    const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
 
     const baseUrl = 'http://api.twitter.test'
@@ -146,8 +146,10 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     }, [location.pathname]);
 
+
+
     // Sort tweets based on created_at in descending order
-    allUserTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    randomTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
 
     // Handle model open state
@@ -167,7 +169,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     }, [])
 
     return (
-        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl, handleModelOpen, isModelOpen, setIsModelOpen, allUserTweets, setAllUserTweets, suggestedUsersToFollow}}>
+        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl, handleModelOpen, isModelOpen, setIsModelOpen, randomTweets, setRandomTweets, suggestedUsersToFollow}}>
             {children}
         </AppContext.Provider>
     )

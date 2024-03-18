@@ -38,7 +38,6 @@ function Profile() {
     const getAllUserTweets = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
-                console.log(res.data.data)
                 const tweets = res.data.data.pagination.data
                 if(tweets){
                     setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))

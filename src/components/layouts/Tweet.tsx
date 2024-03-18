@@ -1,7 +1,7 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
-import {useContext, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
@@ -9,16 +9,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import {Link, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 
-
 interface RetweetData {
     id: number;
 }
 
-
 function Tweet(props: TweetInfo) {
 
     const {baseUrl, user, location} = useContext(AppContext);
-    const {username} = useParams();
+    const {username, id} = useParams();
 
     const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
     const [reactionCount, setReactionNumber] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
@@ -30,7 +28,7 @@ function Tweet(props: TweetInfo) {
 
     const [isCommentOpen, setIsCommentOpen] = useState(false);
 
-    const tweetId: number = props.id;
+    const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
 
     // Handle tweet reaction
     const handleReaction = () => {
@@ -47,7 +45,7 @@ function Tweet(props: TweetInfo) {
 
     // Handle tweet retweet
     const handleRetweet = () => {
-        if (props.user_id !== user?.id && !isRetweeted) {
+        if (!isRetweeted) {
             ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -56,7 +54,7 @@ function Tweet(props: TweetInfo) {
                 .catch((err) => {
                     console.log(err)
                 })
-        } else if (props.user_id === props.user.id && isRetweeted) {
+        } else if (isRetweeted) {
             ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -83,7 +81,7 @@ function Tweet(props: TweetInfo) {
 
     // Handle tweet's comments
     const getTweetComments = (pageURL: string, data: RetweetData) => {
-        ApiClient().post(pageURL, data)
+        ApiClient().get(`${pageURL}/${data}`)
             .then(res => {
                 console.log(res.data.data.comments_count)
                 // setCommentCount(res.data.data.comments_count);
@@ -101,10 +99,13 @@ function Tweet(props: TweetInfo) {
 
     }
 
+
     return (
         <>
-            <div className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 `}>
-                {(isRetweeted && props.user_id !== props.user.id) &&
+            <Link
+                to={`/tweets/${id}`}
+                className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 `}>
+                {(isRetweeted && location?.pathname === `/users/${username}` || props.main_tweet ) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
                         <span
@@ -223,7 +224,7 @@ function Tweet(props: TweetInfo) {
                 </div>
 
 
-            </div>
+            </Link>
         </>
 
     )

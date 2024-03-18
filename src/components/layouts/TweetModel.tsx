@@ -14,7 +14,7 @@ interface Tweet{
 
 function TweetModel() {
 
-    const {user ,baseUrl, isModelOpen, setIsModelOpen, setAllUserTweets, handleModelOpen} = useContext(AppContext);
+    const {user ,baseUrl, isModelOpen, setIsModelOpen, setRandomTweets, handleModelOpen} = useContext(AppContext);
 
     const [tweetInModel, setTweetInModel] = useState<Tweet>({
         title: '',
@@ -99,8 +99,8 @@ function TweetModel() {
                 setIsModelOpen(false)
 
                 // Concatenate the new tweet with existing tweets and sort them based on created_at
-                setAllUserTweets(prevAllUserTweets => (
-                    [...prevAllUserTweets, res.data.data]
+                setRandomTweets(prevRandomTweets => (
+                    [res.data.data, ...prevRandomTweets]
                 ));
                 makeInputEmpty()
 

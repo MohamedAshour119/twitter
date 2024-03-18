@@ -15,7 +15,6 @@ import EmojiPicker from 'emoji-picker-react';
 import {EmojiData} from 'emoji-picker-react'
 import TweetModel from "../layouts/TweetModel.tsx";
 import apiClient from "../services/ApiClient.tsx";
-import {TweetInfo} from "../../Interfaces.tsx";
 
 interface Tweet {
     title: string
@@ -24,14 +23,13 @@ interface Tweet {
 }
 
 function UserHomePage() {
-    const {user, baseUrl, isModelOpen, setIsModelOpen, allUserTweets, setAllUserTweets} = useContext(AppContext);
+    const {user, baseUrl, isModelOpen, setIsModelOpen, randomTweets, setRandomTweets} = useContext(AppContext);
 
     const [tweet, setTweet] = useState<Tweet>({
         title: '',
         image: null,
         video: null
     })
-    const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
 
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false)
@@ -84,9 +82,6 @@ function UserHomePage() {
         };
     }, [pageURL])
 
-    if (randomTweets.length < 6) {
-        randomTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-    }
     // Display random tweets
     const displayRandomTweets: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
         <Tweet
@@ -183,11 +178,12 @@ function UserHomePage() {
 
         ApiClient().post('/create-tweet', formData)
             .then(res => {
+                console.log(res.data.data)
                 setIsModelOpen(false)
-                // Concatenate the new tweet with existing tweets and sort them based on created_at
-                setAllUserTweets(prevAllUserTweets => (
-                    [...prevAllUserTweets, res.data.data]
-                ));
+                setRandomTweets(prevRandomTweets => ([
+                    res.data.data ,...prevRandomTweets
+                ]))
+
                 makeInputEmpty()
 
                 if (inputElement) {
@@ -199,27 +195,6 @@ function UserHomePage() {
                 console.log(err)
             })
     }
-
-    const tweets: React.ReactNode = allUserTweets?.map(tweetInfo => (
-        <Tweet
-            key={tweetInfo.id}
-            user={tweetInfo.user}
-            title={tweetInfo.title}
-            image={tweetInfo.image}
-            video={tweetInfo.video}
-            user_id={tweetInfo.user_id}
-            retweet_to={tweetInfo.retweet_to}
-            id={tweetInfo.id}
-            created_at={tweetInfo.created_at}
-            updated_at={tweetInfo.updated_at}
-            reactions_count={tweetInfo.reactions_count}
-            is_reacted={tweetInfo.is_reacted}
-            retweets_count={tweetInfo.retweets_count}
-            comments_count={tweetInfo.comments_count}
-            main_tweet={tweetInfo.main_tweet}
-            is_retweeted={tweetInfo.is_retweeted}
-        />
-    ));
 
     // Dynamic change textarea height based on the text long
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -404,7 +379,7 @@ function UserHomePage() {
 
                     {/*  All Tweets  */}
                     <div>
-                        {tweets}
+                        {/*{tweets}*/}
                         {displayRandomTweets}
                         <div ref={lastTweetRef}>
                             {randomTweets.length > 0 && (
