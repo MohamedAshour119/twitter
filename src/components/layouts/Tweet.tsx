@@ -103,7 +103,7 @@ function Tweet(props: TweetInfo) {
     return (
         <>
             <Link
-                to={`/tweets/${id}`}
+                to={`/tweets/${props.id}`}
                 className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 `}>
                 {(isRetweeted && location?.pathname === `/users/${username}` || props.main_tweet ) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>

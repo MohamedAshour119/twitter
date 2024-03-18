@@ -6,7 +6,7 @@ import {LuArrowBigUp} from "react-icons/lu";
 import TweetModel from "../layouts/TweetModel.tsx";
 import {useContext, useEffect} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
 
 function ShowTweet() {
@@ -25,9 +25,9 @@ function ShowTweet() {
 
     }, [id])
 
-    useEffect( () => {
-        console.log(id)
-    }, [location?.pathname])
+    // const navigate = useNavigate();
+    // navigate(`/tweets/547`);
+
 
     return (
         <div
