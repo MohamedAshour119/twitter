@@ -6,8 +6,10 @@ import {LuArrowBigUp} from "react-icons/lu";
 import TweetModel from "../layouts/TweetModel.tsx";
 import {useContext, useEffect} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
+import {RiArrowLeftLine} from "react-icons/ri";
+import * as React from "react";
 
 function ShowTweet() {
 
@@ -42,9 +44,11 @@ function ShowTweet() {
                         <IoSettingsOutline className={`size-9`}/>
                     </div>
                     {/* Header for the rest of screens */}
-                    <div className={`w-full text-neutral-200 z-[100]`}>
-                        <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
-                        <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
+                    <div className={`flex items-center gap-x-7 px-4 w-full text-neutral-200 z-[100] cursor-pointer`}>
+                        <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+                            <RiArrowLeftLine className={`size-5`}/>
+                        </Link>
+                        <div className={`py-4 text-xl font-semibold`}>Post</div>
                     </div>
                 </header>
                 <div></div>

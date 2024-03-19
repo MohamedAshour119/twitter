@@ -24,6 +24,7 @@ function TweetModel() {
         handleModelOpen,
         isCommentOpen,
         setIsCommentOpen,
+        clickedTweet,
     } = useContext(AppContext);
 
     const [tweetInModel, setTweetInModel] = useState<Tweet>({
@@ -103,7 +104,13 @@ function TweetModel() {
             formData.append('video', tweetInModel.video as Blob)
         }
 
-        ApiClient().post('/create-tweet', formData)
+        if(isCommentOpen) {
+            formData.append('id', String(clickedTweet.tweet.id))
+        }
+
+        const endPoint = isModelOpen ? '/create-tweet' : '/addComment';
+
+        ApiClient().post(endPoint, formData)
             .then(res => {
                 setIsModelOpen(false)
 
@@ -215,18 +222,35 @@ function TweetModel() {
             </div>
 
             { isCommentOpen &&
-                <div className={`flex gap-x-3 border-zinc-700/70 text-neutral-200`}>
-                    <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`}
-                         alt=""/>
-                    {/*<div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>*/}
-                    {/*    <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2`}>*/}
-                    {/*        <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>*/}
-                    {/*        <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>*/}
-                    {/*    </Link>*/}
-                    {/*    <span*/}
-                    {/*        className={`font-light text-[#71767b] cursor-pointer`}>{!props.main_tweet ? props.created_at : props.main_tweet.created_at}</span>*/}
-                    {/*</div>*/}
-                </div>
+                <>
+                    <div className={`flex gap-x-3 border-zinc-700/70 text-neutral-200`}>
+                        <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${clickedTweet.user.avatar}`}
+                             alt=""/>
+                        <div className={``}>
+                            <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
+                                <Link to={`/users/${clickedTweet.user.username}`} className={`xs:flex gap-x-2`}>
+                                    <h1 className={`font-semibold cursor-pointer`}>{clickedTweet.user.username}</h1>
+                                    <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{clickedTweet.user.username}</h1>
+                                </Link>
+                                <span
+                                    className={`font-light text-[#71767b] cursor-pointer`}>{clickedTweet.tweet.created_at}
+                            </span>
+                            </div>
+
+                            <div>
+                                {clickedTweet.tweet.title}
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div className={`ml-14`}>
+                        <p className={`text-sky-600`}> <span className={`text-zinc-500`}>Replying to </span>@{clickedTweet.user.username}</p>
+                    </div>
+                </>
+
+
+
             }
 
             <div className={`flex gap-x-3 ${(tweetInModel.image || tweetInModel.video) ? 'border-0' : 'border-b'} border-zinc-700/70 text-neutral-200`}>
@@ -236,10 +260,10 @@ function TweetModel() {
                     ref={textAreaModelRef}
                     maxLength={255}
                     onChange={handleTextAreaChangePostModel}
-                    placeholder={`What is happening?!`}
+                    placeholder={isModelOpen ? `What is happening?!` : 'Post your reply'}
                     name={`title`}
                     value={tweetInModel.title}
-                    className={`bg-transparent overflow-x-auto resize-none text-xl w-full pt-1 pb-16 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
+                    className={`bg-transparent overflow-x-auto resize-none text-xl w-full pt-1 pb-16 placeholder:font-light placeholder:text-zinc-500 focus:outline-0`}
                 />
             </div>
 
@@ -301,7 +325,7 @@ function TweetModel() {
 
                 <div onClick={sendRequest}
                      className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
-                    Post
+                    {isModelOpen ? 'Post' : 'Reply'}
                 </div>
             </div>
         </div>
