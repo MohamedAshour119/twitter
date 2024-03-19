@@ -25,9 +25,6 @@ function ShowTweet() {
 
     }, [id])
 
-    // const navigate = useNavigate();
-    // navigate(`/tweets/547`);
-
 
     return (
         <div

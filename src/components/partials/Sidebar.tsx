@@ -13,7 +13,12 @@ import {ToastContainer} from "react-toastify";
 
 function Sidebar() {
 
-    const {user,setUser, baseUrl, handleModelOpen} = useContext(AppContext)
+    const {
+        user,
+        setUser,
+        baseUrl,
+        setIsModelOpen
+    } = useContext(AppContext)
 
     const [logoutWindowOpen, setLogoutWindowOpen] = useState(false)
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -86,7 +91,7 @@ function Sidebar() {
                         </Link>
                     </li>
                     <li>
-                        <div onClick={handleModelOpen} className={`flex items-end justify-center cursor-pointer w-fit px-4 py-4 xl:py-3 xl:px-0 xl:w-auto rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
+                        <div onClick={() => setIsModelOpen(prev => !prev)} className={`flex items-end justify-center cursor-pointer w-fit px-4 py-4 xl:py-3 xl:px-0 xl:w-auto rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
                             <span className={`hidden xl:block`}>Post</span>
                             <FaFeatherPointed className={`block xl:hidden`}/>
                         </div>

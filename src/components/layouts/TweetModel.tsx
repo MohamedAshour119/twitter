@@ -5,6 +5,7 @@ import EmojiPicker, {EmojiData} from "emoji-picker-react";
 import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
+import {Link} from "react-router-dom";
 
 interface Tweet{
     title: string
@@ -14,7 +15,16 @@ interface Tweet{
 
 function TweetModel() {
 
-    const {user ,baseUrl, isModelOpen, setIsModelOpen, setRandomTweets, handleModelOpen} = useContext(AppContext);
+    const {
+        user ,
+        baseUrl,
+        isModelOpen,
+        setIsModelOpen,
+        setRandomTweets,
+        handleModelOpen,
+        isCommentOpen,
+        setIsCommentOpen,
+    } = useContext(AppContext);
 
     const [tweetInModel, setTweetInModel] = useState<Tweet>({
         title: '',
@@ -22,7 +32,6 @@ function TweetModel() {
         video: null
     })
     const [videoURL, setVideoURL] = useState("");
-    // const [tweetInfo, setTweetInfo] = useState({})
     const [showModelEmojiPicker, setShowModelEmojiPicker] = useState(false)
     const [isBtnDisabled, setIsBtnDisabled] = useState(true)
 
@@ -150,6 +159,7 @@ function TweetModel() {
         const handleClickOutside = (e: MouseEvent) => {
             if(!model.current?.contains(e.target as Node)){
                 setIsModelOpen(false)
+                setIsCommentOpen(false)
 
                 setTweetInModel(prevTweetInModel => ({
                     ...prevTweetInModel,
@@ -197,12 +207,28 @@ function TweetModel() {
     }, []);
 
     return (
-        <div ref={model} className={`z-50 absolute bg-black text-neutral-200 top-16 w-[37rem] p-3 rounded-2xl flex flex-col gap-y-3 ${isModelOpen ? 'animate-slide-down' : 'close-slide-down'} `}>
+        <div ref={model} className={`z-[150] absolute bg-black text-neutral-200 top-16 xs:w-[37rem] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModelOpen || isCommentOpen) ? 'animate-slide-down' : 'close-slide-down'} `}>
             <div
                 onClick={handleModelOpen}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">
                 <HiMiniXMark className={`size-6`}/>
             </div>
+
+            { isCommentOpen &&
+                <div className={`flex gap-x-3 border-zinc-700/70 text-neutral-200`}>
+                    <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`}
+                         alt=""/>
+                    {/*<div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>*/}
+                    {/*    <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2`}>*/}
+                    {/*        <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>*/}
+                    {/*        <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>*/}
+                    {/*    </Link>*/}
+                    {/*    <span*/}
+                    {/*        className={`font-light text-[#71767b] cursor-pointer`}>{!props.main_tweet ? props.created_at : props.main_tweet.created_at}</span>*/}
+                    {/*</div>*/}
+                </div>
+            }
+
             <div className={`flex gap-x-3 ${(tweetInModel.image || tweetInModel.video) ? 'border-0' : 'border-b'} border-zinc-700/70 text-neutral-200`}>
                 <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`}
                      alt=""/>

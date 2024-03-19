@@ -39,3 +39,16 @@ export interface UserInfo {
     is_followed: boolean | null;
     tweets_count: number | null;
 }
+
+export interface ClickedTweet {
+    user: {
+        id: number,
+        username: string,
+        avatar: string,
+    }
+    tweet: {
+        title: string,
+        created_at: string,
+        id: number,
+    }
+}

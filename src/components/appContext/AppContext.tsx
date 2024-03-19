@@ -1,7 +1,7 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
-import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
+import {ClickedTweet, TweetInfo, UserInfo} from "../../Interfaces.tsx";
 
 interface AppContextType {
     isRegisterOpen: boolean;
@@ -12,9 +12,13 @@ interface AppContextType {
     handleModelOpen: () => void;
     isModelOpen: boolean;
     setIsModelOpen: Dispatch<SetStateAction<boolean>>;
-    randomTweets: TweetInfo[]
-    setRandomTweets: Dispatch<SetStateAction<TweetInfo[]>>
-    suggestedUsersToFollow: UserInfo[]
+    randomTweets: TweetInfo[];
+    setRandomTweets: Dispatch<SetStateAction<TweetInfo[]>>;
+    suggestedUsersToFollow: UserInfo[];
+    isCommentOpen: boolean;
+    setIsCommentOpen: Dispatch<SetStateAction<boolean>>;
+    clickedTweet: ClickedTweet;
+    setClickedTweet: Dispatch<SetStateAction<ClickedTweet>>
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -39,6 +43,8 @@ export const AppContext = createContext<AppContextType>({
     handleModelOpen: () => null,
     isModelOpen: false,
     setIsModelOpen: () => null,
+    isCommentOpen: false,
+    setIsCommentOpen: () => null,
     baseUrl: '',
     setRandomTweets: () => null,
     randomTweets: [{
@@ -94,7 +100,23 @@ export const AppContext = createContext<AppContextType>({
             is_followed: null,
             tweets_count: null,
         }
-    ]
+    ],
+
+    clickedTweet: {
+        user: {
+            id: 0,
+            username: '',
+            avatar: ''
+        },
+
+        tweet: {
+            title: '',
+            created_at: '',
+            id: 0,
+        },
+    },
+
+    setClickedTweet: () => null
 
 });
 
@@ -115,6 +137,7 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     const [isModelOpen, setIsModelOpen] = useState(false)
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
+    const [isCommentOpen, setIsCommentOpen] = useState(false);
     const location: Pathname = useLocation();
     const [user, setUser] = useState<UserInfo | null>({
         id: null,
@@ -130,6 +153,18 @@ const AppProvider = ({children}: AppProviderProps) => {
         followers_number: null,
         is_followed: null,
         tweets_count: null,
+    })
+    const [clickedTweet, setClickedTweet] = useState<ClickedTweet>({
+        user: {
+            id: 0,
+            username: '',
+            avatar: '',
+        },
+        tweet: {
+            id: 0,
+            title: '',
+            created_at: ''
+        }
     })
     const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
@@ -154,7 +189,8 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     // Handle model open state
     const handleModelOpen = () => {
-        setIsModelOpen(prev => !prev)
+        setIsModelOpen(false)
+        setIsCommentOpen(false)
     }
 
     // Suggested users to follow
@@ -169,7 +205,24 @@ const AppProvider = ({children}: AppProviderProps) => {
     }, [])
 
     return (
-        <AppContext.Provider value={{isRegisterOpen, location, user, setUser, baseUrl, handleModelOpen, isModelOpen, setIsModelOpen, randomTweets, setRandomTweets, suggestedUsersToFollow}}>
+        <AppContext.Provider
+            value={{
+                isRegisterOpen,
+                location,
+                user,
+                setUser,
+                baseUrl,
+                handleModelOpen,
+                isModelOpen,
+                setIsModelOpen,
+                randomTweets,
+                setRandomTweets,
+                suggestedUsersToFollow,
+                isCommentOpen,
+                setIsCommentOpen,
+                clickedTweet,
+                setClickedTweet,
+            }}>
             {children}
         </AppContext.Provider>
     )

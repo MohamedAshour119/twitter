@@ -23,7 +23,15 @@ interface Tweet {
 }
 
 function UserHomePage() {
-    const {user, baseUrl, isModelOpen, setIsModelOpen, randomTweets, setRandomTweets} = useContext(AppContext);
+    const {
+        user,
+        baseUrl,
+        isModelOpen,
+        setIsModelOpen,
+        randomTweets,
+        setRandomTweets,
+        isCommentOpen,
+    } = useContext(AppContext);
 
     const [tweet, setTweet] = useState<Tweet>({
         title: '',
@@ -244,14 +252,14 @@ function UserHomePage() {
 
     return (
         <div
-            className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
+            className={`${(isModelOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header
                     className={`w-full grid grid-cols-1 border-b border-zinc-700/70 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-sm`}>
                     {/* Header but only on small screens */}
-                    <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
+                    <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                         <img className={`size-11 rounded-full object-cover`}
                              src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
                         <FaXTwitter className={`size-9`}/>
@@ -267,7 +275,7 @@ function UserHomePage() {
             </div>
 
             <div
-                className={`${isModelOpen ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+                className={`${(isModelOpen || isCommentOpen) ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Scroll to top button */}
                 <div

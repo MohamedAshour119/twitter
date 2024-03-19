@@ -1,7 +1,7 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
@@ -15,18 +15,22 @@ interface RetweetData {
 
 function Tweet(props: TweetInfo) {
 
-    const {baseUrl, user, location} = useContext(AppContext);
-    const {username, id} = useParams();
+    const {
+        baseUrl,
+        user,
+        location,
+        isCommentOpen,
+        setIsCommentOpen,
+        setClickedTweet,
+    } = useContext(AppContext);
+
+    const {username} = useParams();
 
     const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
-    const [reactionCount, setReactionNumber] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
-
-    const [retweetCount, setRetweetNumber] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
     const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
-
+    const [reactionCount, setReactionNumber] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
+    const [retweetCount, setRetweetNumber] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
     const [commentCount, setCommentCount] = useState(!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)
-
-    const [isCommentOpen, setIsCommentOpen] = useState(false);
 
     const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
 
@@ -79,32 +83,38 @@ function Tweet(props: TweetInfo) {
         }
     }
 
-    // Handle tweet's comments
-    const getTweetComments = (pageURL: string, data: RetweetData) => {
-        ApiClient().get(`${pageURL}/${data}`)
-            .then(res => {
-                console.log(res.data.data.comments_count)
-                // setCommentCount(res.data.data.comments_count);
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
 
 
     // Handle click open comments
     const handleOpenComments = () => {
         setIsCommentOpen(!isCommentOpen)
-        getTweetComments(`/getCommentsCount`, {id: tweetId})
-
     }
 
+    // Add tweet info which user clicked
+    const addTweetInfo = () => {
+        setClickedTweet({
+            user: {
+                id: props.user_id,
+                username: props.user.username,
+                avatar: props.user.avatar,
+            },
+            tweet: {
+                id: props.id,
+                title: props.title,
+                created_at: props.created_at
+            }
+        })
+    }
+
+    const cominedFunctions = () => {
+        handleOpenComments();
+        addTweetInfo();
+    }
 
     return (
         <>
-            <Link
-                to={`/tweets/${props.id}`}
-                className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 `}>
+            <div
+                className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 relative`}>
                 {(isRetweeted && location?.pathname === `/users/${username}` || props.main_tweet ) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
@@ -112,10 +122,12 @@ function Tweet(props: TweetInfo) {
                             className={`text-sm`}>{(username === user?.username) ? 'You retweeted' : `${username} retweeted`}</span>
                     </Link>
                 }
-                <div className={`border-b border-zinc-700/70 `}>
+                <Link
+                    to={`/tweets/${props.id}`}
+                    className={`border-b border-zinc-700/70 pb-10 hover:bg-zinc-800/20 transition`}>
                     <div className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
                         <div className={`flex gap-x-2`}>
-                            <Link to={`/users/${props.user?.username}`} className={`w-[10%]`}>
+                            <Link to={`/users/${props.user?.username}`} className={`md:w-[10%] w-[14%]`}>
                                 <img
                                     className={`size-11 object-cover rounded-full`}
                                     src={`${baseUrl}/storage/${props.user?.avatar}`}
@@ -157,74 +169,73 @@ function Tweet(props: TweetInfo) {
 
                                 </div>
                             </div>
-
-                            <div
-                                className={`flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
-                                <div onClick={handleOpenComments} className={`flex items-center cursor-pointer group`}>
-                                    <div
-                                        className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
-                                        <FaRegComment/>
-                                    </div>
-                                    <span
-                                        className={`group-hover:text-sky-500 transition`}>{commentCount}</span>
-                                </div>
-
-                                <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
-                                    <div
-                                        className={`text-xl flex justify-center items-center group-hover:text-emerald-400 transition group-hover:bg-emerald-400/20 rounded-full p-2`}>
-                                        <BsRepeat
-                                            className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
-                                    </div>
-                                    <span
-                                        className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetCount}</span>
-                                </div>
-
-                                <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
-                                    <div
-                                        className={`text-xl flex justify-center items-center group-hover:text-rose-500 transition group-hover:bg-rose-500/20 rounded-full p-2`}>
-                                        <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
-                                        <FaHeart
-                                            className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
-                                    </div>
-                                    <span
-                                        className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionCount}</span>
-                                </div>
-                            </div>
                         </div>
                     </div>
 
 
-                    {/*  Comments  */}
-                    { isCommentOpen &&
-                        <div className={`w-full border-t border-b border-zinc-700/70 sm:px-6 px-2 py-3`}>
-                            <div className={`flex items-center w-full`}>
-                                <div className={`flex gap-x-3 w-full`}>
-                                    <Link to={`/users/${user?.username}`}>
-                                        <img
-                                            className={`size-11 object-cover rounded-full`}
-                                            src={`${baseUrl}/storage/${user?.avatar}`}
-                                            alt=""
-                                        />
-                                    </Link>
+                    {/*/!*  Comments  *!/*/}
+                    {/*{ isCommentOpen &&*/}
+                    {/*    <div className={`w-full border-t border-b border-zinc-700/70 sm:px-6 px-2 py-3`}>*/}
+                    {/*        <div className={`flex items-center w-full`}>*/}
+                    {/*            <div className={`flex gap-x-3 w-full`}>*/}
+                    {/*                <Link to={`/users/${user?.username}`}>*/}
+                    {/*                    <img*/}
+                    {/*                        className={`size-11 object-cover rounded-full`}*/}
+                    {/*                        src={`${baseUrl}/storage/${user?.avatar}`}*/}
+                    {/*                        alt=""*/}
+                    {/*                    />*/}
+                    {/*                </Link>*/}
 
-                                    <textarea
-                                        placeholder={`Have something to say?`}
-                                        className={`w-[85%] px-3 bg-[#2a2d32b3] rounded-xl focus:outline-0 break-words overflow-x-hidden`}
-                                    />
-                                </div>
-                                <div>
-                                    <button
-                                        className={`bg-[#16181a] px-4 py-2 rounded-xl hover:bg-[#202327] transition`}>Comment
-                                    </button>
-                                </div>
-                            </div>
+                    {/*                <textarea*/}
+                    {/*                    placeholder={`Have something to say?`}*/}
+                    {/*                    className={`w-[85%] px-3 bg-[#2a2d32b3] rounded-xl focus:outline-0 break-words overflow-x-hidden`}*/}
+                    {/*                />*/}
+                    {/*            </div>*/}
+                    {/*            <div>*/}
+                    {/*                <button*/}
+                    {/*                    className={`bg-[#16181a] px-4 py-2 rounded-xl hover:bg-[#202327] transition`}>Comment*/}
+                    {/*                </button>*/}
+                    {/*            </div>*/}
+                    {/*        </div>*/}
+                    {/*    </div>*/}
+                    {/*}*/}
+
+                </Link>
+
+                <div className={`absolute bottom-2 left-20 flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
+                    <div onClick={cominedFunctions} className={`flex items-center cursor-pointer group`}>
+                        <div
+                            className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
+                            <FaRegComment/>
                         </div>
-                    }
+                        <span
+                            className={`group-hover:text-sky-500 transition`}>{commentCount}</span>
+                    </div>
 
+                    <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
+                        <div
+                            className={`text-xl flex justify-center items-center group-hover:text-emerald-400 transition group-hover:bg-emerald-400/20 rounded-full p-2`}>
+                            <BsRepeat
+                                className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
+                        </div>
+                        <span
+                            className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetCount}</span>
+                    </div>
+
+                    <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
+                        <div
+                            className={`text-xl flex justify-center items-center group-hover:text-rose-500 transition group-hover:bg-rose-500/20 rounded-full p-2`}>
+                            <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
+                            <FaHeart
+                                className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
+                        </div>
+                        <span
+                            className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionCount}</span>
+                    </div>
                 </div>
 
 
-            </Link>
+            </div>
         </>
 
     )
