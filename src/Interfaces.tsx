@@ -1,5 +1,5 @@
 interface Tweet {
-    title: string;
+    title: string | null;
     user_id: number;
     image: string | null;
     video: string | null;
@@ -47,7 +47,7 @@ export interface ClickedTweet {
         avatar: string,
     }
     tweet: {
-        title: string,
+        title: string | null,
         created_at: string,
         id: number,
     }

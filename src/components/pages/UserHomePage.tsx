@@ -94,21 +94,7 @@ function UserHomePage() {
     const displayRandomTweets: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
         <Tweet
             key={tweetInfo.id}
-            user={tweetInfo.user}
-            title={tweetInfo.title}
-            image={tweetInfo.image}
-            video={tweetInfo.video}
-            user_id={tweetInfo.user_id}
-            retweet_to={tweetInfo.retweet_to}
-            id={tweetInfo.id}
-            created_at={tweetInfo.created_at}
-            updated_at={tweetInfo.updated_at}
-            reactions_count={tweetInfo.reactions_count}
-            is_reacted={tweetInfo.is_reacted}
-            retweets_count={tweetInfo.retweets_count}
-            comments_count={tweetInfo.comments_count}
-            main_tweet={tweetInfo.main_tweet}
-            is_retweeted={tweetInfo.is_retweeted}
+            {...tweetInfo}
         />
     ));
 
@@ -290,7 +276,7 @@ function UserHomePage() {
 
                 {/* Middle content */}
                 <div
-                    className={`z-10 text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative animate-slide-down`}>
+                    className={`z-10 text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative`}>
 
                     {/* Tweet Section */}
                     <div className={`flex flex-col py-3 px-6 sm:mt-16 mt-36 border-b border-zinc-700/70 z-10`}>

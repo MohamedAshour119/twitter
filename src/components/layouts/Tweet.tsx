@@ -9,10 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import {Link, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 
-interface RetweetData {
-    id: number;
-}
-
 function Tweet(props: TweetInfo) {
 
     const {
@@ -34,6 +30,7 @@ function Tweet(props: TweetInfo) {
 
     const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
 
+
     // Handle tweet reaction
     const handleReaction = () => {
 
@@ -49,7 +46,7 @@ function Tweet(props: TweetInfo) {
 
     // Handle tweet retweet
     const handleRetweet = () => {
-        if (!isRetweeted) {
+        if (!isRetweeted && props.main_tweet && props.main_tweet?.user_id !== user?.id) {
             ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -58,7 +55,7 @@ function Tweet(props: TweetInfo) {
                 .catch((err) => {
                     console.log(err)
                 })
-        } else if (isRetweeted) {
+        } else if (isRetweeted && props.main_tweet && props.main_tweet?.user_id !== user?.id) {
             ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -81,6 +78,7 @@ function Tweet(props: TweetInfo) {
                 transition: Zoom,
             });
         }
+
     }
 
 
@@ -154,7 +152,7 @@ function Tweet(props: TweetInfo) {
                         <div className={`w-[90%] justify-self-end`}>
                             <div className={`grid grid-cols-1`}>
                                 <p className={`w-fit break-all`}>{!props.main_tweet ? props.title : props.main_tweet.title}</p>
-                                <div className={`${props.title?.length > 0 ? 'mt-4' : ''}`}>
+                                <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>
                                     {(props.image || props.main_tweet?.image) && <img
                                         className={`rounded-2xl max-h-[40rem] w-full `}
                                         src={`${baseUrl}/storage/${!props.main_tweet ? props.image : props.main_tweet?.image}`}

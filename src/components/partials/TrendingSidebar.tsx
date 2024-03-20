@@ -9,7 +9,7 @@ function TrendingSidebar() {
     const {suggestedUsersToFollow} = useContext(AppContext)
 
     return (
-        <div className={`text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed animate-slide-left`}>
+        <div className={`text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
             <div className={`mt-2 relative`}>
                 <input
                     type="text"

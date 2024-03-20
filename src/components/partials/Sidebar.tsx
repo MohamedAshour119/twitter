@@ -57,7 +57,7 @@ function Sidebar() {
     return (
         <>
             <ToastContainer/>
-            <div className={`text-neutral-100 xl:px-16 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container fixed max-w-fit animate-slide-right z-50`}>
+            <div className={`text-neutral-100 xl:px-16 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container fixed max-w-fit z-50`}>
                 <ul className={`flex flex-col gap-y-5`}>
                     <li className={`flex items-center`}>
                         <Link to={`/home`}>

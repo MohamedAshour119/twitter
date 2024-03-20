@@ -51,6 +51,8 @@ function Profile() {
     }
 
     useEffect( () => {
+        setAllProfileUserTweets([]);
+        setPageURL('');
         getAllUserTweets(`users/${username}`)
     }, [username] )
 
@@ -58,23 +60,10 @@ function Profile() {
     const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
         <Tweet
             key={tweetInfo.id}
-            user={tweetInfo.user}
-            title={tweetInfo.title}
-            image={tweetInfo.image}
-            video={tweetInfo.video}
-            user_id={tweetInfo.user_id}
-            retweet_to={tweetInfo.retweet_to}
-            id={tweetInfo.id}
-            created_at={tweetInfo.created_at}
-            updated_at={tweetInfo.updated_at}
-            reactions_count={tweetInfo.reactions_count}
-            is_reacted={tweetInfo.is_reacted}
-            retweets_count={tweetInfo.retweets_count}
-            comments_count={tweetInfo.comments_count}
-            main_tweet={tweetInfo.main_tweet}
-            is_retweeted={tweetInfo.is_retweeted}
+            {...tweetInfo}
         />
     ));
+
 
     // Handle active buttons
     const postsRef = useRef<HTMLLIElement>(null);
@@ -178,10 +167,10 @@ function Profile() {
 
     // cleanup
         return () => {
-            if(lastTweetRef.current){
-                observer.unobserve(lastTweetRef.current)
+            if(observer) {
+                observer.disconnect(); // Disconnect the observer to prevent further observations
             }
-        }
+        };
 
     }, [pageURL])
 

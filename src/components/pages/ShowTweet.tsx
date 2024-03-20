@@ -4,22 +4,25 @@ import {FaXTwitter} from "react-icons/fa6";
 import {IoSettingsOutline} from "react-icons/io5";
 import {LuArrowBigUp} from "react-icons/lu";
 import TweetModel from "../layouts/TweetModel.tsx";
-import {useContext, useEffect} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
 import {RiArrowLeftLine} from "react-icons/ri";
-import * as React from "react";
+import {TweetInfo} from "../../Interfaces.tsx";
+import Tweet from "../layouts/Tweet.tsx";
 
 function ShowTweet() {
 
-    const {isModelOpen, baseUrl, user, location} = useContext(AppContext)
+    const {isModelOpen, baseUrl, user} = useContext(AppContext)
     const {id} = useParams();
+
+    const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
 
     useEffect( () => {
         ApiClient().get(`/tweets/${id}`)
             .then(res => {
-                console.log(res)
+                setDisplayTweet(res.data.data)
             })
             .catch(err => {
                 console.log(err)
@@ -35,7 +38,7 @@ function ShowTweet() {
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header
-                    className={`w-full grid grid-cols-1 border-b border-zinc-700/70 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-sm`}>
+                    className={`w-full grid grid-cols-1 border-b border-l border-r border-zinc-700/70 2xl:max-w-[39rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] backdrop-blur-sm`}>
                     {/* Header but only on small screens */}
                     <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
                         <img className={`size-11 rounded-full object-cover`}
@@ -69,8 +72,11 @@ function ShowTweet() {
                 </div>
 
                 {/* Middle content */}
-                <div className={`z-10 text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative animate-slide-down`}>
-
+                <div className={`z-10 text-neutral-200 sm:mt-14 mt-32 border border-t-0 border-zinc-700/70 w-full relative`}>
+                    {
+                        displayTweet &&
+                        <Tweet {...displayTweet!}/>
+                    }
                 </div>
 
                 <TrendingSidebar/>
