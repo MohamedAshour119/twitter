@@ -51,7 +51,7 @@ function Profile() {
     }
 
     useEffect( () => {
-        setAllProfileUserTweets([]);
+        // setAllProfileUserTweets([]);
         setPageURL('');
         getAllUserTweets(`users/${username}`)
     }, [username] )

@@ -113,7 +113,7 @@ function Tweet(props: TweetInfo) {
         <>
             <div
                 className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 relative`}>
-                {(isRetweeted && location?.pathname === `/users/${username}` || props.main_tweet ) &&
+                {(isRetweeted || props.main_tweet && location?.pathname === `/users/${username}` ) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
                         <span
@@ -170,37 +170,9 @@ function Tweet(props: TweetInfo) {
                         </div>
                     </div>
 
-
-                    {/*/!*  Comments  *!/*/}
-                    {/*{ isCommentOpen &&*/}
-                    {/*    <div className={`w-full border-t border-b border-zinc-700/70 sm:px-6 px-2 py-3`}>*/}
-                    {/*        <div className={`flex items-center w-full`}>*/}
-                    {/*            <div className={`flex gap-x-3 w-full`}>*/}
-                    {/*                <Link to={`/users/${user?.username}`}>*/}
-                    {/*                    <img*/}
-                    {/*                        className={`size-11 object-cover rounded-full`}*/}
-                    {/*                        src={`${baseUrl}/storage/${user?.avatar}`}*/}
-                    {/*                        alt=""*/}
-                    {/*                    />*/}
-                    {/*                </Link>*/}
-
-                    {/*                <textarea*/}
-                    {/*                    placeholder={`Have something to say?`}*/}
-                    {/*                    className={`w-[85%] px-3 bg-[#2a2d32b3] rounded-xl focus:outline-0 break-words overflow-x-hidden`}*/}
-                    {/*                />*/}
-                    {/*            </div>*/}
-                    {/*            <div>*/}
-                    {/*                <button*/}
-                    {/*                    className={`bg-[#16181a] px-4 py-2 rounded-xl hover:bg-[#202327] transition`}>Comment*/}
-                    {/*                </button>*/}
-                    {/*            </div>*/}
-                    {/*        </div>*/}
-                    {/*    </div>*/}
-                    {/*}*/}
-
                 </Link>
 
-                <div className={`absolute bottom-2 left-20 flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
+                <div className={`absolute top-20 left-20 flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
                     <div onClick={cominedFunctions} className={`flex items-center cursor-pointer group`}>
                         <div
                             className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
@@ -232,6 +204,32 @@ function Tweet(props: TweetInfo) {
                     </div>
                 </div>
 
+                {/*  Comments  */}
+                { location?.pathname === `/tweets/${props.id}` &&
+                    <div className={`w-full border-b border-zinc-700/70 sm:px-6 px-2 py-3`}>
+                        <div className={`grid grid-cols-[7fr,1fr] items-center w-full`}>
+                            <div className={`flex gap-x-3 w-full`}>
+                                <Link to={`/users/${user?.username}`}>
+                                    <img
+                                        className={`size-11 object-cover rounded-full`}
+                                        src={`${baseUrl}/storage/${user?.avatar}`}
+                                        alt=""
+                                    />
+                                </Link>
+
+                                <textarea
+                                    placeholder={`Have something to say?`}
+                                    className={`w-[85%] px-3 bg-[#2a2d32b3] rounded-xl focus:outline-0 break-words overflow-x-hidden`}
+                                />
+                            </div>
+                            <div className={`self-start`}>
+                                <button
+                                    className={`bg-sky-500 hover:bg-sky-600 font-semibold px-4 py-2 rounded-xl transition`}>Reply
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
 
             </div>
         </>

@@ -14,7 +14,7 @@ import Tweet from "../layouts/Tweet.tsx";
 
 function ShowTweet() {
 
-    const {isModelOpen, baseUrl, user} = useContext(AppContext)
+    const {isModelOpen, baseUrl, user, isCommentOpen} = useContext(AppContext)
     const {id} = useParams();
 
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
@@ -33,12 +33,12 @@ function ShowTweet() {
 
     return (
         <div
-            className={`${isModelOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
+            className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header
-                    className={`w-full grid grid-cols-1 border-b border-l border-r border-zinc-700/70 2xl:max-w-[39rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] backdrop-blur-sm`}>
+                    className={`w-full grid grid-cols-1 ${isCommentOpen ? 'opacity-20' : ''} border border-zinc-700/70 2xl:max-w-[39rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] backdrop-blur-sm`}>
                     {/* Header but only on small screens */}
                     <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
                         <img className={`size-11 rounded-full object-cover`}
@@ -58,7 +58,7 @@ function ShowTweet() {
             </div>
 
             <div
-                className={`${isModelOpen ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+                className={`${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Scroll to top button */}
                 <div
