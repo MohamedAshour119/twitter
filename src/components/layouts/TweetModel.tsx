@@ -1,13 +1,11 @@
 import {HiMiniXMark} from "react-icons/hi2";
 import {MdOutlinePermMedia} from "react-icons/md";
 import {CiFaceSmile} from "react-icons/ci";
-import EmojiPicker, {EmojiData} from "emoji-picker-react";
-import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
+import EmojiPicker from "emoji-picker-react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import ApiClient from "../services/ApiClient.tsx";
 import {Link} from "react-router-dom";
 import {TweetContext} from "../appContext/TweetContext.tsx";
-import * as React from "react";
 
 
 function TweetModel() {
@@ -17,7 +15,6 @@ function TweetModel() {
         baseUrl,
         isModelOpen,
         setIsModelOpen,
-        setRandomTweets,
         handleModelOpen,
         isCommentOpen,
         setIsCommentOpen,
@@ -28,88 +25,18 @@ function TweetModel() {
         tweet,
         setTweet,
         videoURL,
-        setVideoURL,
         showEmojiElInModel,
         setShowEmojiElInModel,
         handleTextAreaChange,
         onEmojiClick,
         displayModelEmojiPicker,
+        handleFileChange,
+        sendRequest,
     } = useContext(TweetContext)
 
     const [isBtnDisabled, setIsBtnDisabled] = useState(true)
 
-    // Handle input file change
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (file.type.startsWith('image') && !tweet.video) {
-                setTweet(prevTweetInModel => ({
-                    ...prevTweetInModel,
-                    image: file,
-                    video: null
-                }))
-
-            } else if (file.type.startsWith('video') && !tweet.image) {
-                setTweet(prevTweetInModel => ({
-                    ...prevTweetInModel,
-                    image: null,
-                    video: file
-                }))
-                setVideoURL(URL.createObjectURL(file))
-            }
-        }
-    };
-
-    // Set input to empty when he successfully post
-    const makeInputEmpty = () => {
-        setTweet(prevTweetInModel => ({
-            ...prevTweetInModel,
-            title: "",
-            image: null,
-            video: null,
-        }))
-    }
-
     const inputElementInModel = document.getElementById('uploadInputInModel') as HTMLInputElement;
-
-    // Send Request with data
-    const sendRequest = () => {
-        const formData = new FormData();
-        formData.append('title', tweet.title);
-
-        if(tweet.image){
-            formData.append('image', tweet.image as Blob);
-        }
-        if(tweet.video){
-            formData.append('video', tweet.video as Blob)
-        }
-
-        if(isCommentOpen) {
-            formData.append('id', String(clickedTweet.tweet.id))
-        }
-
-        const endPoint = isModelOpen ? '/create-tweet' : '/addComment';
-
-        ApiClient().post(endPoint, formData)
-            .then(res => {
-                setIsModelOpen(false)
-                setIsCommentOpen(false)
-
-                // Concatenate the new tweet with existing tweets and sort them based on created_at
-                setRandomTweets(prevRandomTweets => (
-                    [res.data.data, ...prevRandomTweets]
-                ));
-                makeInputEmpty()
-
-                if (inputElementInModel) {
-                    inputElementInModel.value = '';
-                }
-
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
 
     // Change the disabled post btn if the tweetModel.title not empty
     useEffect( () => {

@@ -2,17 +2,15 @@ import Sidebar from "../partials/Sidebar.tsx";
 import {FaXTwitter} from "react-icons/fa6";
 import {MdOutlinePermMedia} from "react-icons/md";
 import {CiFaceSmile} from "react-icons/ci";
-import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import {LuArrowBigUp} from "react-icons/lu";
-import ApiClient from "../services/ApiClient.tsx";
 import * as React from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import EmojiPicker from 'emoji-picker-react';
-import {EmojiData} from 'emoji-picker-react'
 import TweetModel from "../layouts/TweetModel.tsx";
 import apiClient from "../services/ApiClient.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
@@ -28,9 +26,6 @@ function UserHomePage() {
         user,
         baseUrl,
         isModelOpen,
-        setIsModelOpen,
-        randomTweets,
-        setRandomTweets,
         isCommentOpen,
     } = useContext(AppContext);
 
@@ -38,12 +33,15 @@ function UserHomePage() {
         tweet,
         setTweet,
         videoURL,
-        setVideoURL,
         showEmojiEl,
         setShowEmojiEl,
         handleTextAreaChange,
         onEmojiClick,
         displayMainEmojiPicker,
+        handleFileChange,
+        randomTweets,
+        setRandomTweets,
+        sendRequest,
     } = useContext(TweetContext)
 
 
@@ -105,29 +103,6 @@ function UserHomePage() {
         />
     ));
 
-
-    // Handle input file change
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>, fileType: string, setTweet: (value: Tweet) => void) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            if (file.type.startsWith('image') && !tweet.video) {
-                setTweet({
-                    ...tweet,
-                    image: file,
-                    video: null
-                });
-            } else if (file.type.startsWith('video') && !tweet.image) {
-                setTweet({
-                    ...tweet,
-                    image: null,
-                    video: file
-                });
-                setVideoURL(URL.createObjectURL(file));
-            }
-        }
-    };
-
-
     // Change the disabled post btn if the tweet.title not empty
     useEffect(() => {
         if (tweet.title.length > 0 || tweet.image || tweet.video) {
@@ -139,49 +114,6 @@ function UserHomePage() {
     }, [tweet.title, tweet.image, tweet.video])
 
 
-    // Set input to empty when he successfully post
-    const makeInputEmpty = () => {
-        setTweet(prevTweet => ({
-            ...prevTweet,
-            title: "",
-            image: null,
-            video: null,
-        }))
-    }
-
-    const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
-
-    // Send Request with data
-    const sendRequest = () => {
-        const formData = new FormData();
-        formData.append('title', tweet.title);
-
-        if(tweet.image){
-            formData.append('image', tweet.image as Blob);
-        }
-        if(tweet.video){
-            formData.append('video', tweet.video as Blob)
-        }
-
-        ApiClient().post(`/create-tweet`, formData)
-            .then(res => {
-                setIsModelOpen(false)
-
-                // Concatenate the new tweet with existing tweets and sort them based on created_at
-                setRandomTweets(prevRandomTweets => (
-                    [res.data.data, ...prevRandomTweets]
-                ));
-                makeInputEmpty()
-
-                if (inputElement) {
-                    inputElement.value = '';
-                }
-
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
 
     // Dynamic change textarea height based on the text long
     const textAreaRef = useRef<HTMLTextAreaElement>(null)
@@ -193,6 +125,8 @@ function UserHomePage() {
         }
 
     }, [tweet.title])
+
+    const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
 
     // Remove uploaded image
     const removeUploadedFile = () => {

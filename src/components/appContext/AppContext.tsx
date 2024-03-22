@@ -1,7 +1,7 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
-import {ClickedTweet, TweetInfo, UserInfo} from "../../Interfaces.tsx";
+import {ClickedTweet, UserInfo} from "../../Interfaces.tsx";
 
 interface AppContextType {
     isRegisterOpen: boolean;
@@ -12,8 +12,6 @@ interface AppContextType {
     handleModelOpen: () => void;
     isModelOpen: boolean;
     setIsModelOpen: Dispatch<SetStateAction<boolean>>;
-    randomTweets: TweetInfo[];
-    setRandomTweets: Dispatch<SetStateAction<TweetInfo[]>>;
     suggestedUsersToFollow: UserInfo[];
     isCommentOpen: boolean;
     setIsCommentOpen: Dispatch<SetStateAction<boolean>>;
@@ -46,44 +44,6 @@ export const AppContext = createContext<AppContextType>({
     isCommentOpen: false,
     setIsCommentOpen: () => null,
     baseUrl: '',
-    setRandomTweets: () => null,
-    randomTweets: [{
-        user: {
-            id: 0,
-            username: '',
-            avatar: ''
-        },
-
-        title: '',
-        user_id: 0,
-        image: '',
-        video: '',
-        updated_at: '',
-        created_at: '',
-        id: 0,
-        retweet_to: null,
-        reactions_count: 0,
-        retweets_count: 0,
-        is_reacted: false,
-        is_retweeted: false,
-        comments_count: 0,
-
-        main_tweet: {
-            title: '',
-            user_id: 0,
-            image: '',
-            video: '',
-            updated_at: '',
-            created_at: '',
-            id: 0,
-            retweet_to: null,
-            reactions_count: 0,
-            retweets_count: 0,
-            comments_count: 0,
-            is_reacted: false,
-            is_retweeted: false,
-        }
-    }],
     suggestedUsersToFollow: [
         {
             id: null,
@@ -166,7 +126,6 @@ const AppProvider = ({children}: AppProviderProps) => {
             created_at: ''
         }
     })
-    const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
 
     const baseUrl = 'http://api.twitter.test'
@@ -181,10 +140,6 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     }, [location.pathname]);
 
-
-
-    // Sort tweets based on created_at in descending order
-    randomTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
 
 
     // Handle model open state
@@ -215,8 +170,6 @@ const AppProvider = ({children}: AppProviderProps) => {
                 handleModelOpen,
                 isModelOpen,
                 setIsModelOpen,
-                randomTweets,
-                setRandomTweets,
                 suggestedUsersToFollow,
                 isCommentOpen,
                 setIsCommentOpen,
