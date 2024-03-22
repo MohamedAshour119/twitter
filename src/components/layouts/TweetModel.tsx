@@ -29,7 +29,8 @@ function TweetModel() {
         videoURL,
         setVideoURL,
         showEmojiPicker,
-        setShowEmojiPicker
+        setShowEmojiPicker,
+        handleTextAreaChange
     } = useContext(TweetContext)
 
     const [isBtnDisabled, setIsBtnDisabled] = useState(true)
@@ -39,15 +40,6 @@ function TweetModel() {
     const displayModelEmojiPicker = () => {
         setShowEmojiPicker(!showEmojiPicker)
     }
-
-    // Handle textArea change in Tweet model
-    const handleTextAreaChangePostModel = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setTweet(prevTweetInModel => ({
-            ...prevTweetInModel,
-            [name]: value
-        }));
-    };
 
     const onEmojiClick = (emojiObject: EmojiData) => {
         setTweet(prevTweetInModel => ({
@@ -257,7 +249,7 @@ function TweetModel() {
                 <textarea
                     ref={textAreaModelRef}
                     maxLength={255}
-                    onChange={handleTextAreaChangePostModel}
+                    onChange={handleTextAreaChange}
                     placeholder={isModelOpen ? `What is happening?!` : 'Post your reply'}
                     name={`title`}
                     value={tweet.title}

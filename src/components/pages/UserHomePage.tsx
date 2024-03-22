@@ -39,9 +39,11 @@ function UserHomePage() {
         setTweet,
         videoURL,
         setVideoURL,
-        showEmojiPicker,
-        setShowEmojiPicker
+        showEmojiEl,
+        setShowEmojiEl,
+        handleTextAreaChange,
     } = useContext(TweetContext)
+
 
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
     const [pageURL, setPageURL] = useState('')
@@ -51,6 +53,7 @@ function UserHomePage() {
     const getHomeTweets = (pageURL: string) => {
         apiClient().get(pageURL)
             .then(res => {
+                setRandomTweets([])
                 setPageURL(res.data.data.pagination.next_page_url)
                 setRandomTweets(prevRandomTweets => ([
                     ...prevRandomTweets,
@@ -100,13 +103,6 @@ function UserHomePage() {
         />
     ));
 
-    const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const {name, value} = e.target;
-        setTweet(prevTweet => ({
-            ...prevTweet,
-            [name]: value
-        }));
-    };
 
     const onEmojiClick = (emojiObject: EmojiData) => {
         setTweet(prevTweet => ({
@@ -217,18 +213,17 @@ function UserHomePage() {
         }
     }
 
-
     // Show the main emoji picker when click on the smile btn
     const displayMainEmojiPicker = () => {
-        setShowEmojiPicker(!showEmojiPicker)
+        setShowEmojiEl(!showEmojiEl)
     }
 
     // Handle close main emoji picker when clicked outside
-    const mainEmojiPickerRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
+    const emojiPickerRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
-            if (!mainEmojiPickerRef.current?.contains(e.target as Node)) {
-                setShowEmojiPicker(false);
+            if (!emojiPickerRef.current?.contains(e.target as Node)) {
+                setShowEmojiEl(false);
             }
         };
 
@@ -343,25 +338,41 @@ function UserHomePage() {
                                             </div>
                                         </label>
 
-                                        <div ref={mainEmojiPickerRef}
-                                             className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                            <CiFaceSmile onClick={displayMainEmojiPicker}/>
-                                            {showEmojiPicker &&
-                                                <EmojiPicker
-                                                    theme={'dark'}
-                                                    emojiStyle={'twitter'}
-                                                    width={320}
-                                                    height={400}
-                                                    onEmojiClick={onEmojiClick}
-                                                    className={`main-emoji-picker`}
-                                                    style={{
-                                                        position: 'absolute',
-                                                        backgroundColor: 'black',
-                                                        boxShadow: '0 3px 12px #ffffff73',
-                                                        borderRadius: '8px',
-                                                        padding: '10px',
-                                                    }}
+                                        <div >
+                                            <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
+                                                <CiFaceSmile
+                                                    onClick={displayMainEmojiPicker}
                                                 />
+                                            </div>
+                                            {showEmojiEl &&
+                                                <div ref={emojiPickerRef}>
+                                                    <EmojiPicker
+                                                        theme={'dark'}
+                                                        emojiStyle={'twitter'}
+                                                        autoFocusSearch
+                                                        lazyLoadEmojis={false}
+                                                        suggestedEmojisMode={'recent'}
+                                                        searchDisabled
+                                                        width={320}
+                                                        height={400}
+                                                        onEmojiClick={onEmojiClick}
+                                                        style={{
+                                                            position: 'absolute',
+                                                            backgroundColor: 'black',
+                                                            boxShadow: '0 3px 12px #ffffff73',
+                                                            borderRadius: '8px',
+                                                            padding: '10px',
+                                                            zIndex: '200'
+                                                        }}
+                                                        previewConfig={{showPreview: false}}
+                                                        categories={[
+                                                            {category: 'smileys_people'},
+                                                            {category: 'animals_nature'},
+                                                            {category: 'food_drink'},
+                                                        ]}
+                                                    />
+                                                </div>
+
                                             }
 
                                         </div>

@@ -1,12 +1,13 @@
-import {createContext, Dispatch, ReactNode, SetStateAction, useState} from "react";
+import {ChangeEvent, createContext, Dispatch, ReactNode, SetStateAction, useState} from "react";
 
 interface TweetContextType {
     tweet: Tweet
     setTweet: Dispatch<SetStateAction<Tweet>>
     videoURL: string
     setVideoURL: Dispatch<SetStateAction<string>>
-    showEmojiPicker: boolean
-    setShowEmojiPicker: Dispatch<SetStateAction<boolean>>
+    showEmojiEl: boolean
+    setShowEmojiEl: Dispatch<SetStateAction<boolean>>
+    handleTextAreaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
 }
 
 interface Tweet {
@@ -26,8 +27,10 @@ export const TweetContext = createContext<TweetContextType>({
     setTweet: () => null,
     videoURL: '',
     setVideoURL: () => null,
-    showEmojiPicker: false,
-    setShowEmojiPicker: () => null,
+    showEmojiEl: false,
+    setShowEmojiEl: () => null,
+    handleTextAreaChange: () => null,
+
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
@@ -38,7 +41,15 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         video: null
     })
     const [videoURL, setVideoURL] = useState("");
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false)
+    const [showEmojiEl, setShowEmojiEl] = useState(false)
+
+    const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+        const {name, value} = e.target;
+        setTweet(prevTweet => ({
+            ...prevTweet,
+            [name]: value
+        }));
+    };
 
 
     return (
@@ -48,8 +59,9 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 setTweet,
                 videoURL,
                 setVideoURL,
-                showEmojiPicker,
-                setShowEmojiPicker,
+                showEmojiEl,
+                setShowEmojiEl,
+                handleTextAreaChange,
             }}
         >
             {children}
