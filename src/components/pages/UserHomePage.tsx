@@ -42,6 +42,8 @@ function UserHomePage() {
         showEmojiEl,
         setShowEmojiEl,
         handleTextAreaChange,
+        onEmojiClick,
+        displayMainEmojiPicker,
     } = useContext(TweetContext)
 
 
@@ -102,14 +104,6 @@ function UserHomePage() {
             {...tweetInfo}
         />
     ));
-
-
-    const onEmojiClick = (emojiObject: EmojiData) => {
-        setTweet(prevTweet => ({
-            ...prevTweet,
-            title: prevTweet.title + emojiObject.emoji
-        }))
-    };
 
 
     // Handle input file change
@@ -213,10 +207,7 @@ function UserHomePage() {
         }
     }
 
-    // Show the main emoji picker when click on the smile btn
-    const displayMainEmojiPicker = () => {
-        setShowEmojiEl(!showEmojiEl)
-    }
+
 
     // Handle close main emoji picker when clicked outside
     const emojiPickerRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
@@ -340,9 +331,7 @@ function UserHomePage() {
 
                                         <div >
                                             <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                                <CiFaceSmile
-                                                    onClick={displayMainEmojiPicker}
-                                                />
+                                                <CiFaceSmile onClick={displayMainEmojiPicker}/>
                                             </div>
                                             {showEmojiEl &&
                                                 <div ref={emojiPickerRef}>

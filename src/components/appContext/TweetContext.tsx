@@ -1,4 +1,5 @@
-import {ChangeEvent, createContext, Dispatch, ReactNode, SetStateAction, useState} from "react";
+import {ChangeEvent, createContext, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useState} from "react";
+import {EmojiData} from "emoji-picker-react";
 
 interface TweetContextType {
     tweet: Tweet
@@ -8,6 +9,11 @@ interface TweetContextType {
     showEmojiEl: boolean
     setShowEmojiEl: Dispatch<SetStateAction<boolean>>
     handleTextAreaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
+    onEmojiClick: (emojiObject: EmojiData) => void
+    displayMainEmojiPicker: MouseEventHandler<SVGElement>
+    displayModelEmojiPicker: MouseEventHandler<SVGElement>
+    showEmojiElInModel: boolean
+    setShowEmojiElInModel: Dispatch<SetStateAction<boolean>>
 }
 
 interface Tweet {
@@ -30,7 +36,11 @@ export const TweetContext = createContext<TweetContextType>({
     showEmojiEl: false,
     setShowEmojiEl: () => null,
     handleTextAreaChange: () => null,
-
+    onEmojiClick: () => null,
+    displayMainEmojiPicker: () => null,
+    showEmojiElInModel: false,
+    setShowEmojiElInModel: () => null,
+    displayModelEmojiPicker: () => null,
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
@@ -42,6 +52,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     })
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiEl, setShowEmojiEl] = useState(false)
+    const [showEmojiElInModel, setShowEmojiElInModel] = useState(false)
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -51,6 +62,22 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         }));
     };
 
+    const onEmojiClick = (emojiObject: EmojiData) => {
+        setTweet(prevTweet => ({
+            ...prevTweet,
+            title: prevTweet.title + emojiObject.emoji
+        }))
+    };
+
+    // Show the main emoji picker when click on the smile btn
+    const displayMainEmojiPicker = () => {
+        setShowEmojiEl(!showEmojiEl)
+    }
+
+    // Show the model emoji picker when click on the smile btn
+    const displayModelEmojiPicker = () => {
+        setShowEmojiElInModel(!showEmojiElInModel)
+    }
 
     return (
         <TweetContext.Provider
@@ -62,6 +89,11 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 showEmojiEl,
                 setShowEmojiEl,
                 handleTextAreaChange,
+                onEmojiClick,
+                displayMainEmojiPicker,
+                displayModelEmojiPicker,
+                showEmojiElInModel,
+                setShowEmojiElInModel,
             }}
         >
             {children}

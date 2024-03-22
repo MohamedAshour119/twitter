@@ -7,6 +7,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {Link} from "react-router-dom";
 import {TweetContext} from "../appContext/TweetContext.tsx";
+import * as React from "react";
 
 
 function TweetModel() {
@@ -28,25 +29,14 @@ function TweetModel() {
         setTweet,
         videoURL,
         setVideoURL,
-        showEmojiPicker,
-        setShowEmojiPicker,
-        handleTextAreaChange
+        showEmojiElInModel,
+        setShowEmojiElInModel,
+        handleTextAreaChange,
+        onEmojiClick,
+        displayModelEmojiPicker,
     } = useContext(TweetContext)
 
     const [isBtnDisabled, setIsBtnDisabled] = useState(true)
-
-
-    // Show the model emoji picker when click on the smile btn
-    const displayModelEmojiPicker = () => {
-        setShowEmojiPicker(!showEmojiPicker)
-    }
-
-    const onEmojiClick = (emojiObject: EmojiData) => {
-        setTweet(prevTweetInModel => ({
-            ...prevTweetInModel,
-            title: prevTweetInModel.title + emojiObject.emoji
-        }))
-    };
 
     // Handle input file change
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -193,7 +183,7 @@ function TweetModel() {
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
             if (!modelEmojiPickerRef.current?.contains(e.target as Node)) {
-                setShowEmojiPicker(false);
+                setShowEmojiElInModel(false);
             }
         };
 
@@ -292,25 +282,39 @@ function TweetModel() {
                         </div>
                     </label>
 
-                    <div ref={modelEmojiPickerRef} className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
+                    <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
                         <CiFaceSmile onClick={displayModelEmojiPicker}/>
-                        {showEmojiPicker &&
+                    </div>
+                    {showEmojiElInModel &&
+                        <div ref={modelEmojiPickerRef}>
                             <EmojiPicker
                                 theme={'dark'}
                                 emojiStyle={'twitter'}
+                                autoFocusSearch
+                                lazyLoadEmojis={false}
+                                suggestedEmojisMode={'recent'}
+                                searchDisabled
                                 width={320}
                                 height={400}
+                                onEmojiClick={onEmojiClick}
                                 style={{
                                     position: 'absolute',
                                     backgroundColor: 'black',
                                     boxShadow: '0 3px 12px #ffffff73',
                                     borderRadius: '8px',
                                     padding: '10px',
+                                    zIndex: '200'
                                 }}
-                                onEmojiClick={onEmojiClick}
+                                previewConfig={{showPreview: false}}
+                                categories={[
+                                    {category: 'smileys_people'},
+                                    {category: 'animals_nature'},
+                                    {category: 'food_drink'},
+                                ]}
                             />
-                        }
-                    </div>
+                        </div>
+
+                    }
                 </div>
 
                 <button
