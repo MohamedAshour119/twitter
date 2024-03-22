@@ -112,7 +112,7 @@ function Tweet(props: TweetInfo) {
     return (
         <>
             <div
-                className={` gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 relative`}>
+                className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''}  hover:bg-zinc-800/20 transition border-b-1 border-zinc-700/70 relative`}>
                 {(isRetweeted || props.main_tweet && location?.pathname === `/users/${username}` ) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
@@ -120,9 +120,7 @@ function Tweet(props: TweetInfo) {
                             className={`text-sm`}>{(username === user?.username) ? 'You retweeted' : `${username} retweeted`}</span>
                     </Link>
                 }
-                <Link
-                    to={`/tweets/${props.id}`}
-                    className={`border-b border-zinc-700/70 pb-10 hover:bg-zinc-800/20 transition`}>
+                <Link to={`/tweets/${props.id}`}>
                     <div className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
                         <div className={`flex gap-x-2`}>
                             <Link to={`/users/${props.user?.username}`} className={`md:w-[10%] w-[14%]`}>
@@ -172,7 +170,7 @@ function Tweet(props: TweetInfo) {
 
                 </Link>
 
-                <div className={`absolute top-20 left-20 flex xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 mt-2 text-zinc-400/70`}>
+                <div className={`flex ml-20 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 text-zinc-400/70`}>
                     <div onClick={cominedFunctions} className={`flex items-center cursor-pointer group`}>
                         <div
                             className={`text-xl flex justify-center items-center group-hover:text-sky-500 transition group-hover:bg-sky-500/20 rounded-full p-2`}>
@@ -206,7 +204,7 @@ function Tweet(props: TweetInfo) {
 
                 {/*  Comments  */}
                 { location?.pathname === `/tweets/${props.id}` &&
-                    <div className={`w-full border-b border-zinc-700/70 sm:px-6 px-2 py-3`}>
+                    <div className={`w-full border-t border-zinc-700/70 sm:px-6 px-2 py-3`}>
                         <div className={`grid grid-cols-[7fr,1fr] items-center w-full`}>
                             <div className={`flex gap-x-3 w-full`}>
                                 <Link to={`/users/${user?.username}`}>

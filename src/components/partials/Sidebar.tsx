@@ -9,6 +9,7 @@ import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {ToastContainer} from "react-toastify";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
 
 function Sidebar() {
@@ -19,6 +20,8 @@ function Sidebar() {
         baseUrl,
         setIsModelOpen
     } = useContext(AppContext)
+
+    const {setTweet} = useContext(TweetContext)
 
     const [logoutWindowOpen, setLogoutWindowOpen] = useState(false)
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -53,6 +56,15 @@ function Sidebar() {
 
     }, [] )
 
+    // Clear the tweet when click on post btn in sidebar
+    const openTweetModel = () => {
+        setIsModelOpen(prev => !prev)
+        setTweet(() => ({
+            title: "",
+            image: null,
+            video: null,
+        }))
+    }
 
     return (
         <>
@@ -91,7 +103,7 @@ function Sidebar() {
                         </Link>
                     </li>
                     <li>
-                        <div onClick={() => setIsModelOpen(prev => !prev)} className={`flex items-end justify-center cursor-pointer w-fit px-4 py-4 xl:py-3 xl:px-0 xl:w-auto rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
+                        <div onClick={openTweetModel} className={`flex items-end justify-center cursor-pointer w-fit px-4 py-4 xl:py-3 xl:px-0 xl:w-auto rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
                             <span className={`hidden xl:block`}>Post</span>
                             <FaFeatherPointed className={`block xl:hidden`}/>
                         </div>

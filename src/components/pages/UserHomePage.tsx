@@ -15,6 +15,7 @@ import EmojiPicker from 'emoji-picker-react';
 import {EmojiData} from 'emoji-picker-react'
 import TweetModel from "../layouts/TweetModel.tsx";
 import apiClient from "../services/ApiClient.tsx";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
 interface Tweet {
     title: string
@@ -33,14 +34,15 @@ function UserHomePage() {
         isCommentOpen,
     } = useContext(AppContext);
 
-    const [tweet, setTweet] = useState<Tweet>({
-        title: '',
-        image: null,
-        video: null
-    })
+    const {
+        tweet,
+        setTweet,
+        videoURL,
+        setVideoURL,
+        showEmojiPicker,
+        setShowEmojiPicker
+    } = useContext(TweetContext)
 
-    const [videoURL, setVideoURL] = useState("");
-    const [showEmojiPicker, setShowEmojiPicker] = useState(false)
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
     const [pageURL, setPageURL] = useState('')
 
@@ -163,21 +165,22 @@ function UserHomePage() {
     const sendRequest = () => {
         const formData = new FormData();
         formData.append('title', tweet.title);
-        if (tweet.image) {
+
+        if(tweet.image){
             formData.append('image', tweet.image as Blob);
         }
-        if (tweet.video) {
+        if(tweet.video){
             formData.append('video', tweet.video as Blob)
         }
 
-        ApiClient().post('/create-tweet', formData)
+        ApiClient().post(`/create-tweet`, formData)
             .then(res => {
-                console.log(res.data.data)
                 setIsModelOpen(false)
-                setRandomTweets(prevRandomTweets => ([
-                    res.data.data ,...prevRandomTweets
-                ]))
 
+                // Concatenate the new tweet with existing tweets and sort them based on created_at
+                setRandomTweets(prevRandomTweets => (
+                    [res.data.data, ...prevRandomTweets]
+                ));
                 makeInputEmpty()
 
                 if (inputElement) {
@@ -243,7 +246,7 @@ function UserHomePage() {
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header
-                    className={`w-full grid grid-cols-1 border-b border-zinc-700/70 2xl:max-w-[38.46rem] xl:max-w-[33.3rem] lg:max-w-[33.7rem] md:max-w-[39.34rem] sm:max-w-[31.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.6rem] backdrop-blur-sm`}>
+                    className={`w-full grid grid-cols-1 border ${isModelOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 2xl:max-w-[39rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] backdrop-blur-sm`}>
                     {/* Header but only on small screens */}
                     <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                         <img className={`size-11 rounded-full object-cover`}
@@ -331,7 +334,9 @@ function UserHomePage() {
                                         <label htmlFor="uploadInput">
                                             <div
                                                 className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                                <input name={'image'} id={`uploadInput`} type="file"
+                                                <input name={'image'}
+                                                       id={`uploadInput`}
+                                                       type="file"
                                                        className={`hidden`}
                                                        onChange={(e) => handleFileChange(e, 'image', setTweet)}/>
                                                 <MdOutlinePermMedia/>

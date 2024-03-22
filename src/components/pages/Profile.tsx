@@ -179,7 +179,7 @@ function Profile() {
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
-                <header className={`flex gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
+                <header className={`flex border ${isModelOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
                     <Link to={'/home'} className={`w-[7%] hover:bg-neutral-600/30 flex justify-center items-center py-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
                     </Link>

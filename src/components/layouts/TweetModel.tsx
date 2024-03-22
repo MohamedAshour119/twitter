@@ -6,12 +6,8 @@ import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {Link} from "react-router-dom";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
-interface Tweet{
-    title: string
-    image: string| File | null | undefined
-    video: string| File | null | undefined
-}
 
 function TweetModel() {
 
@@ -27,32 +23,34 @@ function TweetModel() {
         clickedTweet,
     } = useContext(AppContext);
 
-    const [tweetInModel, setTweetInModel] = useState<Tweet>({
-        title: '',
-        image: null,
-        video: null
-    })
-    const [videoURL, setVideoURL] = useState("");
-    const [showModelEmojiPicker, setShowModelEmojiPicker] = useState(false)
+    const {
+        tweet,
+        setTweet,
+        videoURL,
+        setVideoURL,
+        showEmojiPicker,
+        setShowEmojiPicker
+    } = useContext(TweetContext)
+
     const [isBtnDisabled, setIsBtnDisabled] = useState(true)
 
 
     // Show the model emoji picker when click on the smile btn
     const displayModelEmojiPicker = () => {
-        setShowModelEmojiPicker(!showModelEmojiPicker)
+        setShowEmojiPicker(!showEmojiPicker)
     }
 
     // Handle textArea change in Tweet model
     const handleTextAreaChangePostModel = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const { name, value } = e.target;
-        setTweetInModel(prevTweetInModel => ({
+        setTweet(prevTweetInModel => ({
             ...prevTweetInModel,
             [name]: value
         }));
     };
 
     const onEmojiClick = (emojiObject: EmojiData) => {
-        setTweetInModel(prevTweetInModel => ({
+        setTweet(prevTweetInModel => ({
             ...prevTweetInModel,
             title: prevTweetInModel.title + emojiObject.emoji
         }))
@@ -62,15 +60,15 @@ function TweetModel() {
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.type.startsWith('image') && !tweetInModel.video) {
-                setTweetInModel(prevTweetInModel => ({
+            if (file.type.startsWith('image') && !tweet.video) {
+                setTweet(prevTweetInModel => ({
                     ...prevTweetInModel,
                     image: file,
                     video: null
                 }))
 
-            } else if (file.type.startsWith('video') && !tweetInModel.image) {
-                setTweetInModel(prevTweetInModel => ({
+            } else if (file.type.startsWith('video') && !tweet.image) {
+                setTweet(prevTweetInModel => ({
                     ...prevTweetInModel,
                     image: null,
                     video: file
@@ -82,7 +80,7 @@ function TweetModel() {
 
     // Set input to empty when he successfully post
     const makeInputEmpty = () => {
-        setTweetInModel(prevTweetInModel => ({
+        setTweet(prevTweetInModel => ({
             ...prevTweetInModel,
             title: "",
             image: null,
@@ -95,13 +93,13 @@ function TweetModel() {
     // Send Request with data
     const sendRequest = () => {
         const formData = new FormData();
-        formData.append('title', tweetInModel.title);
+        formData.append('title', tweet.title);
 
-        if(tweetInModel.image){
-            formData.append('image', tweetInModel.image as Blob);
+        if(tweet.image){
+            formData.append('image', tweet.image as Blob);
         }
-        if(tweetInModel.video){
-            formData.append('video', tweetInModel.video as Blob)
+        if(tweet.video){
+            formData.append('video', tweet.video as Blob)
         }
 
         if(isCommentOpen) {
@@ -133,13 +131,13 @@ function TweetModel() {
 
     // Change the disabled post btn if the tweetModel.title not empty
     useEffect( () => {
-        if(tweetInModel.title.length > 0 || tweetInModel.image || tweetInModel.video){
+        if(tweet.title.length > 0 || tweet.image || tweet.video){
             setIsBtnDisabled(false)
         }else {
             setIsBtnDisabled(true)
         }
 
-    }, [tweetInModel.title, tweetInModel.image, tweetInModel.video] )
+    }, [tweet.title, tweet.image, tweet.video] )
 
 
     // Dynamic change textarea height based on the text long
@@ -152,7 +150,7 @@ function TweetModel() {
             textAreaModelRef.current.style.height = textAreaModelRef.current.scrollHeight + 1 + 'px';
         }
 
-    }, [tweetInModel.title] )
+    }, [tweet.title] )
 
     // Handle start animation when page loaded
     const model = useRef<HTMLDivElement>(null);
@@ -165,12 +163,11 @@ function TweetModel() {
     // Close model post when clicked outside it
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
-            if(!model.current?.contains(e.target as Node)){
+            if(!model.current?.contains(e.target as Node) && (isModelOpen || isCommentOpen)){
                 setIsModelOpen(false)
                 setIsCommentOpen(false)
 
-                setTweetInModel(prevTweetInModel => ({
-                    ...prevTweetInModel,
+                setTweet(() => ({
                     title: "",
                     image: null,
                     video: null,
@@ -183,12 +180,12 @@ function TweetModel() {
             document.removeEventListener('mousedown', handleClickOutside)
         }
 
-    }, [] )
+    }, [isModelOpen, isCommentOpen] )
 
     // Remove uploaded image
     const removeUploadedFile = () => {
 
-        setTweetInModel(prevTweetInModel => ({
+        setTweet(prevTweetInModel => ({
             ...prevTweetInModel,
             image: null,
             video: null,
@@ -204,7 +201,7 @@ function TweetModel() {
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
             if (!modelEmojiPickerRef.current?.contains(e.target as Node)) {
-                setShowModelEmojiPicker(false);
+                setShowEmojiPicker(false);
             }
         };
 
@@ -254,7 +251,7 @@ function TweetModel() {
 
             }
 
-            <div className={`flex gap-x-3 ${(tweetInModel.image || tweetInModel.video) ? 'border-0' : 'border-b'} border-zinc-700/70 text-neutral-200`}>
+            <div className={`flex gap-x-3 ${(tweet.image || tweet.video) ? 'border-0' : 'border-b'} border-zinc-700/70 text-neutral-200`}>
                 <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`}
                      alt=""/>
                 <textarea
@@ -263,25 +260,25 @@ function TweetModel() {
                     onChange={handleTextAreaChangePostModel}
                     placeholder={isModelOpen ? `What is happening?!` : 'Post your reply'}
                     name={`title`}
-                    value={tweetInModel.title}
+                    value={tweet.title}
                     className={`bg-transparent overflow-x-auto resize-none text-xl w-full pt-1 pb-16 placeholder:font-light placeholder:text-zinc-500 focus:outline-0`}
                 />
             </div>
 
             {/* Preview uploaded image */}
-            {(tweetInModel.image && !tweetInModel.video) &&
-                <div className={`${!tweetInModel.image ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
+            {(tweet.image && !tweet.video) &&
+                <div className={`${!tweet.image ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
                     <div onClick={removeUploadedFile} className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                         <HiMiniXMark className={`size-6`}/>
                     </div>
                     <img className={`w-full max-h-[35rem] rounded-2xl transition`}
-                         src={tweetInModel?.image ? URL.createObjectURL(tweetInModel?.image as File) : ''} alt=""/>
+                         src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''} alt=""/>
                 </div>
             }
 
             {/* Preview uploaded video */}
-            {(tweetInModel.video && !tweetInModel.image) &&
-                <div className={`${!tweetInModel.video ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
+            {(tweet.video && !tweet.image) &&
+                <div className={`${!tweet.video ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
                     <div onClick={removeUploadedFile} className="absolute z-50 right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                         <HiMiniXMark className={`size-6`}/>
                     </div>
@@ -293,19 +290,19 @@ function TweetModel() {
                 </div>
             }
 
-            <div className={`flex justify-between w-full ${tweetInModel.image ? 'mt-2' : 'mt-0'}`}>
+            <div className={`flex justify-between w-full ${tweet.image ? 'mt-2' : 'mt-0'}`}>
                 <div className={`flex text-2xl text-sky-600`}>
                     <label htmlFor="uploadInputInModel">
                         <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
                             <input id={`uploadInputInModel`} type="file" className={`hidden`}
-                                   onChange={(e) => handleFileChange(e, 'image', setTweetInModel)}/>
+                                   onChange={(e) => handleFileChange(e, 'image', setTweet)}/>
                             <MdOutlinePermMedia/>
                         </div>
                     </label>
 
                     <div ref={modelEmojiPickerRef} className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
                         <CiFaceSmile onClick={displayModelEmojiPicker}/>
-                        {showModelEmojiPicker &&
+                        {showEmojiPicker &&
                             <EmojiPicker
                                 theme={'dark'}
                                 emojiStyle={'twitter'}
