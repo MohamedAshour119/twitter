@@ -24,6 +24,7 @@ interface TweetContextType {
 }
 
 interface Tweet {
+    id: number | null
     title: string
     image: string | File | null | undefined
     video: string | File | null | undefined
@@ -33,6 +34,7 @@ interface TweetProviderProps {
 }
 export const TweetContext = createContext<TweetContextType>({
     tweet: {
+        id: null,
         title: '',
         image: null,
         video: null
@@ -95,6 +97,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const {setIsModelOpen} = useContext(AppContext)
 
     const [tweet, setTweet] = useState<Tweet>({
+        id: null,
         title: '',
         image: null,
         video: null

@@ -11,7 +11,10 @@ function TweetTextAreaAndPreview() {
     const {
         user,
         baseUrl,
-        isModelOpen
+        isModelOpen,
+        isCommentOpen,
+        location,
+        clickedTweet,
     } = useContext(AppContext)
 
     const {
@@ -82,8 +85,8 @@ function TweetTextAreaAndPreview() {
 
 
     return (
-        <>
-            <div className={`flex flex-col py-3 px-6 ${isModelOpen ? 'mt-0' : 'sm:mt-16 mt-36 '} ${!isModelOpen ? 'border-b' : ''} border-zinc-700/70 z-10`}>
+        <div className={`${location?.pathname !== `/home` && !isModelOpen && !isCommentOpen ? 'border-t border-zinc-700/70' : ''}`}>
+            <div className={`flex flex-col py-3 px-6 ${location?.pathname !== `/home` || isModelOpen || isCommentOpen ? 'mt-0' : 'sm:mt-16 mt-36 border-b'} border-zinc-700/70 z-10`}>
                 <div className={`flex gap-x-3`}>
 
                     <img className={`size-11 object-cover rounded-full`}
@@ -94,10 +97,10 @@ function TweetTextAreaAndPreview() {
                                     ref={textAreaRef}
                                     maxLength={255}
                                     onChange={handleTextAreaChange}
-                                    placeholder={!tweet.title ? 'What is happening?!' : ''}
+                                    placeholder={ (isModelOpen || !isCommentOpen) && location?.pathname === '/home' || isModelOpen ? 'What is happening?!' : 'Post your reply'}
                                     name={`title`}
                                     value={tweet.title}
-                                    className={`${isModelOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : 'min-h-10'}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
+                                    className={`${isModelOpen || isCommentOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : 'min-h-10'}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                                 />
 
                         {/* Preview uploaded image */}
@@ -184,13 +187,13 @@ function TweetTextAreaAndPreview() {
 
                             <div onClick={sendRequest}
                                  className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
-                                Post
+                                {!isModelOpen && (isCommentOpen || location?.pathname !== '/home') ? 'Reply' : 'Post'}
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </>
+        </div>
 
     )
 }

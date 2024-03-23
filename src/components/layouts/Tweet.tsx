@@ -8,6 +8,7 @@ import {toast, Zoom} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {Link, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
+import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 
 function Tweet(props: TweetInfo) {
 
@@ -18,6 +19,7 @@ function Tweet(props: TweetInfo) {
         isCommentOpen,
         setIsCommentOpen,
         setClickedTweet,
+        clickedTweet,
     } = useContext(AppContext);
 
     const {username} = useParams();
@@ -112,7 +114,7 @@ function Tweet(props: TweetInfo) {
     return (
         <>
             <div
-                className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''}  hover:bg-zinc-800/20 transition border-b-1 border-zinc-700/70 relative`}>
+                className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} hover:bg-zinc-800/20 transition border-b-1 border-zinc-700/70 relative`}>
                 {((isRetweeted || props.main_tweet) && username !== props.user.username && location?.pathname === `/users/${username}` ) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
@@ -204,29 +206,7 @@ function Tweet(props: TweetInfo) {
 
                 {/*  Comments  */}
                 { location?.pathname === `/tweets/${props.id}` &&
-                    <div className={`w-full border-t border-zinc-700/70 sm:px-6 px-2 py-3`}>
-                        <div className={`grid grid-cols-[7fr,1fr] items-center w-full`}>
-                            <div className={`flex gap-x-3 w-full`}>
-                                <Link to={`/users/${user?.username}`}>
-                                    <img
-                                        className={`size-11 object-cover rounded-full`}
-                                        src={`${baseUrl}/storage/${user?.avatar}`}
-                                        alt=""
-                                    />
-                                </Link>
-
-                                <textarea
-                                    placeholder={`Have something to say?`}
-                                    className={`w-[85%] px-3 bg-[#2a2d32b3] max-h-auto rounded-xl focus:outline-0 break-words overflow-x-hidden`}
-                                />
-                            </div>
-                            <div className={`self-start`}>
-                                <button
-                                    className={`bg-sky-500 hover:bg-sky-600 font-semibold px-4 py-2 rounded-xl transition`}>Reply
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <TweetTextAreaAndPreview/>
                 }
 
             </div>
