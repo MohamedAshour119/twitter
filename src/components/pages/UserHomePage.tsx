@@ -53,11 +53,10 @@ function UserHomePage() {
     const getHomeTweets = (pageURL: string) => {
         apiClient().get(pageURL)
             .then(res => {
-                setRandomTweets([])
                 setPageURL(res.data.data.pagination.next_page_url)
                 setRandomTweets(prevRandomTweets => ([
                     ...prevRandomTweets,
-                    ...res.data.data.tweets
+                    ...res.data.data.tweets,
                 ]))
             })
             .catch(err => {
@@ -68,7 +67,6 @@ function UserHomePage() {
     useEffect(() => {
         getHomeTweets('home-tweets')
     }, [])
-
 
 
     // Detect when scroll to last element
@@ -193,7 +191,7 @@ function UserHomePage() {
                 </div>
 
                 {/* Sidebar */}
-                <div className={`justify-end hidden sm:flex relative`}>
+                <div className={`hidden sm:flex relative`}>
                     <Sidebar/>
                 </div>
 

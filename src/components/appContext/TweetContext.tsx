@@ -150,9 +150,6 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         }
     };
 
-    // Sort tweets based on created_at in descending order
-    randomTweets.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
     // Set input to empty when he successfully post
     const makeInputEmpty = () => {
         setTweet(prevTweet => ({

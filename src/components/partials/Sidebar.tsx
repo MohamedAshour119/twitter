@@ -21,6 +21,8 @@ function Sidebar() {
         setIsModelOpen
     } = useContext(AppContext)
 
+    const {setRandomTweets} = useContext(TweetContext)
+
     const {setTweet} = useContext(TweetContext)
 
     const [logoutWindowOpen, setLogoutWindowOpen] = useState(false)
@@ -36,6 +38,7 @@ function Sidebar() {
                 .then( () => {
                     localStorage.removeItem('token')
                     setUser(null)
+                    setRandomTweets([])
                 })
                 .catch(() => {})
         }
@@ -69,7 +72,7 @@ function Sidebar() {
     return (
         <>
             <ToastContainer/>
-            <div className={`text-neutral-100 xl:px-16 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container fixed max-w-fit z-50`}>
+            <div className={`text-neutral-100 2xl:px-16 xl:px-10 lg:px-0 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container fixed max-w-fit xl:max-w-[24%] z-50`}>
                 <ul className={`flex flex-col gap-y-5`}>
                     <li className={`flex items-center`}>
                         <Link to={`/home`}>
@@ -103,7 +106,7 @@ function Sidebar() {
                         </Link>
                     </li>
                     <li>
-                        <div onClick={openTweetModel} className={`flex items-end justify-center cursor-pointer w-fit px-4 py-4 xl:py-3 xl:px-0 xl:w-auto rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
+                        <div onClick={openTweetModel} className={`w-fit xl:w-auto 2xl:max-w-[85%] flex items-end justify-center cursor-pointer px-4 py-4 xl:py-3 xl:px-0 rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
                             <span className={`hidden xl:block`}>Post</span>
                             <FaFeatherPointed className={`block xl:hidden`}/>
                         </div>
@@ -117,7 +120,7 @@ function Sidebar() {
                 </div>
 
 
-                <div ref={logoutRef} onClick={handleClick} className={`flex items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
+                <div ref={logoutRef} onClick={handleClick} className={`2xl:max-w-[85%] flex justify-between items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
                     <div className={`flex items-center gap-x-4`}>
 
                         <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
