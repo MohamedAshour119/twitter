@@ -125,7 +125,7 @@ function Tweet(props: TweetInfo) {
                         <div className={`flex gap-x-2`}>
                             <Link to={`/users/${props.user?.username}`} className={`md:w-[10%] w-[14%]`}>
                                 <img
-                                    className={`size-11 object-cover rounded-full`}
+                                    className={`size-11 object-cover rounded-full`}ooooo
                                     src={`${baseUrl}/storage/${props.user?.avatar}`}
                                     alt=""
                                 />
@@ -217,7 +217,7 @@ function Tweet(props: TweetInfo) {
 
                                 <textarea
                                     placeholder={`Have something to say?`}
-                                    className={`w-[85%] px-3 bg-[#2a2d32b3] rounded-xl focus:outline-0 break-words overflow-x-hidden`}
+                                    className={`w-[85%] px-3 bg-[#2a2d32b3] max-h-auto rounded-xl focus:outline-0 break-words overflow-x-hidden`}
                                 />
                             </div>
                             <div className={`self-start`}>
