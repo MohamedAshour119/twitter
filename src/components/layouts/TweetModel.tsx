@@ -39,6 +39,7 @@ function TweetModel() {
                 setIsCommentOpen(false)
 
                 setTweet(() => ({
+                    id: null,
                     title: "",
                     image: null,
                     video: null,

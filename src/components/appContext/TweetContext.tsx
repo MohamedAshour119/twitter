@@ -52,6 +52,7 @@ export const TweetContext = createContext<TweetContextType>({
         user_id: 0,
         image: '',
         video: '',
+        show_tweet_created_at: '',
         updated_at: '',
         created_at: '',
         id: 0,
@@ -67,6 +68,7 @@ export const TweetContext = createContext<TweetContextType>({
             user_id: 0,
             image: '',
             video: '',
+            show_tweet_created_at: '',
             updated_at: '',
             created_at: '',
             id: 0,
@@ -94,7 +96,7 @@ export const TweetContext = createContext<TweetContextType>({
 
 const TweetProvider = ({children}: TweetProviderProps) => {
 
-    const {setIsModelOpen} = useContext(AppContext)
+    const {setIsModelOpen, clickedTweet} = useContext(AppContext)
 
     const [tweet, setTweet] = useState<Tweet>({
         id: null,
@@ -116,10 +118,13 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     };
 
     const onEmojiClick = (emojiObject: EmojiData) => {
+
         setTweet(prevTweet => ({
             ...prevTweet,
             title: prevTweet.title + emojiObject.emoji
         }))
+        setShowEmojiEl(false)
+        setShowEmojiElInModel(false)
     };
 
     // Show the main emoji picker when click on the smile btn
@@ -169,6 +174,8 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const sendRequest = () => {
         const formData = new FormData();
         formData.append('title', tweet.title);
+        formData.append('id', String(clickedTweet.tweet.id) )
+
 
         if(tweet.image){
             formData.append('image', tweet.image as Blob);
@@ -177,24 +184,36 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             formData.append('video', tweet.video as Blob)
         }
 
-        ApiClient().post(`/create-tweet`, formData)
-            .then(res => {
-                setIsModelOpen(false)
+        if(location.pathname == `/tweets/${clickedTweet.tweet.id}`){
+            ApiClient().post(`/addComment`, formData)
+                .then(res => {
+                    makeInputEmpty()
+                    console.log(res)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        } else {
+            ApiClient().post(`/create-tweet`, formData)
+                .then(res => {
+                    setIsModelOpen(false)
 
-                // Concatenate the new tweet with existing tweets and sort them based on created_at
-                setRandomTweets(prevRandomTweets => (
-                    [res.data.data, ...prevRandomTweets]
-                ));
-                makeInputEmpty()
+                    // Concatenate the new tweet with existing tweets and sort them based on created_at
+                    setRandomTweets(prevRandomTweets => (
+                        [res.data.data, ...prevRandomTweets]
+                    ));
+                    makeInputEmpty()
 
-                if (inputElement) {
-                    inputElement.value = '';
-                }
+                    if (inputElement) {
+                        inputElement.value = '';
+                    }
 
-            })
-            .catch(err => {
-                console.log(err)
-            })
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+
     }
 
     return (

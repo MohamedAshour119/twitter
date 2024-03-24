@@ -14,7 +14,6 @@ function TweetTextAreaAndPreview() {
         isModelOpen,
         isCommentOpen,
         location,
-        clickedTweet,
     } = useContext(AppContext)
 
     const {
@@ -27,7 +26,6 @@ function TweetTextAreaAndPreview() {
         displayMainEmojiPicker,
         handleFileChange,
         sendRequest,
-        setShowEmojiEl,
     } = useContext(TweetContext)
 
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
@@ -67,21 +65,6 @@ function TweetTextAreaAndPreview() {
         }
 
     }, [tweet.title, tweet.image, tweet.video])
-
-    // Handle close main emoji picker when clicked outside
-    const emojiPickerRef = useRef<HTMLDivElement>(null); // Specify the type as HTMLDivElement
-    useEffect(() => {
-        const handleClick = (e: MouseEvent) => {
-            if (!emojiPickerRef.current?.contains(e.target as Node)) {
-                setShowEmojiEl(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClick);
-        return () => {
-            document.removeEventListener('mousedown', handleClick);
-        };
-    }, []);
 
 
     return (
@@ -152,7 +135,7 @@ function TweetTextAreaAndPreview() {
                                         <CiFaceSmile onClick={displayMainEmojiPicker}/>
                                     </div>
                                     {showEmojiEl &&
-                                        <div ref={emojiPickerRef}>
+                                        <div>
                                             <EmojiPicker
                                                 theme={'dark'}
                                                 emojiStyle={'twitter'}
@@ -179,7 +162,6 @@ function TweetTextAreaAndPreview() {
                                                 ]}
                                             />
                                         </div>
-
                                     }
 
                                 </div>

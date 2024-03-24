@@ -3,10 +3,12 @@ interface Tweet {
     user_id: number;
     image: string | null;
     video: string | null;
+    show_tweet_created_at: string;
     updated_at: string;
     created_at: string;
     id: number;
     retweet_to: number | null;
+    comment_to: number | null;
     reactions_count: number;
     retweets_count: number,
     comments_count: number;
@@ -49,6 +51,6 @@ export interface ClickedTweet {
     tweet: {
         title: string | null,
         created_at: string,
-        id: number,
+        id: number | null,
     }
 }

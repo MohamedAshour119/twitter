@@ -72,7 +72,7 @@ export const AppContext = createContext<AppContextType>({
         tweet: {
             title: '',
             created_at: '',
-            id: 0,
+            id: null,
         },
     },
 
@@ -114,21 +114,31 @@ const AppProvider = ({children}: AppProviderProps) => {
         is_followed: null,
         tweets_count: null,
     })
+
+
     const [clickedTweet, setClickedTweet] = useState<ClickedTweet>({
         user: {
             id: 0,
             username: '',
-            avatar: '',
+            avatar: ''
         },
         tweet: {
-            id: 0,
             title: '',
-            created_at: ''
-        }
+            created_at: '',
+            id: null,
+        },
     })
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
 
     const baseUrl = 'http://api.twitter.test'
+
+    useEffect(() => {
+        const storedTweet = localStorage.getItem('tweet');
+        if(storedTweet) {
+            setClickedTweet(JSON.parse(storedTweet))
+        }
+
+    }, []);
 
     useEffect(() => {
         if( location.pathname === '/register' ){
@@ -137,9 +147,7 @@ const AppProvider = ({children}: AppProviderProps) => {
             setIsRegisterOpen(false);
         }
 
-
     }, [location.pathname]);
-
 
 
     // Handle model open state

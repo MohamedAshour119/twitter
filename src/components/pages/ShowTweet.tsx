@@ -4,7 +4,7 @@ import {FaXTwitter} from "react-icons/fa6";
 import {IoSettingsOutline} from "react-icons/io5";
 import {LuArrowBigUp} from "react-icons/lu";
 import TweetModel from "../layouts/TweetModel.tsx";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {Link, useParams} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
@@ -14,15 +14,19 @@ import Tweet from "../layouts/Tweet.tsx";
 
 function ShowTweet() {
 
-    const {isModelOpen, baseUrl, user, isCommentOpen} = useContext(AppContext)
+    const {isModelOpen, baseUrl, user, isCommentOpen, clickedTweet} = useContext(AppContext)
     const {id} = useParams();
 
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
+    const [comments, setComments] = useState<TweetInfo[]>([])
+    const [pageURL, setPageURL] = useState('')
 
     useEffect( () => {
         ApiClient().get(`/tweets/${id}`)
             .then(res => {
-                setDisplayTweet(res.data.data)
+                setDisplayTweet(res.data.data.tweet)
+                setComments(res.data.data.pagination.data)
+                setPageURL(res.data.data.pagination.next_page_url)
             })
             .catch(err => {
                 console.log(err)
@@ -30,6 +34,46 @@ function ShowTweet() {
 
     }, [id])
 
+    const getComments = (pageURL: string) => {
+        ApiClient().get(pageURL)
+            .then(res => {
+                setComments(prevComments => ([
+                    ...prevComments,
+                    ...res.data.data.pagination.data,
+                ]))
+                setPageURL(res.data.data.pagination.next_page_url)
+            })
+    }
+
+    const displayComments = comments?.slice(0, comments.length - 1).map(comment => {
+        return (
+            <Tweet {...comment}/>
+        )
+    })
+
+    // Detect when scroll to last element
+    const lastCommentRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                getComments(pageURL)
+            }
+        }, {
+            threshold: 0.5 // Trigger when 50% of the last tweet is visible
+        });
+
+        // Watch the last tweet
+        if (lastCommentRef.current) {
+            observer.observe(lastCommentRef.current)
+        }
+
+        // Cleanup
+        return () => {
+            if (lastCommentRef.current) {
+                observer.unobserve(lastCommentRef.current);
+            }
+        };
+    }, [pageURL])
 
     return (
         <div
@@ -77,6 +121,12 @@ function ShowTweet() {
                         displayTweet &&
                         <Tweet {...displayTweet!}/>
                     }
+                    {displayComments}
+                    <div ref={lastCommentRef}>
+                        {comments.length > 0 && (
+                            <Tweet {...comments[comments.length - 1]} />
+                        )}
+                    </div>
                 </div>
 
                 <TrendingSidebar/>
