@@ -52,5 +52,6 @@ export interface ClickedTweet {
         title: string | null,
         created_at: string,
         id: number | null,
+        comments_count: number,
     }
 }

@@ -1,7 +1,7 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
@@ -26,9 +26,6 @@ function Tweet(props: TweetInfo) {
 
     const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
     const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
-    const [reactionCount, setReactionNumber] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
-    const [retweetCount, setRetweetNumber] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
-    const [commentCount, setCommentCount] = useState(!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)
 
     const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
 
@@ -39,7 +36,6 @@ function Tweet(props: TweetInfo) {
         ApiClient().post(`/reaction`, {id: tweetId})
             .then((res) => {
                 setIsReacted(res.data.data.is_reacted)
-                setReactionNumber(res.data.data.reactions)
             })
             .catch((err) => {
                 console.log(err)
@@ -52,7 +48,6 @@ function Tweet(props: TweetInfo) {
             ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
-                    setRetweetNumber(res.data.data.retweets)
                 })
                 .catch((err) => {
                     console.log(err)
@@ -61,7 +56,6 @@ function Tweet(props: TweetInfo) {
             ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
-                    setRetweetNumber(res.data.data.retweets)
                 })
                 .catch((err) => {
                     console.log(err)
@@ -84,12 +78,6 @@ function Tweet(props: TweetInfo) {
     }
 
 
-
-    // Handle click open comments
-    const handleOpenComments = () => {
-        setIsCommentOpen(!isCommentOpen)
-    }
-
     // Add tweet info which user clicked
     const addTweetInfo = () => {
         const tweet = {
@@ -101,12 +89,21 @@ function Tweet(props: TweetInfo) {
             tweet: {
                 id: props.id,
                 title: props.title,
-                created_at: props.created_at
+                created_at: props.created_at,
+                comments_count: props.comments_count,
             }
         }
         setClickedTweet(tweet)
         localStorage.setItem('tweet', JSON.stringify(tweet))
     }
+
+
+    // Handle click open comments
+    const handleOpenComments = () => {
+        addTweetInfo()
+        setIsCommentOpen(!isCommentOpen)
+    }
+
 
     return (
         <>
@@ -189,7 +186,7 @@ function Tweet(props: TweetInfo) {
                                 <FaRegComment/>
                             </div>
                             <span
-                                className={`group-hover:text-sky-500 transition`}>{commentCount}</span>
+                                className={`group-hover:text-sky-500 transition`}>{!props.main_tweet ? props.comments_count : props.main_tweet.comments_count}</span>
                         </div>
 
                         <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
@@ -199,7 +196,7 @@ function Tweet(props: TweetInfo) {
                                     className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
                             </div>
                             <span
-                                className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetCount}</span>
+                                className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count}</span>
                         </div>
 
                         <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
@@ -210,7 +207,7 @@ function Tweet(props: TweetInfo) {
                                     className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
                             </div>
                             <span
-                                className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionCount}</span>
+                                className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count}</span>
                         </div>
                     </div>
                 </div>

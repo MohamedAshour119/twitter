@@ -11,19 +11,29 @@ import ApiClient from "../services/ApiClient.tsx";
 import {RiArrowLeftLine} from "react-icons/ri";
 import {TweetInfo} from "../../Interfaces.tsx";
 import Tweet from "../layouts/Tweet.tsx";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
 function ShowTweet() {
 
-    const {isModelOpen, baseUrl, user, isCommentOpen, clickedTweet} = useContext(AppContext)
+    const {
+        isModelOpen,
+        baseUrl,
+        user,
+        isCommentOpen
+    } = useContext(AppContext)
+    const {
+        comments,
+        setComments
+    } = useContext(TweetContext)
     const {id} = useParams();
 
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
-    const [comments, setComments] = useState<TweetInfo[]>([])
     const [pageURL, setPageURL] = useState('')
 
     useEffect( () => {
         ApiClient().get(`/tweets/${id}`)
             .then(res => {
+                console.log(res.data)
                 setDisplayTweet(res.data.data.tweet)
                 setComments(res.data.data.pagination.data)
                 setPageURL(res.data.data.pagination.next_page_url)
@@ -44,6 +54,7 @@ function ShowTweet() {
                 setPageURL(res.data.data.pagination.next_page_url)
             })
     }
+
 
     const displayComments = comments?.slice(0, comments.length - 1).map(comment => {
         return (

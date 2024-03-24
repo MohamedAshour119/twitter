@@ -73,6 +73,7 @@ export const AppContext = createContext<AppContextType>({
             title: '',
             created_at: '',
             id: null,
+            comments_count: 0,
         },
     },
 
@@ -126,6 +127,7 @@ const AppProvider = ({children}: AppProviderProps) => {
             title: '',
             created_at: '',
             id: null,
+            comments_count: 0,
         },
     })
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])

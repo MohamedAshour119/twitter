@@ -21,6 +21,8 @@ interface TweetContextType {
     randomTweets: TweetInfo[];
     setRandomTweets: Dispatch<SetStateAction<TweetInfo[]>>;
     sendRequest: () => void
+    comments: TweetInfo[]
+    setComments: Dispatch<SetStateAction<TweetInfo[]>>
 }
 
 interface Tweet {
@@ -57,6 +59,7 @@ export const TweetContext = createContext<TweetContextType>({
         created_at: '',
         id: 0,
         retweet_to: null,
+        comment_to: null,
         reactions_count: 0,
         retweets_count: 0,
         is_reacted: false,
@@ -73,6 +76,7 @@ export const TweetContext = createContext<TweetContextType>({
             created_at: '',
             id: 0,
             retweet_to: null,
+            comment_to: null,
             reactions_count: 0,
             retweets_count: 0,
             comments_count: 0,
@@ -92,11 +96,53 @@ export const TweetContext = createContext<TweetContextType>({
     displayModelEmojiPicker: () => null,
     handleFileChange: () => null,
     sendRequest: () => null,
+    comments: [{
+        user: {
+            id: 0,
+            username: '',
+            avatar: ''
+        },
+
+        title: '',
+        user_id: 0,
+        image: '',
+        video: '',
+        show_tweet_created_at: '',
+        updated_at: '',
+        created_at: '',
+        id: 0,
+        retweet_to: null,
+        comment_to: null,
+        reactions_count: 0,
+        retweets_count: 0,
+        is_reacted: false,
+        is_retweeted: false,
+        comments_count: 0,
+
+        main_tweet: {
+            title: '',
+            user_id: 0,
+            image: '',
+            video: '',
+            show_tweet_created_at: '',
+            updated_at: '',
+            created_at: '',
+            id: 0,
+            retweet_to: null,
+            comment_to: null,
+            reactions_count: 0,
+            retweets_count: 0,
+            comments_count: 0,
+            is_reacted: false,
+            is_retweeted: false,
+        }
+    }],
+    setComments: () => null,
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
 
-    const {setIsModelOpen, clickedTweet} = useContext(AppContext)
+    const {setIsModelOpen, setIsCommentOpen, clickedTweet} = useContext(AppContext)
 
     const [tweet, setTweet] = useState<Tweet>({
         id: null,
@@ -108,6 +154,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [showEmojiEl, setShowEmojiEl] = useState(false)
     const [showEmojiElInModel, setShowEmojiElInModel] = useState(false)
     const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
+    const [comments, setComments] = useState<TweetInfo[]>([])
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -188,7 +235,11 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             ApiClient().post(`/addComment`, formData)
                 .then(res => {
                     makeInputEmpty()
-                    console.log(res)
+                    setComments(prevComments => ([
+                        res.data.data,
+                        ...prevComments,
+                    ]))
+                    setIsCommentOpen(false)
                 })
                 .catch(err => {
                     console.log(err)
@@ -235,6 +286,8 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 randomTweets,
                 setRandomTweets,
                 sendRequest,
+                comments,
+                setComments,
             }}
         >
             {children}
