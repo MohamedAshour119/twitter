@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {Link, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
 function Tweet(props: TweetInfo) {
 
@@ -22,20 +23,24 @@ function Tweet(props: TweetInfo) {
         clickedTweet,
     } = useContext(AppContext);
 
+    const {commentsCount} = useContext(TweetContext)
+
     const {username} = useParams();
 
     const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
     const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
+    const [retweetsCount, setRetweetsCount] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
+    const [reactionssCount, setReactionssCount] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
 
     const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
 
 
     // Handle tweet reaction
     const handleReaction = () => {
-
         ApiClient().post(`/reaction`, {id: tweetId})
             .then((res) => {
                 setIsReacted(res.data.data.is_reacted)
+                setReactionssCount(res.data.data.reactions)
             })
             .catch((err) => {
                 console.log(err)
@@ -44,18 +49,20 @@ function Tweet(props: TweetInfo) {
 
     // Handle tweet retweet
     const handleRetweet = () => {
-        if (!isRetweeted && props.main_tweet && props.main_tweet?.user_id !== user?.id) {
+        if (!isRetweeted && (props.main_tweet ? props.main_tweet?.user_id !== user?.id : props.user_id !== user?.id) ) {
             ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
+                    setRetweetsCount(res.data.data.retweets)
                 })
                 .catch((err) => {
                     console.log(err)
                 })
-        } else if (isRetweeted && props.main_tweet && props.main_tweet?.user_id !== user?.id) {
+        } else if (isRetweeted && (props.main_tweet ? props.main_tweet?.user_id !== user?.id : props.user_id !== user?.id) )  {
             ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
+                    setRetweetsCount(res.data.data.retweets)
                 })
                 .catch((err) => {
                     console.log(err)
@@ -109,7 +116,7 @@ function Tweet(props: TweetInfo) {
         <>
             <div
                 className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 relative`}>
-                {((isRetweeted || props.main_tweet) && username !== props.user.username && location?.pathname === `/users/${username}` ) &&
+                {((isRetweeted || props.main_tweet) && username !== props.user?.username && location?.pathname === `/users/${username}` ) &&
                     <Link to={`/users/${username}`} className={`flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                         <BsRepeat/>
                         <span
@@ -118,7 +125,7 @@ function Tweet(props: TweetInfo) {
                 }
 
                 <div className={`hover:bg-zinc-800/20 transition`}>
-                    <Link to={`/tweets/${props.id}`}>
+                    <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
                         <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
                             <div className={`flex gap-x-2`}>
                                 <Link to={`/users/${props.user?.username}`} className={`md:w-[10%] w-[14%]`}>
@@ -186,7 +193,7 @@ function Tweet(props: TweetInfo) {
                                 <FaRegComment/>
                             </div>
                             <span
-                                className={`group-hover:text-sky-500 transition`}>{!props.main_tweet ? props.comments_count : props.main_tweet.comments_count}</span>
+                                className={`group-hover:text-sky-500 transition`}>{props.id === commentsCount.id ? commentsCount.comments_counts : (!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)}</span>
                         </div>
 
                         <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
@@ -196,7 +203,7 @@ function Tweet(props: TweetInfo) {
                                     className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
                             </div>
                             <span
-                                className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count}</span>
+                                className={`group-hover:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetsCount}</span>
                         </div>
 
                         <div onClick={handleReaction} className={`flex items-center cursor-pointer group`}>
@@ -207,7 +214,7 @@ function Tweet(props: TweetInfo) {
                                     className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
                             </div>
                             <span
-                                className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count}</span>
+                                className={`group-hover:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionssCount}</span>
                         </div>
                     </div>
                 </div>

@@ -3,6 +3,7 @@ import {EmojiData} from "emoji-picker-react";
 import {TweetInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
+import {useParams} from "react-router-dom";
 
 interface TweetContextType {
     tweet: Tweet
@@ -23,8 +24,13 @@ interface TweetContextType {
     sendRequest: () => void
     comments: TweetInfo[]
     setComments: Dispatch<SetStateAction<TweetInfo[]>>
+    commentsCount: CommentsCount
 }
 
+interface CommentsCount {
+    comments_counts: number | null
+    id: number | null
+}
 interface Tweet {
     id: number | null
     title: string
@@ -138,11 +144,22 @@ export const TweetContext = createContext<TweetContextType>({
         }
     }],
     setComments: () => null,
+    commentsCount: {
+        comments_counts: null,
+        id: null,
+    }
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
 
-    const {setIsModelOpen, setIsCommentOpen, clickedTweet} = useContext(AppContext)
+    const {id} = useParams()
+
+    const {
+        setIsModelOpen,
+        setIsCommentOpen,
+        clickedTweet,
+        isCommentOpen
+    } = useContext(AppContext)
 
     const [tweet, setTweet] = useState<Tweet>({
         id: null,
@@ -155,6 +172,10 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [showEmojiElInModel, setShowEmojiElInModel] = useState(false)
     const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
+    const [commentsCount, setCommentsCount] = useState<CommentsCount>({
+        comments_counts: null,
+        id: null,
+    })
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -231,14 +252,22 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             formData.append('video', tweet.video as Blob)
         }
 
-        if(location.pathname == `/tweets/${clickedTweet.tweet.id}`){
+        if(location.pathname == `/tweets/${clickedTweet.tweet.id}` || isCommentOpen){
             ApiClient().post(`/addComment`, formData)
                 .then(res => {
                     makeInputEmpty()
-                    setComments(prevComments => ([
-                        res.data.data,
-                        ...prevComments,
-                    ]))
+                    if(id && clickedTweet.tweet.id === +id) {
+                        setComments(prevComments => ([
+                            res.data.data.tweet,
+                            ...prevComments,
+                        ]))
+                    }
+
+                    const commentDetails = {
+                        comments_counts: res.data.data.main_tweet.comments_count,
+                        id: res.data.data.main_tweet.id
+                    }
+                    setCommentsCount(commentDetails)
                     setIsCommentOpen(false)
                 })
                 .catch(err => {
@@ -288,6 +317,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 sendRequest,
                 comments,
                 setComments,
+                commentsCount,
             }}
         >
             {children}
