@@ -95,7 +95,7 @@ function Tweet(props: TweetInfo) {
             },
             tweet: {
                 id: props.id,
-                title: props.title,
+                title: !props.main_tweet ? props.title : props.main_tweet.title,
                 created_at: props.created_at,
                 comments_count: props.comments_count,
             }
@@ -193,7 +193,7 @@ function Tweet(props: TweetInfo) {
                                 <FaRegComment/>
                             </div>
                             <span
-                                className={`group-hover:text-sky-500 transition`}>{props.id === commentsCount.id ? commentsCount.comments_counts : (!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)}</span>
+                                className={`group-hover:text-sky-500 transition`}>{props.id === commentsCount.id ? commentsCount.comments_counts : props.comments_count}</span>
                         </div>
 
                         <div onClick={handleRetweet} className={`flex items-center cursor-pointer group`}>
