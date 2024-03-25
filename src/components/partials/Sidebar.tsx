@@ -66,6 +66,7 @@ function Sidebar() {
             title: "",
             image: null,
             video: null,
+            id: null,
         }))
     }
 

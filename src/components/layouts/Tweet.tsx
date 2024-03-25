@@ -6,7 +6,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";

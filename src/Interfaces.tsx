@@ -38,7 +38,7 @@ export interface UserInfo {
     updated_at: string;
     following_number: number | null;
     followers_number: number | null;
-    is_followed: boolean | null;
+    is_followed: boolean;
     tweets_count: number | null;
 }
 

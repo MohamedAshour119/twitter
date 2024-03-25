@@ -113,7 +113,7 @@ function UserHomePage() {
             </div>
 
             <div
-                className={`${(isModelOpen || isCommentOpen) ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+                className={`${(isModelOpen || isCommentOpen) ? 'opacity-20 pointer-events-none' : 'z-[150]'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Scroll to top button */}
                 <div
@@ -128,7 +128,7 @@ function UserHomePage() {
 
                 {/* Middle content */}
                 <div
-                    className={`z-10 text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative`}>
+                    className={`z-[200] text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative`}>
                     <TweetTextAreaAndPreview/>
 
                     {/*  All Tweets  */}

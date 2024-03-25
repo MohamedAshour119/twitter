@@ -1,27 +1,18 @@
-import {useContext, useEffect, useState} from "react";
+import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {Link} from "react-router-dom";
+import {UserInfo} from "../../Interfaces.tsx";
 
-interface SuggestedUsersToFollow {
-    avatar: string | null
-    ban_status: number | null
-    birth_date: string
-    email: string
-    gender: string
-    id: number | null
-    username: string
-    is_followed: boolean
-}
 interface Prop {
-    suggestedUsersToFollow: SuggestedUsersToFollow
+    suggestedUsersToFollow: UserInfo
 }
 function FollowUser({suggestedUsersToFollow}: Prop) {
 
     const {baseUrl} = useContext(AppContext)
 
     const [isFollowed, setIsFollowed] = useState(false)
-    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
+    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(suggestedUsersToFollow.is_followed)
 
     const handleFollow = () => {
         setIsFollowedBtnDisabled(true)
@@ -51,9 +42,6 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
 
     };
 
-    useEffect( () => {
-        setIsFollowed(suggestedUsersToFollow.is_followed)
-    }, [] )
 
     return (
         <div className={`flex justify-between hover:bg-[#25323f30] px-4 py-3`}>
