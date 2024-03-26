@@ -164,14 +164,19 @@ function Register() {
     type OptionType = Month | Gender;
 
     const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
-        control: (styles, {isFocused, isDisabled}) => ({
+        control: (styles, { isFocused, isDisabled }) => ({
             ...styles,
             height: '3.5rem',
             backgroundColor: 'transparent',
             cursor: 'pointer',
             transition: 'ease-in-out',
-            border: '2px solid transparent',
-            outline: isFocused ? '2px solid #0284c7' : '1px solid #52525b',
+            boxShadow: 'none',
+            border: '0 solid transparent',
+            outline: (formErrors.birth_date?.length === 0 && isFocused) ? '2px solid #006a9d'
+                : (formErrors.birth_date?.length > 0 && !isFocused) ? '1px solid red'
+                    : (formErrors.birth_date?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b'
+            ,
+
             '&:hover': {
                 borderColor: isDisabled ? 'transparent' : 'none',
             },
@@ -181,7 +186,8 @@ function Register() {
             ...defaultStyles,
             height: '100% !important',
             fontSize: '14px',
-            color: isFocused ? '#0284c7' : '#52525b',
+            color: (formErrors.birth_date?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors.birth_date?.length > 0 && isFocused) ? 'red' : '#52525b',
         }),
 
         indicatorSeparator: (defaultStyles) => ({
@@ -191,7 +197,8 @@ function Register() {
 
         dropdownIndicator: (defaultStyles, {isFocused}) => ({
             ...defaultStyles,
-            color: isFocused ? '#0284c7' : '#52525b',
+            color: (formErrors.birth_date?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors.birth_date?.length > 0 && isFocused) ? 'red' : '#52525b',
             '&:hover': {
                 color: isFocused ? '#0284c7' : '#52525b',
             },
@@ -210,7 +217,7 @@ function Register() {
         menu: (defaultStyles) => ({
             ...defaultStyles,
             backgroundColor: 'black',
-            border: '1px solid #4a4a4a'
+                border: '1px solid #4a4a4a'
         }),
 
         option: (defaultStyles, state) => ({
@@ -236,6 +243,49 @@ function Register() {
             }
         })
 
+    }
+
+    const genderControlStyle: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
+        control: (styles, { isFocused, isDisabled }) => ({
+            ...styles,
+            height: '3.5rem',
+            backgroundColor: 'transparent',
+            cursor: 'pointer',
+            transition: 'ease-in-out',
+            boxShadow: 'none',
+            border: '0 solid transparent',
+            outline: (formErrors.gender?.length === 0 && isFocused) ? '2px solid #006a9d'
+                    : (formErrors.gender?.length > 0 && !isFocused) ? '1px solid red'
+                    : (formErrors.gender?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b'
+            ,
+
+            '&:hover': {
+                borderColor: isDisabled ? 'transparent' : 'none',
+            },
+        }),
+
+        placeholder: (defaultStyles, {isFocused}) => ({
+            ...defaultStyles,
+            height: '100% !important',
+            fontSize: '14px',
+            color: (formErrors.gender?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
+        }),
+
+        dropdownIndicator: (defaultStyles, {isFocused}) => ({
+            ...defaultStyles,
+            color: (formErrors.gender?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
+            '&:hover': {
+                color: isFocused ? '#0284c7' : '#52525b',
+            },
+        }),
+
+    };
+
+    const genderStyles = {
+        ...styles,
+        ...genderControlStyle
     }
 
     // Handle selected options
@@ -266,8 +316,7 @@ function Register() {
 
     const handleGenderSelectedChange = (selectedOption: SingleValue<Gender>): void => {
         if(selectedOption) {
-            const selectedGender: Gender = selectedOption as Gender;
-            setSelectedGender(selectedGender);
+            setSelectedGender(selectedOption as Gender);
         } else {
             setSelectedGender(null)
         }
@@ -306,7 +355,7 @@ function Register() {
             gender: `${selectedGender?.value}`,
             date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
         }))
-    }, [selectedDay, selectedMonth, selectedYear])
+    }, [selectedDay, selectedMonth, selectedYear, selectedGender])
 
     // Handle form loading
     setTimeout(() => {
@@ -354,7 +403,7 @@ function Register() {
                                             name={`username`}
                                             value={userCredentials?.username}
                                             onChange={handleInputsChange}
-                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            className={`${formErrors.username?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                             type="text"
                                             placeholder="Username"
                                             disabled={isLoading}
@@ -366,7 +415,7 @@ function Register() {
                                     </div>
                                     <div>
                                         <input
-                                            className={`w-full registerInputs h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                            className={`${formErrors.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} w-full registerInputs h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                             name={`email`}
                                             value={userCredentials?.email}
                                             onChange={handleInputsChange}
@@ -381,7 +430,7 @@ function Register() {
                                     <div>
                                         <input
                                             maxLength={30}
-                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            className={`${formErrors.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                             name={`password`}
                                             value={userCredentials?.password}
                                             type="password"
@@ -397,7 +446,7 @@ function Register() {
                                     <div>
                                         <input
                                             maxLength={30}
-                                            className={`registerInputs h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            className={`${formErrors.password_confirmation?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                             name={`password_confirmation`}
                                             value={userCredentials?.password_confirmation}
                                             type="password"
@@ -420,7 +469,7 @@ function Register() {
                                         isDisabled={isLoading}
                                         placeholder={'Gender'}
                                         onChange={handleGenderSelectedChange}
-                                        styles={styles}
+                                        styles={genderStyles}
                                     />
                                     {formErrors?.gender &&
                                         <p className={`text-red-500 font-semibold`}>{formErrors?.gender}</p>}
@@ -469,9 +518,7 @@ function Register() {
                                                 <svg className="w-8 h-8"
                                                      aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
                                                      viewBox="0 0 20 16">
-                                                    <path stroke="currentColor" stroke-linecap="round"
-                                                          stroke-linejoin="round" stroke-width="2"
-                                                          d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
                                                 </svg>
                                                 <p className="mb-2 text-center text-sm "><span
                                                     className="font-semibold">Click to upload</span> or drag and drop

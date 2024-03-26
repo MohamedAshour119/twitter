@@ -14,13 +14,6 @@
     height: 100%; /* Set container height */
 }
 
-/* Focus effect for name input */
-.registerInputs:focus::placeholder {
-    transform: translateY(-75%); /* Move placeholder */
-    font-size: 13px; /* Change font size */
-    opacity: 1; /* Adjust opacity */
-    transition: all 0.3s ease-in-out; /* Apply transition */
-}
 
 /* Remove background color of autofill */
 input:-webkit-autofill {

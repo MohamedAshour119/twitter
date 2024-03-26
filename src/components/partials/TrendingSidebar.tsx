@@ -1,17 +1,44 @@
 import {HiMiniMagnifyingGlass} from "react-icons/hi2";
 import TrendingTag from "../layouts/TrendingTag.tsx";
 import FollowUser from "../layouts/FollowUser.tsx";
-import {useContext} from "react";
+import {ChangeEvent, useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
+import useDebounce from "../hooks/UseDebounce.tsx";
+import ApiClient from "../services/ApiClient.tsx";
 
 function TrendingSidebar() {
 
     const {suggestedUsersToFollow} = useContext(AppContext)
 
+    const [searchValue, setSearchValue] = useState('')
+    const debounceValue = useDebounce(searchValue)
+
+    const sendRequest = () => {
+        ApiClient().get(`/search-user/${debounceValue}`)
+            .then(res => {
+                console.log(res)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearchValue(e.target.value)
+    }
+
+    useEffect(() => {
+        if (debounceValue !== '') {
+            sendRequest();
+        }
+    }, [debounceValue]);
+
     return (
-        <div className={`text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
+        <div className={`z-[200] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
             <div className={`mt-2 relative`}>
                 <input
+                    onChange={handleSearchChange}
+                    value={searchValue}
                     type="text"
                     placeholder={`Search`}
                     className={`bg-[#2a2d32b3] w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b]`}
