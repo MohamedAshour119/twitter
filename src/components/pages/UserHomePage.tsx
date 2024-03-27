@@ -92,7 +92,7 @@ function UserHomePage() {
         <div
             className={`${(isModelOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
 
-            <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+            <div className={`z-[200] container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header
                     className={`w-full grid grid-cols-1 border ${isModelOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 2xl:max-w-[39rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] backdrop-blur-sm`}>
@@ -104,7 +104,7 @@ function UserHomePage() {
                         <IoSettingsOutline className={`size-9`}/>
                     </div>
                     {/* Header for the rest of screens */}
-                    <div className={`w-full text-neutral-200 z-[100]`}>
+                    <div className={`w-full text-neutral-200`}>
                         <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
                         <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
                     </div>
@@ -113,7 +113,7 @@ function UserHomePage() {
             </div>
 
             <div
-                className={`${(isModelOpen || isCommentOpen) ? 'opacity-20 pointer-events-none' : 'z-[150]'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+                className={`${(isModelOpen || isCommentOpen) ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Scroll to top button */}
                 <div
@@ -128,7 +128,7 @@ function UserHomePage() {
 
                 {/* Middle content */}
                 <div
-                    className={`z-[200] text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative`}>
+                    className={`text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative`}>
                     <TweetTextAreaAndPreview/>
 
                     {/*  All Tweets  */}

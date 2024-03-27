@@ -113,7 +113,7 @@ function ShowTweet() {
             </div>
 
             <div
-                className={`${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : 'z-50'} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+                className={`${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Scroll to top button */}
                 <div
@@ -127,7 +127,7 @@ function ShowTweet() {
                 </div>
 
                 {/* Middle content */}
-                <div className={`z-10 text-neutral-200 sm:mt-14 mt-32 border border-t-0 border-zinc-700/70 w-full relative`}>
+                <div className={`text-neutral-200 sm:mt-14 mt-32 border border-t-0 border-zinc-700/70 w-full relative`}>
                     {
                         displayTweet &&
                         <Tweet {...displayTweet!}/>

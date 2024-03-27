@@ -34,7 +34,7 @@ export const AppContext = createContext<AppContextType>({
         updated_at: '',
         following_number: null,
         followers_number: null,
-        is_followed: null,
+        is_followed: false,
         tweets_count: null,
     },
     setUser: () => {},
@@ -57,7 +57,7 @@ export const AppContext = createContext<AppContextType>({
             updated_at: '',
             following_number: null,
             followers_number: null,
-            is_followed: null,
+            is_followed: false,
             tweets_count: null,
         }
     ],
@@ -112,7 +112,7 @@ const AppProvider = ({children}: AppProviderProps) => {
         updated_at: '',
         following_number: null,
         followers_number: null,
-        is_followed: null,
+        is_followed: false,
         tweets_count: null,
     })
 

@@ -1,26 +1,51 @@
-import {HiMiniMagnifyingGlass} from "react-icons/hi2";
+import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
 import TrendingTag from "../layouts/TrendingTag.tsx";
 import FollowUser from "../layouts/FollowUser.tsx";
-import {ChangeEvent, useContext, useEffect, useState} from "react";
+import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../services/ApiClient.tsx";
+import SearchResult from "../layouts/SearchResult.tsx";
+import {UserInfo} from "../../Interfaces.tsx";
+import apiClient from "../services/ApiClient.tsx";
 
 function TrendingSidebar() {
 
     const {suggestedUsersToFollow} = useContext(AppContext)
-
+    const [isOpen, setIsOpen] = useState(false)
+    const [searchResults, setSearchResults] = useState<UserInfo[]>([])
+    const [pageURL, setPageURL] = useState('')
     const [searchValue, setSearchValue] = useState('')
     const debounceValue = useDebounce(searchValue)
 
     const sendRequest = () => {
         ApiClient().get(`/search-user/${debounceValue}`)
             .then(res => {
-                console.log(res)
+                setSearchResults(res.data.data.users)
+                const nextPageUrl = res.data.data.pagination.next_page_url
+                nextPageUrl ? setPageURL(nextPageUrl) : null
             })
             .catch(err => {
                 console.log(err)
             })
+    }
+    const getSearchResult = (pageURL: string) => {
+        ApiClient().get(pageURL)
+            .then(res => {
+                setSearchResults(prevSearcedResults => [
+                    ...prevSearcedResults,
+                    ...res.data.data.users
+                ])
+                const nextPageUrl = res.data.data.pagination.next_page_url
+                setPageURL(nextPageUrl ? nextPageUrl : '')
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const handleOpen = () => {
+        setIsOpen(true)
     }
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,20 +55,85 @@ function TrendingSidebar() {
     useEffect(() => {
         if (debounceValue !== '') {
             sendRequest();
+        } else {
+            setSearchResults([])
         }
     }, [debounceValue]);
 
+    const searchRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            searchRef.current && !searchRef.current.contains(e.target as Node) ? setIsOpen(false) : ''
+        }
+
+        document.addEventListener('mousedown', handleClick)
+
+        return () => {
+            document.removeEventListener('mousedown', handleClick)
+        }
+    }, []);
+
+    // Detect when scroll to last element
+    const lastResultRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                getSearchResult(pageURL)
+            }
+        }, {
+            threshold: 0.5 // Trigger when 50% of the last tweet is visible
+        });
+
+        // Watch the last tweet
+        if (lastResultRef.current) {
+            observer.observe(lastResultRef.current)
+        }
+
+        // Cleanup
+        return () => {
+            if (lastResultRef.current) {
+                observer.unobserve(lastResultRef.current);
+            }
+        };
+    }, [pageURL])
+
+    const users = searchResults.slice(0, searchResults.length - 1).map(user => {
+        return(
+            <SearchResult {...user}/>
+        )
+    })
+
     return (
-        <div className={`z-[200] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
-            <div className={`mt-2 relative`}>
+        <div className={`z-[300] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
+            <div ref={searchRef} className={`mt-2 relative`}>
                 <input
+                    onClick={handleOpen}
                     onChange={handleSearchChange}
                     value={searchValue}
                     type="text"
                     placeholder={`Search`}
-                    className={`bg-[#2a2d32b3] w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b]`}
+                    className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
                 />
-                <HiMiniMagnifyingGlass className={`absolute top-1/2 left-3 -translate-y-1/2 size-5 text-[#71767b]`}/>
+                <HiMiniMagnifyingGlass className={`absolute top-1/2 left-3 -translate-y-1/2 size-5 text-[#71767b] ${isOpen ? 'text-sky-500' : ''}`}/>
+                {(isOpen && searchValue !== '') &&
+                    <div className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-5 -translate-y-1/2 text-black rounded-full p-[2px] cursor-pointer`}>
+                        <HiMiniXMark
+                            onClick={() => setSearchValue('')}
+                            className={`size-5`}/>
+                    </div>
+                }
+
+            {/*  Search result  */}
+                {isOpen && <div
+                    className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
+                    {users}
+                    <div ref={lastResultRef}>
+                        {searchResults.length > 0 && (
+                            <SearchResult {...searchResults[searchResults.length - 1]} />
+                        )}
+                    </div>
+                </div>}
+
             </div>
 
             <div className={`bg-[#2a2d32b3] rounded-2xl`}>
