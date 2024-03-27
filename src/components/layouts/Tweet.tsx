@@ -1,4 +1,3 @@
-import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
 import {useContext, useState} from "react";
@@ -6,27 +5,27 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
+import TweetCommonContent from "./TweetCommonContent.tsx";
 
 function Tweet(props: TweetInfo) {
 
     const {
-        baseUrl,
         user,
         location,
         isCommentOpen,
         setIsCommentOpen,
         setClickedTweet,
-        clickedTweet,
     } = useContext(AppContext);
 
     const {commentsCount} = useContext(TweetContext)
 
     const {username} = useParams();
 
+    const [disableLink, setDisableLink] = useState(false)
     const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
     const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
     const [retweetsCount, setRetweetsCount] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
@@ -127,70 +126,52 @@ function Tweet(props: TweetInfo) {
                 }
 
                 <div className={`group-hover:bg-zinc-800/20 transition`}>
-                    <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
-                        <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
-                            <div className={`flex gap-x-2`}>
-                                <Link to={`/users/${props.user?.username}`} className={`md:w-[10%] w-[14%]`}>
-                                    <img
-                                        className={`size-11 object-cover rounded-full`}
-                                        src={`${baseUrl}/storage/${props.user?.avatar}`}
-                                        alt=""
-                                    />
-                                </Link>
-                                <div className={`flex gap-x-2 justify-between items-start w-full`}>
-                                    <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
-                                        <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
-                                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
-                                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
-                                        </Link>
-                                        {(location?.pathname === `/home` || props.comment_to) &&
-                                            <span className={`font-light text-[#71767b] cursor-pointer`}>
-                                                {!props.main_tweet ? props.created_at : props.main_tweet.created_at}
-                                            </span>
-                                        }
-                                    </div>
-
-                                    <div
-                                        className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
-                                        <HiOutlineDotsHorizontal/>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className={`w-[90%] justify-self-end`}>
-                                <div className={`grid grid-cols-1`}>
-                                    <p className={`w-fit break-all`}>{!props.main_tweet ? props.title : props.main_tweet.title}</p>
-                                    <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>
-                                        {(props.image || props.main_tweet?.image) &&
-                                            <img
-                                                className={`rounded-2xl max-h-[40rem] w-full `}
-                                                src={`${baseUrl}/storage/${!props.main_tweet ? props.image : props.main_tweet?.image}`}
-                                                alt="post_image"
-                                        />}
-
-                                        {(props.video || props.main_tweet?.video) &&
-                                            <video
-                                                className="mt-2 max-h-[40rem] w-full"
-                                                controls
-                                                src={`${baseUrl}/storage/${!props.main_tweet ? props.video : props.main_tweet?.video}`}
-                                        />}
-
-                                        {(location?.pathname !== `/home` && !props.comment_to) &&
-                                            <div className={`font-light text-[#71767b] cursor-pointer mt-3`}>
-                                                {!props.main_tweet ? props.show_tweet_created_at : props.main_tweet.show_tweet_created_at}
-                                            </div>
-                                        }
-
-                                    </div>
-                                </div>
-                            </div>
+                    {!disableLink ? (
+                        <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
+                            <TweetCommonContent
+                                addTweetInfo={addTweetInfo}
+                                username={props.user.username}
+                                avatar={props.user.avatar}
+                                comment_to={props.comment_to}
+                                main_tweet={props.main_tweet}
+                                created_at={props.created_at}
+                                main_tweet_created_at={props.main_tweet?.created_at}
+                                setDisableLink={setDisableLink}
+                                title={props?.title}
+                                main_tweet_title={props?.main_tweet?.title}
+                                image={props?.image}
+                                main_tweet_image={props?.main_tweet?.image}
+                                video={props?.video}
+                                main_tweet_video={props?.main_tweet?.video}
+                                show_tweet_created_at={props?.show_tweet_created_at}
+                                main_tweet_show_tweet_created_at={props?.main_tweet?.show_tweet_created_at}
+                            />
+                        </Link>
+                    ) : (
+                        <div>
+                            <TweetCommonContent
+                                addTweetInfo={addTweetInfo}
+                                username={props.user.username}
+                                avatar={props.user.avatar}
+                                comment_to={props.comment_to}
+                                main_tweet={props.main_tweet}
+                                created_at={props.created_at}
+                                main_tweet_created_at={props.main_tweet?.created_at}
+                                setDisableLink={setDisableLink}
+                                title={props?.title}
+                                main_tweet_title={props?.main_tweet?.title}
+                                image={props?.image}
+                                main_tweet_image={props?.main_tweet?.image}
+                                video={props?.video}
+                                main_tweet_video={props?.main_tweet?.video}
+                                show_tweet_created_at={props?.show_tweet_created_at}
+                                main_tweet_show_tweet_created_at={props?.main_tweet?.show_tweet_created_at}
+                            />
                         </div>
-
-                    </Link>
+                    ) }
                     <div className={`flex ml-20 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 text-zinc-400/70`}>
-                        <div className={`flex items-center cursor-pointer group/icon`}>
+                        <div onClick={handleOpenComments} className={`flex items-center cursor-pointer group/icon`}>
                             <div
-                                onClick={handleOpenComments}
                                 className={`text-xl flex justify-center items-center group-hover/icon:text-sky-500 transition group-hover/icon:bg-sky-500/20 rounded-full p-2`}>
                                 <FaRegComment/>
                             </div>

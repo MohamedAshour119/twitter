@@ -1,4 +1,4 @@
-interface Tweet {
+export interface Tweet {
     title: string | null;
     user_id: number;
     image: string | null;

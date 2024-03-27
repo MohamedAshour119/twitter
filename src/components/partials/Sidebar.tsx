@@ -73,8 +73,8 @@ function Sidebar() {
     return (
         <>
             <ToastContainer/>
-            <div className={`text-neutral-100 2xl:px-16 xl:px-10 lg:px-0 px-4 pb-5 pt-1 h-dvh flex flex-col justify-between container fixed max-w-fit xl:max-w-[24%] z-50`}>
-                <ul className={`flex flex-col gap-y-5`}>
+            <div className={`text-neutral-100 lg:px-0 px-4 pb-5 pt-1 h-dvh grid grid-cols-1 justify-center container fixed min-w-fit 2xl:max-w-[22%] z-50`}>
+                <ul className={`flex flex-col gap-y-5 justify-self-end 2xl:w-[80%] xl:w-[22%] mx-4`}>
                     <li className={`flex items-center`}>
                         <Link to={`/home`}>
                             <div className={`hover:bg-neutral-600/30 rounded-full p-3 `}>
@@ -115,13 +115,13 @@ function Sidebar() {
                 </ul>
 
                 {/*Logout window*/}
-                <div className={`bg-black flex flex-col gap-y-3 border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
+                <div className={`bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] -right-16 bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
                     <button disabled={!logoutWindowOpen} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Settings</button>
                     <button disabled={!logoutWindowOpen} onClick={logout} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Logout @{user?.username}</button>
                 </div>
 
 
-                <div ref={logoutRef} onClick={handleClick} className={`2xl:max-w-[85%] flex justify-between items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
+                <div ref={logoutRef} onClick={handleClick} className={`mx-4 self-end flex justify-between justify-self-end 2xl:w-[80%] items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
                     <div className={`flex items-center gap-x-4`}>
 
                         <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>

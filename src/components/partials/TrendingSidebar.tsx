@@ -7,7 +7,6 @@ import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import SearchResult from "../layouts/SearchResult.tsx";
 import {UserInfo} from "../../Interfaces.tsx";
-import apiClient from "../services/ApiClient.tsx";
 
 function TrendingSidebar() {
 
@@ -32,8 +31,8 @@ function TrendingSidebar() {
     const getSearchResult = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
-                setSearchResults(prevSearcedResults => [
-                    ...prevSearcedResults,
+                setSearchResults(prevSearchedResults => [
+                    ...prevSearchedResults,
                     ...res.data.data.users
                 ])
                 const nextPageUrl = res.data.data.pagination.next_page_url
@@ -112,11 +111,11 @@ function TrendingSidebar() {
                     value={searchValue}
                     type="text"
                     placeholder={`Search`}
-                    className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
+                    className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
                 />
-                <HiMiniMagnifyingGlass className={`absolute top-1/2 left-3 -translate-y-1/2 size-5 text-[#71767b] ${isOpen ? 'text-sky-500' : ''}`}/>
+                <HiMiniMagnifyingGlass className={`absolute top-1/2 left-3 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>
                 {(isOpen && searchValue !== '') &&
-                    <div className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-5 -translate-y-1/2 text-black rounded-full p-[2px] cursor-pointer`}>
+                    <div className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-5 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
                         <HiMiniXMark
                             onClick={() => setSearchValue('')}
                             className={`size-5`}/>

@@ -56,7 +56,7 @@ function TweetModel() {
 
 
     return (
-        <div ref={model} className={`absolute bg-black text-neutral-200 top-2 xs:w-[37rem] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModelOpen || isCommentOpen) ? 'animate-slide-down z-[150]' : 'close-slide-down'} `}>
+        <div ref={model} className={`absolute bg-black text-neutral-200 sm:top-16 top-36 xs:w-[31rem] sm:w-[40rem] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModelOpen || isCommentOpen) ? 'animate-slide-down z-[150]' : 'close-slide-down'} `}>
             <div
                 onClick={handleModelOpen}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">
