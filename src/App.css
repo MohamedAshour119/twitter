@@ -4,7 +4,6 @@
 /* Global Styling */
 * {
     font-family: 'Rubik', sans-serif; /* Apply Rubik font to all elements */
-    user-select: none; /* Disable user selection */
 }
 
 /* React Select Styling */

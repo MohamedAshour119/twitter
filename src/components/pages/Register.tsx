@@ -113,14 +113,13 @@ function Register() {
 
         ApiClient().post('/register', formData)
             .then(() => {
-                setCreateBtnLoading(false)
                 setSuccessfulRegister(true)
             })
             .catch(err => {
-                setCreateBtnLoading(false)
                 setSuccessfulRegister(false)
                 setFormErrors(err.response.data.errors)
             })
+            .finally(() => setCreateBtnLoading(false))
     }
 
 

@@ -51,7 +51,6 @@ function Profile() {
     }
 
     useEffect( () => {
-        // setAllProfileUserTweets([]);
         setPageURL('');
         getAllUserTweets(`users/${username}`)
     }, [username] )
@@ -60,6 +59,8 @@ function Profile() {
     const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
         <Tweet
             key={tweetInfo.id}
+            allProfileUserTweets={allProfileUserTweets}
+            setAllProfileUserTweets={setAllProfileUserTweets}
             {...tweetInfo}
         />
     ));

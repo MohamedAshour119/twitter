@@ -6,13 +6,15 @@ import {Tweet} from "../../Interfaces.tsx";
 
 interface Props {
     addTweetInfo: () => void
+    setDisableLink: Dispatch<SetStateAction<boolean>>
+    setTweetMenuOpen: Dispatch<SetStateAction<boolean>>
+    tweetMenuOpen: boolean
     username: string
     avatar: string
     comment_to: number | null
     main_tweet: Tweet
     created_at: string
     main_tweet_created_at: string
-    setDisableLink: Dispatch<SetStateAction<boolean>>
     title: string | null
     main_tweet_title: string | null
     image: string | null
@@ -26,12 +28,13 @@ function TweetCommonContent(props: Props) {
 
     const {baseUrl, clickedTweet} = useContext(AppContext)
 
+
     return (
         <div onClick={props.addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
             <div className={`flex gap-x-2`}>
                 <Link to={`/users/${props.username}`} className={`md:w-[10%] w-[14%]`}>
                     <img
-                        className={`size-11 object-cover rounded-full`}
+                        className={`size-11 object-cover rounded-full select-none`}
                         src={`${baseUrl}/storage/${props.avatar}`}
                         alt=""
                     />
@@ -49,6 +52,7 @@ function TweetCommonContent(props: Props) {
                         }
                     </div>
                     <div
+                        onClick={() => props.setTweetMenuOpen(!props.tweetMenuOpen)}
                         onMouseEnter={() => props.setDisableLink(true)}
                         onMouseLeave={() => props.setDisableLink(false)}
                         className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>

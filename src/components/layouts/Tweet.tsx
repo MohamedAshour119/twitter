@@ -1,6 +1,6 @@
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
-import {useContext, useState} from "react";
+import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
@@ -10,8 +10,13 @@ import {TweetInfo} from "../../Interfaces.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import TweetCommonContent from "./TweetCommonContent.tsx";
+import {HiMiniXMark} from "react-icons/hi2";
 
-function Tweet(props: TweetInfo) {
+interface Props extends  TweetInfo {
+    allProfileUserTweets: TweetInfo[]
+    setAllProfileUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
+}
+function Tweet(props: Props) {
 
     const {
         user,
@@ -25,11 +30,12 @@ function Tweet(props: TweetInfo) {
 
     const {username} = useParams();
 
-    const [disableLink, setDisableLink] = useState(false)
     const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
     const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
     const [retweetsCount, setRetweetsCount] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
-    const [reactionssCount, setReactionssCount] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
+    const [reactionsCount, setReactionssCount] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
+    const [tweetMenuOpen, setTweetMenuOpen] = useState(false)
+    const [disableLink, setDisableLink] = useState(false)
 
     const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
 
@@ -83,7 +89,6 @@ function Tweet(props: TweetInfo) {
 
     }
 
-
     // Add tweet info which user clicked
     const addTweetInfo = () => {
         const tweet = {
@@ -110,6 +115,44 @@ function Tweet(props: TweetInfo) {
         setIsCommentOpen(!isCommentOpen)
     }
 
+    // Handle click outside the Tweet menu window
+    const tweetMenuRef = useRef<HTMLDivElement>(null)
+    useEffect( () => {
+        const handleOutside = (e: MouseEvent) => {
+            if(!tweetMenuRef.current?.contains(e.target as Node)){
+                setTweetMenuOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleOutside)
+        }
+    }, [] )
+
+    // Delete tweet
+    const deleteTweet = () => {
+        ApiClient().delete(`/delete-tweet/${props.id}`)
+            .then(() => {
+                const filteredUserTweets = props.allProfileUserTweets.filter(singleTweet => singleTweet.id !== props.id)
+                props.setAllProfileUserTweets(filteredUserTweets)
+                toast.success("Tweet deleted successfully", {
+                    className: 'custom-toast',
+                    position: "top-center",
+                    autoClose: 2000,
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    pauseOnHover: true,
+                    draggable: true,
+                    progress: undefined,
+                    theme: "dark",
+                    transition: Zoom,
+                });
+            })
+            .catch(err => {
+                console.log(err)
+            })
+            .finally(() => setTweetMenuOpen(false))
+    }
 
     return (
         <>
@@ -125,18 +168,57 @@ function Tweet(props: TweetInfo) {
                     </div>
                 }
 
-                <div className={`group-hover:bg-zinc-800/20 transition`}>
+                {/* Popup windows */}
+                {tweetMenuOpen &&
+                    <div
+                        ref={tweetMenuRef}
+                        onMouseEnter={() => setDisableLink(true)}
+                        onMouseLeave={() => setDisableLink(false)}
+                        className={`z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
+                        <div
+                            onClick={() => setTweetMenuOpen(false)}
+                            className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
+                            <HiMiniXMark/>
+                        </div>
+                        {props.user_id === user?.id &&
+                            <>
+                                <button
+                                    onClick={deleteTweet}
+                                    disabled={!tweetMenuOpen}
+                                    className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    <span className={`text-red-700 font-semibold`}>Delete</span>
+                                </button>
+                                <button
+                                    disabled={!tweetMenuOpen}
+                                    className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    Pin to your profile
+                                </button>
+                            </>
+                        }
+                        {props.user_id !== user?.id &&
+                            <button
+                                disabled={!tweetMenuOpen}
+                                className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                Retweet
+                            </button>
+                        }
+                    </div>
+                }
+
+                <div className={`${!disableLink ? 'group-hover:bg-zinc-800/20' : ''} transition`}>
                     {!disableLink ? (
                         <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
                             <TweetCommonContent
                                 addTweetInfo={addTweetInfo}
-                                username={props.user.username}
-                                avatar={props.user.avatar}
+                                setDisableLink={setDisableLink}
+                                setTweetMenuOpen={setTweetMenuOpen}
+                                tweetMenuOpen={tweetMenuOpen}
+                                username={props.user?.username}
+                                avatar={props.user?.avatar}
                                 comment_to={props.comment_to}
                                 main_tweet={props.main_tweet}
                                 created_at={props.created_at}
                                 main_tweet_created_at={props.main_tweet?.created_at}
-                                setDisableLink={setDisableLink}
                                 title={props?.title}
                                 main_tweet_title={props?.main_tweet?.title}
                                 image={props?.image}
@@ -151,13 +233,15 @@ function Tweet(props: TweetInfo) {
                         <div>
                             <TweetCommonContent
                                 addTweetInfo={addTweetInfo}
-                                username={props.user.username}
-                                avatar={props.user.avatar}
+                                setDisableLink={setDisableLink}
+                                setTweetMenuOpen={setTweetMenuOpen}
+                                tweetMenuOpen={tweetMenuOpen}
+                                username={props.user?.username}
+                                avatar={props.user?.avatar}
                                 comment_to={props.comment_to}
                                 main_tweet={props.main_tweet}
                                 created_at={props.created_at}
                                 main_tweet_created_at={props.main_tweet?.created_at}
-                                setDisableLink={setDisableLink}
                                 title={props?.title}
                                 main_tweet_title={props?.main_tweet?.title}
                                 image={props?.image}
@@ -197,7 +281,7 @@ function Tweet(props: TweetInfo) {
                                     className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
                             </div>
                             <span
-                                className={`group-hover/icon:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionssCount}</span>
+                                className={`group-hover/icon:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionsCount}</span>
                         </div>
                     </div>
                 </div>

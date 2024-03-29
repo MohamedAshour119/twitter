@@ -50,7 +50,6 @@ function Login() {
 
         ApiClient().post('/login', formData)
             .then(res=> {
-                setLoginBtnLoading(false)
                 setUser(res.data.data.data)
                 localStorage.setItem('token', res.data.data.token)
                 navigate('/home')
@@ -58,9 +57,8 @@ function Login() {
             .catch((err) => {
                 setFormErrors(err.response.data.errors)
                 setWrongCredentialsMsg(err.response.data.message)
-
-                setLoginBtnLoading(false)
             })
+            .finally(() => setLoginBtnLoading(false))
     }
 
     // Handle Submit button (Next btn)
