@@ -1,14 +1,21 @@
-import {useContext} from "react";
+import {Dispatch, SetStateAction, useContext} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {UserInfo} from "../../Interfaces.tsx";
 import {Link} from "react-router-dom";
 
-function SearchResult(props: UserInfo) {
+interface Props extends  UserInfo{
+    setIsOpen: Dispatch<SetStateAction<boolean>>
+}
+function SearchResult(props: Props) {
 
     const {baseUrl} = useContext(AppContext)
 
     return (
-        <Link to={`/users/${props.username}`} className={`text-white flex items-center gap-x-3 hover:bg-[#1c1e2182] p-4`}>
+        <Link
+            onClick={() => props.setIsOpen(false)}
+            to={`/users/${props.username}`}
+            className={`text-white flex items-center gap-x-3 hover:bg-[#1c1e2182] p-4`}
+        >
             <img
                 src={`${baseUrl}/storage/${props.avatar}`}
                 alt=""

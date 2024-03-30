@@ -98,7 +98,7 @@ function TrendingSidebar() {
 
     const users = searchResults.slice(0, searchResults.length - 1).map(user => {
         return(
-            <SearchResult {...user}/>
+            <SearchResult {...user} setIsOpen={setIsOpen}/>
         )
     })
 
@@ -128,7 +128,7 @@ function TrendingSidebar() {
                     {users}
                     <div ref={lastResultRef}>
                         {searchResults.length > 0 && (
-                            <SearchResult {...searchResults[searchResults.length - 1]} />
+                            <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} />
                         )}
                     </div>
                 </div>}

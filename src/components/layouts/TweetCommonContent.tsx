@@ -67,14 +67,14 @@ function TweetCommonContent(props: Props) {
                     <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>
                         {(props.image || props.main_tweet?.image) &&
                             <img
-                                className={`rounded-2xl max-h-[40rem] w-full `}
+                                className={`rounded-2xl max-h-[40rem] w-full ${props.image || props.main_tweet?.image ? 'mt-4' : ''}`}
                                 src={`${baseUrl}/storage/${!props.main_tweet ? props.image : props.main_tweet?.image}`}
                                 alt="post_image"
                             />}
 
                         {(props.video || props.main_tweet?.video) &&
                             <video
-                                className="mt-2 max-h-[40rem] w-full"
+                                className={`max-h-[40rem] w-full rounded-2xl ${props.video || props.main_tweet?.video ? 'mt-4' : ''}`}
                                 controls
                                 src={`${baseUrl}/storage/${!props.main_tweet ? props.video : props.main_tweet?.video}`}
                             />}

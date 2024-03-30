@@ -55,6 +55,23 @@ function Profile() {
         getAllUserTweets(`users/${username}`)
     }, [username] )
 
+    // Get the tweets which is suitable to the button which is clicked
+    const getSuitableTweets = (pageURL: string) => {
+        setAllProfileUserTweets([])
+        setPageURL('')
+        ApiClient().get(pageURL)
+            .then(res => {
+                setAllProfileUserTweets(prevAllProfileUserTweets => ([
+                    ...prevAllProfileUserTweets,
+                    ...res.data.data.pagination.data
+                ]))
+                setPageURL(res.data.data.pagination.next_page_url)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
     // All User Tweets
     const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
         <Tweet
@@ -104,6 +121,7 @@ function Profile() {
         }
 
     }, [location?.pathname])
+
 
     // Reset posts category active when the slug change
     useEffect( () => {
@@ -292,9 +310,28 @@ function Profile() {
 
                         {/* Buttons section */}
                         <ul className={`w-full flex border-b border-zinc-700/70 text-[#71767b]`}>
-                            <li ref={postsRef} className={`hover:bg-neutral-700/30 sm:px-12 px-8 py-4 cursor-pointer transition ${isActive.posts ? 'text-neutral-200 font-semibold' : ''}`}>Posts</li>
-                            <li ref={repliesRef} className={`hover:bg-neutral-700/30 sm:px-12 px-8 py-4 cursor-pointer transition ${isActive.replies ? 'text-neutral-200 font-semibold' : ''}`}>Replies</li>
-                            <li ref={likesRef} className={`hover:bg-neutral-700/30 sm:px-12 px-8 py-4 cursor-pointer transition ${isActive.likes ? 'text-neutral-200 font-semibold' : ''}`}>Likes</li>
+                            <li
+                                onClick={() => getSuitableTweets(`/users/${username}`)}
+                                ref={postsRef}
+                                className={`relative hover:bg-neutral-700/30 sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.posts ? 'text-neutral-200 font-semibold ' : ''}`}
+                            >
+                                <div className={`${isActive.posts ? 'border-b-2 border-sky-500' : ''}  pb-4 px-3`}>Posts</div>
+                            </li>
+                            <li
+                                onClick={() => getSuitableTweets(`/replies/${username}`)}
+                                ref={repliesRef}
+                                className={`relative hover:bg-neutral-700/30 sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.replies ? 'text-neutral-200 font-semibold ' : ''}`}
+                            >
+                                <div className={`${isActive.replies ? 'border-b-2 border-sky-500' : ''} pb-4 px-3`}>Replies</div>
+                            </li>
+
+                            <li
+                                onClick={() => getSuitableTweets(`/likes/${username}`)}
+                                ref={likesRef}
+                                className={`relative hover:bg-neutral-700/30 sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.likes ? 'text-neutral-200 font-semibold ' : ''}`}
+                            >
+                                <div className={`${isActive.likes ? 'border-b-2 border-sky-500' : ''} pb-4 px-3`}>Likes</div>
+                            </li>
                         </ul>
                     </div>
 
@@ -302,7 +339,11 @@ function Profile() {
                     {tweets}
                     <div className={`invisible opacity-0 pointer-events-none`} ref={lastTweetRef}>
                         {allProfileUserTweets.length > 0 && (
-                            <Tweet {...allProfileUserTweets[allProfileUserTweets.length]} />
+                            <Tweet
+                                {...allProfileUserTweets[allProfileUserTweets.length]}
+                                setAllProfileUserTweets={setAllProfileUserTweets}
+                                allProfileUserTweets={allProfileUserTweets}
+                            />
                         )}
                     </div>
 
