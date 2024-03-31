@@ -95,7 +95,9 @@ function Sidebar() {
                         </Link>
                     </li>
                     <li>
-                        <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`} to={`/notifications`}>
+                        <Link
+                            to={`/notifications`}
+                            className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`} to={`/notifications`}>
                             <BsBell className={`size-8`}/>
                             <span className={`hidden xl:block`}>Notifications</span>
                         </Link>

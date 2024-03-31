@@ -42,8 +42,18 @@ function Profile() {
                 if(tweets){
                     setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
                 }
-                setUserInfo(res.data.data.user)
                 setPageURL(res.data.data.pagination.next_page_url)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    // I separate this function alone cause pagination problem
+    const getUserInfoTweets = (pageURL: string) => {
+        ApiClient().get(pageURL)
+            .then(res => {
+                setUserInfo(res.data.data.user)
             })
             .catch(err => {
                 console.log(err)
@@ -53,6 +63,7 @@ function Profile() {
     useEffect( () => {
         setPageURL('');
         getAllUserTweets(`users/${username}`)
+        getUserInfoTweets(`users/${username}`)
     }, [username] )
 
     // Get the tweets which is suitable to the button which is clicked
@@ -199,7 +210,7 @@ function Profile() {
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header className={`flex border ${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
-                    <Link to={'/home'} className={`w-[7%] hover:bg-neutral-600/30 flex justify-center items-center py-2 rounded-full transition cursor-pointer`}>
+                    <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
                     </Link>
                     <div className={`w-full`}>

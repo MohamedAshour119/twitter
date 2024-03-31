@@ -26,7 +26,7 @@ interface Props {
 }
 function TweetCommonContent(props: Props) {
 
-    const {baseUrl, clickedTweet} = useContext(AppContext)
+    const {baseUrl, clickedTweet, location} = useContext(AppContext)
 
 
     return (
@@ -45,10 +45,10 @@ function TweetCommonContent(props: Props) {
                             <h1 className={`font-semibold cursor-pointer`}>{props.username}</h1>
                             <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.username}</h1>
                         </Link>
-                        {(location?.pathname === `/home` || props.comment_to) &&
+                        {(location?.pathname === `/home` || !props.comment_to) &&
                             <span className={`font-light text-[#71767b] cursor-pointer`}>
-                                                {!props.main_tweet ? props.created_at : props.main_tweet.created_at}
-                                            </span>
+                                {!props.main_tweet ? props.created_at : props.main_tweet.created_at}
+                            </span>
                         }
                     </div>
                     <div
@@ -79,7 +79,7 @@ function TweetCommonContent(props: Props) {
                                 src={`${baseUrl}/storage/${!props.main_tweet ? props.video : props.main_tweet?.video}`}
                             />}
 
-                        {(location?.pathname !== `/home` && !props.comment_to) &&
+                        {(location?.pathname !== `/home` && props.comment_to) &&
                             <div className={`font-light text-[#71767b] cursor-pointer mt-3`}>
                                 {!props.main_tweet ? props.show_tweet_created_at : props.main_tweet.show_tweet_created_at}
                             </div>

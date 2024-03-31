@@ -13,8 +13,8 @@ import TweetCommonContent from "./TweetCommonContent.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 
 interface Props extends  TweetInfo {
-    allProfileUserTweets: TweetInfo[]
-    setAllProfileUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
+    allProfileUserTweets?: TweetInfo[]
+    setAllProfileUserTweets?: Dispatch<SetStateAction<TweetInfo[]>>
 }
 function Tweet(props: Props) {
 
@@ -133,8 +133,8 @@ function Tweet(props: Props) {
     const deleteTweet = () => {
         ApiClient().delete(`/delete-tweet/${props.id}`)
             .then(() => {
-                const filteredUserTweets = props.allProfileUserTweets.filter(singleTweet => singleTweet.id !== props.id)
-                props.setAllProfileUserTweets(filteredUserTweets)
+                const filteredUserTweets = props.allProfileUserTweets?.filter(singleTweet => singleTweet.id !== props.id)
+                props.setAllProfileUserTweets && filteredUserTweets && props.setAllProfileUserTweets(filteredUserTweets)
                 toast.success("Tweet deleted successfully", {
                     className: 'custom-toast',
                     position: "top-center",

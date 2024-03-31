@@ -12,6 +12,7 @@ import {useLocation} from "react-router";
 import UserHomePage from "./components/pages/UserHomePage.tsx";
 import Profile from "./components/pages/Profile.tsx";
 import ShowTweet from "./components/pages/ShowTweet.tsx";
+import Notifications from "./components/pages/Notifications.tsx";
 
 
 function App() {
@@ -36,26 +37,6 @@ function App() {
     }, [])
 
     useEffect(() => {
-        const handleScroll = () => {
-
-            if (window.scrollY >= 191) {
-                console.log('Reached')
-            } else {
-                console.log('reached')
-            }
-        };
-
-        window.addEventListener('scroll', handleScroll);
-
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-        };
-    }, []);
-
-
-
-    useEffect(() => {
         // Redirect to home if user exists and when trying to access '/' or '/register' or '/login'
         if (token && (location.pathname === '/' || location.pathname === '/register' || location.pathname === '/login')) {
             navigate('/home');
@@ -73,8 +54,9 @@ function App() {
 
             <Route element={<AuthRoute />}>
                 <Route path={`/home`} element={<UserHomePage />}/>
-                <Route path={`/users/:username`} element={<Profile/>}/>
-                <Route path={`/tweets/:id`} element={<ShowTweet/>}/>
+                <Route path={`/users/:username`} element={<Profile />}/>
+                <Route path={`/tweets/:id`} element={<ShowTweet />}/>
+                <Route path={`/notifications`} element={<Notifications />}/>
             </Route>
 
             <Route path={`/`} element={<Home />}/>
