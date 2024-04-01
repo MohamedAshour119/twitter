@@ -55,3 +55,15 @@ export interface ClickedTweet {
         comments_count: number,
     }
 }
+
+export interface TweetNotification {
+    id: number | null
+    username: string
+    email: string
+    gender: string
+    avatar: string
+    birth_date: string
+    ban_status: boolean
+    created_at: string
+    updated_at: string
+}

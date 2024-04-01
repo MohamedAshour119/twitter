@@ -154,6 +154,28 @@ function Tweet(props: Props) {
             .finally(() => setTweetMenuOpen(false))
     }
 
+    const tweetCommonContent =
+        <TweetCommonContent
+            addTweetInfo={addTweetInfo}
+            setDisableLink={setDisableLink}
+            setTweetMenuOpen={setTweetMenuOpen}
+            tweetMenuOpen={tweetMenuOpen}
+            username={props.user?.username}
+            avatar={props.user?.avatar}
+            comment_to={props.comment_to}
+            main_tweet={props.main_tweet}
+            created_at={props.created_at}
+            main_tweet_created_at={props.main_tweet?.created_at}
+            title={props?.title}
+            main_tweet_title={props?.main_tweet?.title}
+            image={props?.image}
+            main_tweet_image={props?.main_tweet?.image}
+            video={props?.video}
+            main_tweet_video={props?.main_tweet?.video}
+            show_tweet_created_at={props?.show_tweet_created_at}
+            main_tweet_show_tweet_created_at={props?.main_tweet?.show_tweet_created_at}
+        />
+
     return (
         <>
             <div
@@ -208,49 +230,11 @@ function Tweet(props: Props) {
                 <div className={`${!disableLink ? 'group-hover:bg-zinc-800/20' : ''} transition`}>
                     {!disableLink ? (
                         <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
-                            <TweetCommonContent
-                                addTweetInfo={addTweetInfo}
-                                setDisableLink={setDisableLink}
-                                setTweetMenuOpen={setTweetMenuOpen}
-                                tweetMenuOpen={tweetMenuOpen}
-                                username={props.user?.username}
-                                avatar={props.user?.avatar}
-                                comment_to={props.comment_to}
-                                main_tweet={props.main_tweet}
-                                created_at={props.created_at}
-                                main_tweet_created_at={props.main_tweet?.created_at}
-                                title={props?.title}
-                                main_tweet_title={props?.main_tweet?.title}
-                                image={props?.image}
-                                main_tweet_image={props?.main_tweet?.image}
-                                video={props?.video}
-                                main_tweet_video={props?.main_tweet?.video}
-                                show_tweet_created_at={props?.show_tweet_created_at}
-                                main_tweet_show_tweet_created_at={props?.main_tweet?.show_tweet_created_at}
-                            />
+                            {tweetCommonContent}
                         </Link>
                     ) : (
                         <div>
-                            <TweetCommonContent
-                                addTweetInfo={addTweetInfo}
-                                setDisableLink={setDisableLink}
-                                setTweetMenuOpen={setTweetMenuOpen}
-                                tweetMenuOpen={tweetMenuOpen}
-                                username={props.user?.username}
-                                avatar={props.user?.avatar}
-                                comment_to={props.comment_to}
-                                main_tweet={props.main_tweet}
-                                created_at={props.created_at}
-                                main_tweet_created_at={props.main_tweet?.created_at}
-                                title={props?.title}
-                                main_tweet_title={props?.main_tweet?.title}
-                                image={props?.image}
-                                main_tweet_image={props?.main_tweet?.image}
-                                video={props?.video}
-                                main_tweet_video={props?.main_tweet?.video}
-                                show_tweet_created_at={props?.show_tweet_created_at}
-                                main_tweet_show_tweet_created_at={props?.main_tweet?.show_tweet_created_at}
-                            />
+                            {tweetCommonContent}
                         </div>
                     ) }
                     <div className={`flex ml-20 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 text-zinc-400/70`}>

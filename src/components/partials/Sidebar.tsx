@@ -11,14 +11,14 @@ import ApiClient from "../services/ApiClient.tsx";
 import {ToastContainer} from "react-toastify";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 
-
 function Sidebar() {
 
     const {
         user,
         setUser,
         baseUrl,
-        setIsModelOpen
+        setIsModelOpen,
+        tweetNotifications,
     } = useContext(AppContext)
 
     const {setRandomTweets} = useContext(TweetContext)
@@ -73,7 +73,7 @@ function Sidebar() {
     return (
         <>
             <ToastContainer/>
-            <div className={`text-neutral-100 lg:px-0 px-4 pb-5 pt-1 h-dvh grid grid-cols-1 justify-center container fixed min-w-fit 2xl:max-w-[22%] z-50`}>
+            <div className={`text-neutral-100 lg:px-0 px-4 pb-5 pt-1 h-dvh grid grid-cols-1 justify-center container fixed min-w-fit 2xl:max-w-[22%] z-[300]`}>
                 <ul className={`flex flex-col gap-y-5 justify-self-end 2xl:w-[80%] xl:w-[22%] mx-4 select-none`}>
                     <li className={`flex items-center`}>
                         <Link to={`/home`}>
@@ -83,13 +83,16 @@ function Sidebar() {
                         </Link>
                     </li>
                     <li className={``}>
-                        <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`} to={`/home`}>
+                        <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
+                              to={`/home`}>
                             <MdHomeFilled className={`size-8`}/>
                             <span className={`hidden xl:block`}>Home</span>
                         </Link>
                     </li>
                     <li>
-                        <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`} to={`/explore`}>
+                        <Link
+                            className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}
+                            to={`/explore`}>
                             <HiMiniMagnifyingGlass className={`size-8`}/>
                             <span className={`hidden xl:block`}>Explore</span>
                         </Link>
@@ -97,13 +100,22 @@ function Sidebar() {
                     <li>
                         <Link
                             to={`/notifications`}
-                            className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`} to={`/notifications`}>
-                            <BsBell className={`size-8`}/>
+                            className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}>
+                            <div className={`relative`}>
+                                <BsBell className={`size-8`}/>
+                                {tweetNotifications?.length !== 0 &&
+                                    <div
+                                        className={`absolute -top-3 left-4 text-sm bg-sky-500 rounded-full min-w-[1.5rem] min-h-[1.5rem] flex justify-center items-center`}>
+                                        {tweetNotifications.length}
+                                    </div>
+                                }
+                            </div>
                             <span className={`hidden xl:block`}>Notifications</span>
                         </Link>
                     </li>
                     <li>
-                        <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`} to={`/users/${user?.username}`}>
+                        <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
+                              to={`/users/${user?.username}`}>
                             <LuUser className={`size-8`}/>
                             <span className={`hidden xl:block`}>Profile</span>
                         </Link>

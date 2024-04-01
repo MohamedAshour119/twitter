@@ -1,22 +1,24 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
-import {ClickedTweet, UserInfo} from "../../Interfaces.tsx";
+import {ClickedTweet, TweetNotification, UserInfo} from "../../Interfaces.tsx";
 
 interface AppContextType {
-    isRegisterOpen: boolean;
-    location: Pathname | null;
-    user: UserInfo | null;
-    setUser: Dispatch<SetStateAction<UserInfo | null>>;
-    baseUrl: string;
-    handleModelOpen: () => void;
-    isModelOpen: boolean;
-    setIsModelOpen: Dispatch<SetStateAction<boolean>>;
-    suggestedUsersToFollow: UserInfo[];
-    isCommentOpen: boolean;
-    setIsCommentOpen: Dispatch<SetStateAction<boolean>>;
-    clickedTweet: ClickedTweet;
+    isRegisterOpen: boolean
+    location: Pathname | null
+    user: UserInfo | null
+    setUser: Dispatch<SetStateAction<UserInfo | null>>
+    baseUrl: string
+    handleModelOpen: () => void
+    isModelOpen: boolean
+    setIsModelOpen: Dispatch<SetStateAction<boolean>>
+    suggestedUsersToFollow: UserInfo[]
+    isCommentOpen: boolean
+    setIsCommentOpen: Dispatch<SetStateAction<boolean>>
+    clickedTweet: ClickedTweet
     setClickedTweet: Dispatch<SetStateAction<ClickedTweet>>
+    tweetNotifications: TweetNotification[]
+    setTweetNotifications: Dispatch<SetStateAction<TweetNotification[]>>
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -77,8 +79,19 @@ export const AppContext = createContext<AppContextType>({
         },
     },
 
-    setClickedTweet: () => null
-
+    setClickedTweet: () => null,
+    tweetNotifications: [{
+        id: null,
+        username: '',
+        email: '',
+        gender: '',
+        avatar: '',
+        birth_date: '',
+        ban_status: false,
+        created_at: '',
+        updated_at: '',
+    }],
+    setTweetNotifications: () => null,
 });
 
 interface AppProviderProps {
@@ -131,6 +144,8 @@ const AppProvider = ({children}: AppProviderProps) => {
         },
     })
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
+    // const [notificationsCount, setNotificationsCount] = useState<number | null>(null)
+    const [tweetNotifications, setTweetNotifications] = useState<TweetNotification[]>([])
 
     const baseUrl = 'http://api.twitter.test'
 
@@ -160,14 +175,19 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     // Suggested users to follow
     useEffect( () => {
-        ApiClient().get('/home')
-            .then(res => {
-                setSuggestedUsersToFollow(res.data.data.suggested_users)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }, [])
+        if(user?.id) {
+            ApiClient().get('/home')
+                .then(res => {
+                    setSuggestedUsersToFollow(res.data.data.suggested_users)
+                    // setNotificationsCount(res.data.data.notifications_count)
+                    setTweetNotifications(res.data.data.notifications)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+
+    }, [user])
 
     return (
         <AppContext.Provider
@@ -185,6 +205,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setIsCommentOpen,
                 clickedTweet,
                 setClickedTweet,
+                tweetNotifications,
+                setTweetNotifications,
             }}>
             {children}
         </AppContext.Provider>

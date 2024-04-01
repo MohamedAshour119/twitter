@@ -6,6 +6,7 @@ import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import TweetModel from "../layouts/TweetModel.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
+import NewTweetNotification from "../layouts/NewTweetNotification.tsx";
 
 function Notifications() {
 
@@ -13,6 +14,7 @@ function Notifications() {
         isModelOpen,
         isCommentOpen,
         location,
+        tweetNotifications,
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
@@ -45,8 +47,17 @@ function Notifications() {
         return () => {
             document.removeEventListener('mousedown', handleClick)
         }
-
     }, [location?.pathname])
+
+    const notifications = tweetNotifications?.map(notification => {
+        return (
+            <NewTweetNotification
+                avatar={notification.avatar}
+                username={notification.username}
+                created_at={notification.created_at}
+            />
+        )
+    })
 
     return (
         <div className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
@@ -92,11 +103,11 @@ function Notifications() {
                     <Sidebar/>
                 </div>
                 {/* Middle section */}
-                <div className={`text-neutral-200 border-r border-l border-zinc-700/70 animate-slide-down`}>
-                    <div className={`h-14 bg-black z-10`}></div>
-
-                    {/* All user tweets */}
-
+                <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
+                    {/* All user notifications */}
+                    <div className={`mt-28 pb-5`}>
+                        {notifications}
+                    </div>
 
                 </div>
 

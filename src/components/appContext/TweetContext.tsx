@@ -1,6 +1,6 @@
 import {ChangeEvent, createContext, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useContext, useState} from "react";
 import {EmojiData} from "emoji-picker-react";
-import {TweetInfo} from "../../Interfaces.tsx";
+import {TweetInfo, TweetNotification} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
 import {useParams} from "react-router-dom";
@@ -108,7 +108,6 @@ export const TweetContext = createContext<TweetContextType>({
             username: '',
             avatar: ''
         },
-
         title: '',
         user_id: 0,
         image: '',
@@ -124,7 +123,6 @@ export const TweetContext = createContext<TweetContextType>({
         is_reacted: false,
         is_retweeted: false,
         comments_count: 0,
-
         main_tweet: {
             title: '',
             user_id: 0,
@@ -147,7 +145,7 @@ export const TweetContext = createContext<TweetContextType>({
     commentsCount: {
         comments_counts: null,
         id: null,
-    }
+    },
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
