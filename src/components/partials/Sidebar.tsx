@@ -18,7 +18,7 @@ function Sidebar() {
         setUser,
         baseUrl,
         setIsModelOpen,
-        tweetNotifications,
+        notificationsCount,
     } = useContext(AppContext)
 
     const {setRandomTweets} = useContext(TweetContext)
@@ -103,10 +103,10 @@ function Sidebar() {
                             className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}>
                             <div className={`relative`}>
                                 <BsBell className={`size-8`}/>
-                                {tweetNotifications?.length !== 0 &&
+                                {notificationsCount &&
                                     <div
                                         className={`absolute -top-3 left-4 text-sm bg-sky-500 rounded-full min-w-[1.5rem] min-h-[1.5rem] flex justify-center items-center`}>
-                                        {tweetNotifications.length}
+                                        {notificationsCount}
                                     </div>
                                 }
                             </div>

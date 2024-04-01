@@ -23,7 +23,7 @@ function NewTweetNotification(props: Props) {
                 <div>
                     <Link
                         to={`/users/${props.username}`}
-                        className={`text-sky-500 font-semibold`}>
+                        className={`text-sky-500 font-semibold hover:text-sky-600 transition`}>
                         {props.username + ' '}
                     </Link>
                     posted a new tweet, check it out

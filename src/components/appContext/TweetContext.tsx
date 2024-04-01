@@ -1,6 +1,6 @@
 import {ChangeEvent, createContext, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useContext, useState} from "react";
 import {EmojiData} from "emoji-picker-react";
-import {TweetInfo, TweetNotification} from "../../Interfaces.tsx";
+import {tweetDefaultValues, TweetInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
 import {useParams} from "react-router-dom";
@@ -49,47 +49,7 @@ export const TweetContext = createContext<TweetContextType>({
     },
     setTweet: () => null,
     setRandomTweets: () => null,
-    randomTweets: [{
-        user: {
-            id: 0,
-            username: '',
-            avatar: ''
-        },
-
-        title: '',
-        user_id: 0,
-        image: '',
-        video: '',
-        show_tweet_created_at: '',
-        updated_at: '',
-        created_at: '',
-        id: 0,
-        retweet_to: null,
-        comment_to: null,
-        reactions_count: 0,
-        retweets_count: 0,
-        is_reacted: false,
-        is_retweeted: false,
-        comments_count: 0,
-
-        main_tweet: {
-            title: '',
-            user_id: 0,
-            image: '',
-            video: '',
-            show_tweet_created_at: '',
-            updated_at: '',
-            created_at: '',
-            id: 0,
-            retweet_to: null,
-            comment_to: null,
-            reactions_count: 0,
-            retweets_count: 0,
-            comments_count: 0,
-            is_reacted: false,
-            is_retweeted: false,
-        }
-    }],
+    randomTweets: [tweetDefaultValues],
     videoURL: '',
     setVideoURL: () => null,
     showEmojiEl: false,
@@ -102,45 +62,7 @@ export const TweetContext = createContext<TweetContextType>({
     displayModelEmojiPicker: () => null,
     handleFileChange: () => null,
     sendRequest: () => null,
-    comments: [{
-        user: {
-            id: 0,
-            username: '',
-            avatar: ''
-        },
-        title: '',
-        user_id: 0,
-        image: '',
-        video: '',
-        show_tweet_created_at: '',
-        updated_at: '',
-        created_at: '',
-        id: 0,
-        retweet_to: null,
-        comment_to: null,
-        reactions_count: 0,
-        retweets_count: 0,
-        is_reacted: false,
-        is_retweeted: false,
-        comments_count: 0,
-        main_tweet: {
-            title: '',
-            user_id: 0,
-            image: '',
-            video: '',
-            show_tweet_created_at: '',
-            updated_at: '',
-            created_at: '',
-            id: 0,
-            retweet_to: null,
-            comment_to: null,
-            reactions_count: 0,
-            retweets_count: 0,
-            comments_count: 0,
-            is_reacted: false,
-            is_retweeted: false,
-        }
-    }],
+    comments: [tweetDefaultValues],
     setComments: () => null,
     commentsCount: {
         comments_counts: null,
@@ -291,7 +213,6 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                     console.log(err)
                 })
         }
-
     }
 
     return (

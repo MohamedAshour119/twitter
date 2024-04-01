@@ -58,12 +58,48 @@ export interface ClickedTweet {
 
 export interface TweetNotification {
     id: number | null
-    username: string
-    email: string
-    gender: string
-    avatar: string
-    birth_date: string
-    ban_status: boolean
-    created_at: string
-    updated_at: string
+    tweet_id: number | null
+    tweet_user: TweetInfo
 }
+
+export const tweetDefaultValues = {
+    user: {
+        id: 0,
+        username: '',
+        avatar: '',
+    },
+    title: '',
+    user_id: 0,
+    image: '',
+    video: '',
+    show_tweet_created_at: '',
+    updated_at: '',
+    created_at: '',
+    id: 0,
+    retweet_to: null,
+    comment_to: null,
+    reactions_count: 0,
+    retweets_count: 0,
+    is_reacted: false,
+    is_retweeted: false,
+    comments_count: 0,
+    main_tweet: {
+        title: '',
+        user_id: 0,
+        image: '',
+        video: '',
+        show_tweet_created_at: '',
+        updated_at: '',
+        created_at: '',
+        id: 0,
+        retweet_to: null,
+        comment_to: null,
+        reactions_count: 0,
+        retweets_count: 0,
+        comments_count: 0,
+        is_reacted: false,
+        is_retweeted: false,
+    }
+}
+
+
