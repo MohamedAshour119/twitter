@@ -59,7 +59,9 @@ export interface ClickedTweet {
 export interface TweetNotification {
     id: number | null
     tweet_id: number | null
-    tweet_user: TweetInfo
+    is_read: boolean
+    follower_id: number | null
+    tweet: TweetInfo
 }
 
 export const tweetDefaultValues = {

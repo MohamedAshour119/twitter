@@ -52,9 +52,13 @@ function Notifications() {
     const notifications = tweetNotifications?.map(notification => {
         return (
             <NewTweetNotification
-                avatar={notification.tweet_user.user.avatar}
-                username={notification.tweet_user.user.username}
-                created_at={notification.tweet_user.user.created_at}
+                avatar={notification.tweet.user.avatar}
+                username={notification.tweet.user.username}
+                created_at={notification.tweet.created_at}
+                user_id={notification.tweet.user_id}
+                tweet_id={notification.tweet_id}
+                is_read={notification.is_read}
+                follower_id={notification.follower_id}
             />
         )
     })

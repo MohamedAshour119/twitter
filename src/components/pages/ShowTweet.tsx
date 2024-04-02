@@ -33,7 +33,6 @@ function ShowTweet() {
     useEffect( () => {
         ApiClient().get(`/tweets/${id}`)
             .then(res => {
-                console.log(res.data)
                 setDisplayTweet(res.data.data.tweet)
                 setComments(res.data.data.pagination.data)
                 setPageURL(res.data.data.pagination.next_page_url)

@@ -9,8 +9,8 @@ import {Link, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
-import TweetCommonContent from "./TweetCommonContent.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
+import {HiOutlineDotsHorizontal} from "react-icons/hi";
 
 interface Props extends  TweetInfo {
     allProfileUserTweets?: TweetInfo[]
@@ -21,8 +21,10 @@ function Tweet(props: Props) {
     const {
         user,
         location,
+        baseUrl,
         isCommentOpen,
         setIsCommentOpen,
+        clickedTweet,
         setClickedTweet,
     } = useContext(AppContext);
 
@@ -155,26 +157,66 @@ function Tweet(props: Props) {
     }
 
     const tweetCommonContent =
-        <TweetCommonContent
-            addTweetInfo={addTweetInfo}
-            setDisableLink={setDisableLink}
-            setTweetMenuOpen={setTweetMenuOpen}
-            tweetMenuOpen={tweetMenuOpen}
-            username={props.user?.username}
-            avatar={props.user?.avatar}
-            comment_to={props.comment_to}
-            main_tweet={props.main_tweet}
-            created_at={props.created_at}
-            main_tweet_created_at={props.main_tweet?.created_at}
-            title={props?.title}
-            main_tweet_title={props?.main_tweet?.title}
-            image={props?.image}
-            main_tweet_image={props?.main_tweet?.image}
-            video={props?.video}
-            main_tweet_video={props?.main_tweet?.video}
-            show_tweet_created_at={props?.show_tweet_created_at}
-            main_tweet_show_tweet_created_at={props?.main_tweet?.show_tweet_created_at}
-        />
+        <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
+            <div className={`flex gap-x-2`}>
+                <Link to={`/users/${username}`} className={`md:w-[10%] w-[14%]`}>
+                    <img
+                        className={`size-11 object-cover rounded-full select-none`}
+                        src={`${baseUrl}/storage/${props.user?.avatar}`}
+                        alt=""
+                    />
+                </Link>
+                <div className={`flex gap-x-2 justify-between items-start w-full`}>
+                    <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
+                        <Link to={`/users/${username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
+                            <h1 className={`font-semibold cursor-pointer`}>{username}</h1>
+                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{username}</h1>
+                        </Link>
+                        {(location?.pathname === `/home` || !props.comment_to) &&
+                            <span className={`font-light text-[#71767b] cursor-pointer`}>
+                                {!props.main_tweet ? props.created_at : props.main_tweet.created_at}
+                            </span>
+                        }
+                    </div>
+                    <div
+                        onClick={() => setTweetMenuOpen(!tweetMenuOpen)}
+                        onMouseEnter={() => setDisableLink(true)}
+                        onMouseLeave={() => setDisableLink(false)}
+                        className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
+                        <HiOutlineDotsHorizontal/>
+                    </div>
+                </div>
+            </div>
+
+            <div className={`w-[90%] justify-self-end`}>
+                <div className={`grid grid-cols-1`}>
+                    <p className={`w-fit break-all`}>{!props.main_tweet ? props.title : props.main_tweet.title}</p>
+                    <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>
+                        {(props.image || props.main_tweet?.image) &&
+                            <img
+                                className={`rounded-2xl max-h-[40rem] w-full ${props.image || props.main_tweet?.image ? 'mt-4' : ''}`}
+                                src={`${baseUrl}/storage/${!props.main_tweet ? props.image : props.main_tweet?.image}`}
+                                alt="post_image"
+                            />}
+
+                        {(props.video || props.main_tweet?.video) &&
+                            <video
+                                className={`max-h-[40rem] w-full rounded-2xl ${props.video || props.main_tweet?.video ? 'mt-4' : ''}`}
+                                controls
+                                src={`${baseUrl}/storage/${!props.main_tweet ? props.video : props.main_tweet?.video}`}
+                            />}
+
+                        {(location?.pathname !== `/home` && props.comment_to) &&
+                            <div className={`font-light text-[#71767b] cursor-pointer mt-3`}>
+                                {!props.main_tweet ? props.show_tweet_created_at : props.main_tweet.show_tweet_created_at}
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
     return (
         <>
@@ -196,7 +238,7 @@ function Tweet(props: Props) {
                         ref={tweetMenuRef}
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
-                        className={`z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
+                        className={`shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
                         <div
                             onClick={() => setTweetMenuOpen(false)}
                             className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">

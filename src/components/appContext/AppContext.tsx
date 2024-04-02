@@ -19,8 +19,8 @@ interface AppContextType {
     setClickedTweet: Dispatch<SetStateAction<ClickedTweet>>
     tweetNotifications: TweetNotification[]
     setTweetNotifications: Dispatch<SetStateAction<TweetNotification[]>>
-    notificationsCount: number | null
-    setNotificationsCount: Dispatch<SetStateAction<number | null>>
+    notificationsCount: number
+    setNotificationsCount: Dispatch<SetStateAction<number>>
     notificationsPageURL: string | null
     setNotificationsPageURL: Dispatch<SetStateAction<string | null>>
 }
@@ -87,10 +87,12 @@ export const AppContext = createContext<AppContextType>({
     tweetNotifications: [{
         id: null,
         tweet_id: null,
-        tweet_user: tweetDefaultValues
+        is_read: false,
+        follower_id: null,
+        tweet: tweetDefaultValues
     }],
     setTweetNotifications: () => null,
-    notificationsCount: null,
+    notificationsCount: 0,
     setNotificationsCount: () => null,
     notificationsPageURL: '',
     setNotificationsPageURL: () => null,
@@ -147,7 +149,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     })
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
     const [tweetNotifications, setTweetNotifications] = useState<TweetNotification[]>([])
-    const [notificationsCount, setNotificationsCount] = useState<number | null>(null)
+    const [notificationsCount, setNotificationsCount] = useState<number>(0)
     const [notificationsPageURL, setNotificationsPageURL] = useState<string | null>(null)
 
     const baseUrl = 'http://api.twitter.test'
@@ -182,16 +184,26 @@ const AppProvider = ({children}: AppProviderProps) => {
             ApiClient().get('/home')
                 .then(res => {
                     setSuggestedUsersToFollow(res.data.data.suggested_users)
-                    setTweetNotifications(res.data.data.notifications.data)
-                    setNotificationsPageURL(res.data.data.notifications.next_page_url)
-                    setNotificationsCount(res.data.data.notifications.total)
                 })
                 .catch(err => {
                     console.log(err)
                 })
         }
-
     }, [user])
+
+    // Get all notifications
+    useEffect( () => {
+        ApiClient().get('/notifications')
+            .then(res => {
+                setTweetNotifications(res.data.data.notifications.data)
+                setNotificationsPageURL(res.data.data.notifications.next_page_url)
+                setNotificationsCount(res.data.data.notifications_count)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+
+    }, [])
 
     return (
         <AppContext.Provider
