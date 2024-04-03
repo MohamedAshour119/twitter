@@ -11,7 +11,7 @@ import ApiClient from "../services/ApiClient.tsx";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
 
 type NotificationsInfo = {
-    'users_id': number[],
+    'users_id': number[] | null,
     'tweets_id': number[],
 }
 function Notifications() {
@@ -23,6 +23,8 @@ function Notifications() {
         notificationsPageURL,
         getAllNotifications,
         setTweetNotifications,
+        setNotificationsCount,
+        user,
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
@@ -61,19 +63,18 @@ function Notifications() {
         }
     }, [location?.pathname])
 
-    const notifications = tweetNotifications?.slice(0, tweetNotifications.length - 1).map(notification => {
-        return (
-            <NewTweetNotification
-                avatar={notification.tweet?.user.avatar}
-                username={notification.tweet?.user.username}
-                created_at={notification.tweet?.created_at}
-                user_id={notification.tweet?.user_id}
-                tweet_id={notification.tweet_id}
-                is_read={notification.is_read}
-                follower_id={notification.follower_id}
-            />
-        )
-    })
+    const notifications = tweetNotifications.slice(0, tweetNotifications.length - 1).map(notification => (
+        <NewTweetNotification
+            key={notification.tweet_id}
+            avatar={notification.tweet?.user.avatar}
+            username={notification.tweet?.user.username}
+            created_at={notification.tweet?.created_at}
+            user_id={notification.tweet?.user_id}
+            tweet_id={notification.tweet_id}
+            is_read={notification.is_read}
+            follower_id={notification.follower_id}
+        />
+    ));
 
     // Detect when scroll to last element
     const lastNotificationRef = useRef<HTMLDivElement>(null)
@@ -106,7 +107,7 @@ function Notifications() {
         const filteredNotifications = tweetNotifications.filter(notification => !notification.is_read)
         filteredNotifications.map(notification => {
             if(notification.tweet){
-                notificationsInfoDiff.users_id.push(notification.tweet.user_id)
+                notificationsInfoDiff.users_id.push(user?.id)
                 notificationsInfoDiff.tweets_id.push(notification.tweet.id)
             }
         })
@@ -117,8 +118,16 @@ function Notifications() {
     const markAllNotificationsAsRead = () => {
         if(notificationsInfo) {
             ApiClient().put(`/mark-all`, notificationsInfo)
-                .then(res => {
-                    setTweetNotifications(res.data.data)
+                .then(() => {
+                    const updatedNotifications = tweetNotifications.map(notification => {
+                        localStorage.setItem(`isRead_${notification.tweet_id}`, JSON.stringify(true));
+                        return {
+                            ...notification,
+                            is_read: true,
+                        }
+                    })
+                    setTweetNotifications(updatedNotifications)
+                    setNotificationsCount(0)
                 })
                 .catch(err => {
                     console.log(err)
