@@ -169,8 +169,8 @@ function Tweet(props: Props) {
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
                         <Link to={`/users/${username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{username}</h1>
-                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{username}</h1>
+                            <h1 className={`font-semibold cursor-pointer`}>{props.user.username}</h1>
+                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user.username}</h1>
                         </Link>
                         {(location?.pathname === `/home` || !props.comment_to) &&
                             <span className={`font-light text-[#71767b] cursor-pointer`}>

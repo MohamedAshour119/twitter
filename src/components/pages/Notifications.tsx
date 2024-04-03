@@ -7,19 +7,31 @@ import TweetModel from "../layouts/TweetModel.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import NewTweetNotification from "../layouts/NewTweetNotification.tsx";
+import ApiClient from "../services/ApiClient.tsx";
+import {IoCheckmarkDoneOutline} from "react-icons/io5";
 
+type NotificationsInfo = {
+    'users_id': number[],
+    'tweets_id': number[],
+}
 function Notifications() {
-
     const {
         isModelOpen,
         isCommentOpen,
         location,
         tweetNotifications,
+        notificationsPageURL,
+        getAllNotifications,
+        setTweetNotifications,
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
         all: true,
         mentioned: false,
+    })
+    const [notificationsInfo, setNotificationsInfo] = useState<NotificationsInfo>({
+        'users_id': [],
+        'tweets_id': [],
     })
 
     // Handle active buttons
@@ -49,19 +61,71 @@ function Notifications() {
         }
     }, [location?.pathname])
 
-    const notifications = tweetNotifications?.map(notification => {
+    const notifications = tweetNotifications?.slice(0, tweetNotifications.length - 1).map(notification => {
         return (
             <NewTweetNotification
-                avatar={notification.tweet.user.avatar}
-                username={notification.tweet.user.username}
-                created_at={notification.tweet.created_at}
-                user_id={notification.tweet.user_id}
+                avatar={notification.tweet?.user.avatar}
+                username={notification.tweet?.user.username}
+                created_at={notification.tweet?.created_at}
+                user_id={notification.tweet?.user_id}
                 tweet_id={notification.tweet_id}
                 is_read={notification.is_read}
                 follower_id={notification.follower_id}
             />
         )
     })
+
+    // Detect when scroll to last element
+    const lastNotificationRef = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        const observer = new IntersectionObserver(entries => {
+            if (entries[0].isIntersecting) {
+                getAllNotifications(notificationsPageURL)
+            }
+        }, {
+            threshold: 0.5 // Trigger when 50% of the last tweet is visible
+        });
+
+        // Watch the last tweet
+        if (lastNotificationRef.current) {
+            observer.observe(lastNotificationRef.current)
+        }
+
+        // Cleanup
+        return () => {
+            if (lastNotificationRef.current) {
+                observer.unobserve(lastNotificationRef.current);
+            }
+        };
+    }, [notificationsPageURL])
+
+    // Mark all notifications as read
+
+    useEffect( () => {
+        const notificationsInfoDiff: NotificationsInfo = {'users_id': [], 'tweets_id': [] }
+        const filteredNotifications = tweetNotifications.filter(notification => !notification.is_read)
+        filteredNotifications.map(notification => {
+            if(notification.tweet){
+                notificationsInfoDiff.users_id.push(notification.tweet.user_id)
+                notificationsInfoDiff.tweets_id.push(notification.tweet.id)
+            }
+        })
+        setNotificationsInfo(notificationsInfoDiff)
+    }, [getAllNotifications])
+
+
+    const markAllNotificationsAsRead = () => {
+        if(notificationsInfo) {
+            ApiClient().put(`/mark-all`, notificationsInfo)
+                .then(res => {
+                    setTweetNotifications(res.data.data)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+    }
+
 
     return (
         <div className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
@@ -110,8 +174,23 @@ function Notifications() {
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
                     {/* All user notifications */}
                     <div className={`mt-28 pb-5`}>
+                        {notifications.length > 1 &&
+                            <div
+                                onClick={markAllNotificationsAsRead}
+                                className={`flex gap-x-3 bg-sky-500 w-fit px-6 py-2 relative left-1/2 -translate-x-1/2 cursor-pointer hover:bg-sky-600 transition rounded-md`}>
+                                <span>Mark all as read</span>
+                                <IoCheckmarkDoneOutline className={`size-6`}/>
+                            </div>
+                        }
+
                         {notifications}
+                        <div ref={lastNotificationRef}>
+                            {notifications.length > 0 && (
+                                <NewTweetNotification {...notifications[notifications.length - 1].props} />
+                            )}
+                        </div>
                     </div>
+
 
                 </div>
 

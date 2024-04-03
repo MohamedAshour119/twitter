@@ -61,7 +61,7 @@ export interface TweetNotification {
     tweet_id: number | null
     is_read: boolean
     follower_id: number | null
-    tweet: TweetInfo
+    tweet?: TweetInfo
 }
 
 export const tweetDefaultValues = {

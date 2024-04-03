@@ -7,17 +7,17 @@ import {IoCheckmarkDoneOutline} from "react-icons/io5";
 import ApiClient from "../services/ApiClient.tsx";
 
 interface Props {
-    avatar: string,
-    username: string,
-    created_at: string,
-    user_id: number | null,
+    avatar: string | undefined,
+    username: string | undefined,
+    created_at: string | undefined,
+    user_id: number | null | undefined,
     tweet_id: number | null,
     is_read: boolean,
     follower_id: number | null,
 }
 function NewTweetNotification(props: Props) {
 
-    const {baseUrl, setNotificationsCount} = useContext(AppContext)
+    const {baseUrl, setNotificationsCount, tweetNotifications} = useContext(AppContext)
 
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
@@ -49,11 +49,17 @@ function NewTweetNotification(props: Props) {
                     setIsRead(res.data.data.notification.is_read)
                     setNotificationsCount(res.data.data.notifications_count)
                     localStorage.setItem(`isRead_${props.tweet_id}`, JSON.stringify(res.data.data.notification.is_read));
+
+                    tweetNotifications.map(notification => {
+                        notification.tweet_id === notificationInfo.tweet_id ? notification.is_read = true : ''
+                    })
                 })
                 .catch(err => {
                     console.log(err)
                 })
                 .finally(() => setNotificationMenuOpen(false))
+        } else {
+            setNotificationMenuOpen(false)
         }
     }
 
