@@ -11,7 +11,7 @@ import ApiClient from "../services/ApiClient.tsx";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
 
 type NotificationsInfo = {
-    'users_id': number[] | null,
+    'users_id': number[],
     'tweets_id': number[],
 }
 function Notifications() {
@@ -19,17 +19,17 @@ function Notifications() {
         isModelOpen,
         isCommentOpen,
         location,
-        tweetNotifications,
+        allNotifications,
         notificationsPageURL,
         getAllNotifications,
-        setTweetNotifications,
+        setAllNotifications,
         setNotificationsCount,
         user,
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
         all: true,
-        mentioned: false,
+        verified: false,
     })
     const [notificationsInfo, setNotificationsInfo] = useState<NotificationsInfo>({
         'users_id': [],
@@ -46,14 +46,14 @@ function Notifications() {
                 setIsActive(prevIsActive => ({
                     ...prevIsActive,
                     all: true,
-                    mentioned: false,
+                    verified: false,
                 }))
             }
             if(mentionedNotificationsRef.current?.contains(e.target as Node)){
                 setIsActive(prevIsActive => ({
                     ...prevIsActive,
                     all: false,
-                    mentioned: true,
+                    verified: true,
                 }))
             }
         }
@@ -63,16 +63,17 @@ function Notifications() {
         }
     }, [location?.pathname])
 
-    const notifications = tweetNotifications.slice(0, tweetNotifications.length - 1).map(notification => (
+    const notifications = allNotifications.slice(0, allNotifications.length - 1).map(notification => (
         <NewTweetNotification
-            key={notification.tweet_id}
-            avatar={notification.tweet?.user.avatar}
-            username={notification.tweet?.user.username}
-            created_at={notification.tweet?.created_at}
-            user_id={notification.tweet?.user_id}
+            key={notification.id}
+            id={notification.id}
+            type={notification.type}
+            follower_id={notification.follower_id}
+            followed_id={notification.followed_id}
+            created_at={notification.created_at}
             tweet_id={notification.tweet_id}
             is_read={notification.is_read}
-            follower_id={notification.follower_id}
+            user={notification.user}
         />
     ));
 
@@ -104,11 +105,11 @@ function Notifications() {
 
     useEffect( () => {
         const notificationsInfoDiff: NotificationsInfo = {'users_id': [], 'tweets_id': [] }
-        const filteredNotifications = tweetNotifications.filter(notification => !notification.is_read)
+        const filteredNotifications = allNotifications.filter(notification => !notification.is_read)
         filteredNotifications.map(notification => {
-            if(notification.tweet){
-                notificationsInfoDiff.users_id.push(user?.id)
-                notificationsInfoDiff.tweets_id.push(notification.tweet.id)
+            if(notification.tweet_id && user){
+                notificationsInfoDiff.users_id?.push(user?.id)
+                notificationsInfoDiff.tweets_id.push(notification.tweet_id)
             }
         })
         setNotificationsInfo(notificationsInfoDiff)
@@ -119,14 +120,14 @@ function Notifications() {
         if(notificationsInfo) {
             ApiClient().put(`/mark-all`, notificationsInfo)
                 .then(() => {
-                    const updatedNotifications = tweetNotifications.map(notification => {
+                    const updatedNotifications = allNotifications.map(notification => {
                         localStorage.setItem(`isRead_${notification.tweet_id}`, JSON.stringify(true));
                         return {
                             ...notification,
                             is_read: true,
                         }
                     })
-                    setTweetNotifications(updatedNotifications)
+                    setAllNotifications(updatedNotifications)
                     setNotificationsCount(0)
                 })
                 .catch(err => {
@@ -134,7 +135,6 @@ function Notifications() {
                 })
         }
     }
-
 
     return (
         <div className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
@@ -159,9 +159,9 @@ function Notifications() {
                         </li>
                         <li
                             ref={mentionedNotificationsRef}
-                            className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.mentioned ? 'text-neutral-200 font-semibold ' : ''}`}
+                            className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.verified ? 'text-neutral-200 font-semibold ' : ''}`}
                         >
-                            <div className={`${isActive.mentioned ? 'border-b-2 border-sky-500 w-fit' : ''} pb-4 px-3`}>Mentioned</div>
+                            <div className={`${isActive.verified ? 'border-b-2 border-sky-500 w-fit' : ''} pb-4 px-3`}>Verified</div>
                         </li>
                     </ul>
                 </header>
@@ -194,8 +194,8 @@ function Notifications() {
 
                         {notifications}
                         <div ref={lastNotificationRef}>
-                            {notifications.length > 0 && (
-                                <NewTweetNotification {...notifications[notifications.length - 1].props} />
+                            {allNotifications.length > 0 && (
+                                <NewTweetNotification {...allNotifications[allNotifications.length - 1]} />
                             )}
                         </div>
                     </div>

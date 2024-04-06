@@ -1,7 +1,7 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
-import {ClickedTweet, tweetDefaultValues, TweetNotification, UserInfo} from "../../Interfaces.tsx";
+import {ClickedTweet, Notification, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
 
 interface AppContextType {
     isRegisterOpen: boolean
@@ -17,8 +17,8 @@ interface AppContextType {
     setIsCommentOpen: Dispatch<SetStateAction<boolean>>
     clickedTweet: ClickedTweet
     setClickedTweet: Dispatch<SetStateAction<ClickedTweet>>
-    tweetNotifications: TweetNotification[]
-    setTweetNotifications: Dispatch<SetStateAction<TweetNotification[]>>
+    allNotifications: Notification[]
+    setAllNotifications: Dispatch<SetStateAction<Notification[]>>
     notificationsCount: number
     setNotificationsCount: Dispatch<SetStateAction<number>>
     notificationsPageURL: string
@@ -30,7 +30,7 @@ export const AppContext = createContext<AppContextType>({
     isRegisterOpen: false,
     location: null,
     user: {
-        id: null,
+        id: 0,
         username: '',
         email: '',
         gender: '',
@@ -53,7 +53,7 @@ export const AppContext = createContext<AppContextType>({
     baseUrl: '',
     suggestedUsersToFollow: [
         {
-            id: null,
+            id: 0,
             username: '',
             email: '',
             gender: '',
@@ -85,14 +85,17 @@ export const AppContext = createContext<AppContextType>({
     },
 
     setClickedTweet: () => null,
-    tweetNotifications: [{
+    allNotifications: [{
         id: null,
+        type: '',
         tweet_id: null,
         is_read: false,
         follower_id: null,
-        tweet: tweetDefaultValues
+        followed_id: null,
+        created_at: '',
+        user: UserDefaultValues
     }],
-    setTweetNotifications: () => null,
+    setAllNotifications: () => null,
     notificationsCount: 0,
     setNotificationsCount: () => null,
     notificationsPageURL: '',
@@ -119,21 +122,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const location: Pathname = useLocation();
-    const [user, setUser] = useState<UserInfo | null>({
-        id: null,
-        username: '',
-        email: '',
-        gender: '',
-        avatar: '',
-        birth_date: '',
-        ban_status: null,
-        created_at: '',
-        updated_at: '',
-        following_number: null,
-        followers_number: null,
-        is_followed: false,
-        tweets_count: null,
-    })
+    const [user, setUser] = useState<UserInfo | null>(UserDefaultValues)
 
 
     const [clickedTweet, setClickedTweet] = useState<ClickedTweet>({
@@ -150,7 +139,7 @@ const AppProvider = ({children}: AppProviderProps) => {
         },
     })
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
-    const [tweetNotifications, setTweetNotifications] = useState<TweetNotification[]>([])
+    const [allNotifications, setAllNotifications] = useState<Notification[]>([])
     const [notificationsCount, setNotificationsCount] = useState<number>(0)
     const [notificationsPageURL, setNotificationsPageURL] = useState<string>('')
 
@@ -197,11 +186,11 @@ const AppProvider = ({children}: AppProviderProps) => {
     const getAllNotifications = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
-                setTweetNotifications(prevNotifications => ([
+                setAllNotifications(prevNotifications => ([
                     ...prevNotifications,
-                    ...res.data.data.notifications.data
+                    ...res.data.data.notifications
                 ]))
-                setNotificationsPageURL(res.data.data.notifications.next_page_url)
+                setNotificationsPageURL(res.data.data.next_page_url)
                 setNotificationsCount(res.data.data.notifications_count)
             })
             .catch(err => {
@@ -211,7 +200,7 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     useEffect( () => {
         getAllNotifications('/notifications')
-    }, [])
+    }, [localStorage.getItem('token')])
 
     return (
         <AppContext.Provider
@@ -229,8 +218,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setIsCommentOpen,
                 clickedTweet,
                 setClickedTweet,
-                tweetNotifications,
-                setTweetNotifications,
+                allNotifications,
+                setAllNotifications,
                 notificationsCount,
                 setNotificationsCount,
                 notificationsPageURL,

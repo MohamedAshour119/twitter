@@ -5,24 +5,26 @@ import {Link} from "react-router-dom";
 import {HiMiniXMark} from "react-icons/hi2";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
 import ApiClient from "../services/ApiClient.tsx";
+import {Notification} from "../../Interfaces.tsx";
 
-interface Props {
-    avatar: string | undefined,
-    username: string | undefined,
-    created_at: string | undefined,
-    user_id: number | null | undefined,
-    tweet_id: number | null,
-    is_read: boolean,
-    follower_id: number | null,
-}
+interface Props extends Notification{}
 function NewTweetNotification(props: Props) {
 
-    const {baseUrl, setNotificationsCount, tweetNotifications} = useContext(AppContext)
+    const {baseUrl, setNotificationsCount, allNotifications} = useContext(AppContext)
 
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
-    const is_read = localStorage.getItem(`isRead_${props.tweet_id}`)
-    const [isRead, setIsRead] = useState(is_read ? JSON.parse(is_read) : props.is_read);
+    const [isRead, setIsRead] = useState();
+
+    // let is_read: string | null;
+
+    useEffect(() => {
+        const is_read = localStorage.getItem(`isRead_${props.tweet_id}`)
+
+        setIsRead(() => is_read ? JSON.parse(is_read) : props.is_read)
+
+    }, [allNotifications]);
+
 
 
     const popUpWindow = useRef<HTMLDivElement>(null)
@@ -50,7 +52,7 @@ function NewTweetNotification(props: Props) {
                     setNotificationsCount(res.data.data.notifications_count)
                     localStorage.setItem(`isRead_${props.tweet_id}`, JSON.stringify(res.data.data.notification.is_read));
 
-                    tweetNotifications.map(notification => {
+                    allNotifications.map((notification: Notification) => {
                         notification.tweet_id === notificationInfo.tweet_id ? notification.is_read = true : ''
                     })
                 })
@@ -67,7 +69,7 @@ function NewTweetNotification(props: Props) {
         <div className={`flex mt-4 items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!isRead ? 'bg-sky-300/10' : ''} p-4 border-y border-zinc-700 relative transition`}>
             <div className={`flex items-center gap-x-3`}>
                 <img
-                    src={`${baseUrl}/storage/${props.avatar}`}
+                    src={`${baseUrl}/storage/${props.user.avatar}`}
                     alt=""
                     className={`size-12 object-cover rounded-full`}
                 />
@@ -75,11 +77,11 @@ function NewTweetNotification(props: Props) {
                     <Link
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
-                        to={`/users/${props.username}`}
+                        to={`/users/${props.user.username}`}
                         className={`text-sky-500 font-semibold hover:text-sky-600 transition`}>
-                        {props.username + ' '}
+                        {props.user.username + ' '}
                     </Link>
-                    posted a new tweet, check it out
+                    {props.type === 'tweet' ? 'posted a new tweet, check it out' : `followed you!`}
                 </div>
             </div>
             <div className={`flex items-center gap-x-1`}>
@@ -123,7 +125,7 @@ function NewTweetNotification(props: Props) {
         <>
             {!disableLink ? (
                 <div onClick={markNotificationAsRead}>
-                    <Link to={`/tweets/${props.tweet_id}`}>
+                    <Link to={props.type === 'tweet' ? `/tweets/${props.tweet_id}` : `/users/${props.user.username}`}>
                         {notificationCommonContent}
                     </Link>
                 </div>

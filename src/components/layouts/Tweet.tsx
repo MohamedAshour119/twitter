@@ -159,7 +159,7 @@ function Tweet(props: Props) {
     const tweetCommonContent =
         <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
             <div className={`flex gap-x-2`}>
-                <Link to={`/users/${username}`} className={`md:w-[10%] w-[14%]`}>
+                <Link to={`/users/${props.user?.username}`} className={`md:w-[10%] w-[14%]`}>
                     <img
                         className={`size-11 object-cover rounded-full select-none`}
                         src={`${baseUrl}/storage/${props.user?.avatar}`}
@@ -168,9 +168,9 @@ function Tweet(props: Props) {
                 </Link>
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
-                        <Link to={`/users/${username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{props.user.username}</h1>
-                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user.username}</h1>
+                        <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
+                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
+                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
                         </Link>
                         {(location?.pathname === `/home` || !props.comment_to) &&
                             <span className={`font-light text-[#71767b] cursor-pointer`}>

@@ -27,7 +27,7 @@ export interface TweetInfo extends Tweet{
 }
 
 export interface UserInfo {
-    id: number | null;
+    id: number;
     username: string;
     email: string;
     gender: string;
@@ -56,12 +56,15 @@ export interface ClickedTweet {
     }
 }
 
-export interface TweetNotification {
+export interface Notification {
     id: number | null
+    type: string
     tweet_id: number | null
     is_read: boolean
     follower_id: number | null
-    tweet?: TweetInfo
+    followed_id: number | null
+    created_at: string
+    user: UserInfo
 }
 
 export const tweetDefaultValues = {
@@ -104,4 +107,20 @@ export const tweetDefaultValues = {
     }
 }
 
+export const UserDefaultValues =
+    {
+        id: 0,
+        username: '',
+        email: '',
+        gender: '',
+        avatar: '',
+        birth_date: '',
+        ban_status: null,
+        created_at: '',
+        updated_at: '',
+        following_number: null,
+        followers_number: null,
+        is_followed: false,
+        tweets_count: null,
+    }
 
