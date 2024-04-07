@@ -3,8 +3,9 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import {UserInfo} from "../../Interfaces.tsx";
 import {Link} from "react-router-dom";
 
-interface Props extends  UserInfo{
+interface Props extends UserInfo{
     setIsOpen: Dispatch<SetStateAction<boolean>>
+    isOpen: boolean
 }
 function SearchResult(props: Props) {
 

@@ -161,6 +161,18 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     // Send Request with data
     const sendRequest = () => {
         const formData = new FormData();
+
+        const hashtags = tweet.title.match(/#[a-zA-Z][a-zA-Z0-9]+/g)
+        if(hashtags) {
+            ApiClient().post('/add-hashtag', hashtags)
+                .then(res => {
+                    console.log(res)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+
         formData.append('title', tweet.title);
         formData.append('id', String(clickedTweet.tweet.id) )
 
