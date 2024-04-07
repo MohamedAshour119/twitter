@@ -11,8 +11,7 @@ import ApiClient from "../services/ApiClient.tsx";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
 
 type NotificationsInfo = {
-    'users_id': number[],
-    'tweets_id': number[],
+    users_id: number[],
 }
 function Notifications() {
     const {
@@ -25,6 +24,7 @@ function Notifications() {
         setAllNotifications,
         setNotificationsCount,
         user,
+        originalNotifications,
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
@@ -33,7 +33,6 @@ function Notifications() {
     })
     const [notificationsInfo, setNotificationsInfo] = useState<NotificationsInfo>({
         'users_id': [],
-        'tweets_id': [],
     })
 
     // Handle active buttons
@@ -104,12 +103,11 @@ function Notifications() {
     // Mark all notifications as read
 
     useEffect( () => {
-        const notificationsInfoDiff: NotificationsInfo = {'users_id': [], 'tweets_id': [] }
+        const notificationsInfoDiff: NotificationsInfo = {'users_id': []}
         const filteredNotifications = allNotifications.filter(notification => !notification.is_read)
         filteredNotifications.map(notification => {
             if(notification.tweet_id && user){
                 notificationsInfoDiff.users_id?.push(user?.id)
-                notificationsInfoDiff.tweets_id.push(notification.tweet_id)
             }
         })
         setNotificationsInfo(notificationsInfoDiff)
@@ -117,11 +115,14 @@ function Notifications() {
 
 
     const markAllNotificationsAsRead = () => {
-        if(notificationsInfo) {
+
+        let numberOfUnreadNotifications = 0;
+        allNotifications.map(notification => !notification.is_read ? numberOfUnreadNotifications++ : numberOfUnreadNotifications)
+
+        if(numberOfUnreadNotifications > 0) {
             ApiClient().put(`/mark-all`, notificationsInfo)
                 .then(() => {
                     const updatedNotifications = allNotifications.map(notification => {
-                        localStorage.setItem(`isRead_${notification.tweet_id}`, JSON.stringify(true));
                         return {
                             ...notification,
                             is_read: true,
@@ -134,6 +135,15 @@ function Notifications() {
                     console.log(err)
                 })
         }
+    }
+
+    const filteredVerifiedNotifications = () => {
+        const filteredNotifications = allNotifications.filter(notification => notification.type === 'follow')
+        setAllNotifications(() => ([...filteredNotifications]))
+    }
+
+    const allNotificationsReset = () => {
+        setAllNotifications(() => ([...originalNotifications]))
     }
 
     return (
@@ -153,15 +163,19 @@ function Notifications() {
                     <ul className={`w-full flex text-[#71767b] mt-1`}>
                         <li
                             ref={allNotificationsRef}
+                            onClick={allNotificationsReset}
                             className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.all ? 'text-neutral-200 font-semibold ' : ''}`}
                         >
-                            <div className={`${isActive.all ? 'border-b-2 border-sky-500 w-fit' : ''}  pb-4 px-3`}>All</div>
+                            <div
+                                className={`${isActive.all ? 'border-b-2 border-sky-500 w-fit' : ''}  pb-4 px-3`}>All</div>
                         </li>
                         <li
                             ref={mentionedNotificationsRef}
+                            onClick={filteredVerifiedNotifications}
                             className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.verified ? 'text-neutral-200 font-semibold ' : ''}`}
                         >
-                            <div className={`${isActive.verified ? 'border-b-2 border-sky-500 w-fit' : ''} pb-4 px-3`}>Verified</div>
+                            <div
+                                className={`${isActive.verified ? 'border-b-2 border-sky-500 w-fit' : ''} pb-4 px-3`}>Verified</div>
                         </li>
                     </ul>
                 </header>
@@ -183,7 +197,7 @@ function Notifications() {
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
                     {/* All user notifications */}
                     <div className={`mt-28 pb-5`}>
-                        {notifications.length > 1 &&
+                        {allNotifications.length > 1 &&
                             <div
                                 onClick={markAllNotificationsAsRead}
                                 className={`flex gap-x-3 bg-sky-500 w-fit px-6 py-2 relative left-1/2 -translate-x-1/2 cursor-pointer hover:bg-sky-600 transition rounded-md`}>

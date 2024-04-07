@@ -61,6 +61,11 @@ function Tweet(props: Props) {
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
                     setRetweetsCount(res.data.data.retweets)
+
+                    if(tweetMenuOpen) {
+                        setTweetMenuOpen(false)
+                    }
+
                 })
                 .catch((err) => {
                     console.log(err)
@@ -70,6 +75,11 @@ function Tweet(props: Props) {
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
                     setRetweetsCount(res.data.data.retweets)
+
+                    if(tweetMenuOpen) {
+                        setTweetMenuOpen(false)
+                    }
+
                 })
                 .catch((err) => {
                     console.log(err)
@@ -261,6 +271,7 @@ function Tweet(props: Props) {
                         }
                         {props.user_id !== user?.id &&
                             <button
+                                onClick={handleRetweet}
                                 disabled={!tweetMenuOpen}
                                 className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
                                 Retweet

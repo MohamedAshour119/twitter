@@ -138,7 +138,7 @@ function TrendingSidebar() {
             <div className={`bg-[#2a2d32b3] rounded-2xl`}>
                 <h1 className={`font-bold text-2xl p-4`}>What's happening</h1>
 
-                <div className={`mt-6 flex flex-col gap-y-5 pb-3`}>
+                <div className={`mt-6 flex flex-col gap-y-2 pb-3`}>
                     <TrendingTag/>
                     <TrendingTag/>
                     <TrendingTag/>

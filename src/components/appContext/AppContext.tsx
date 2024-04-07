@@ -24,6 +24,8 @@ interface AppContextType {
     notificationsPageURL: string
     setNotificationsPageURL: Dispatch<SetStateAction<string>>
     getAllNotifications: (pageURL: string) => void
+    originalNotifications: Notification[]
+    setOriginalNotifications: Dispatch<SetStateAction<Notification[]>>
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -95,12 +97,23 @@ export const AppContext = createContext<AppContextType>({
         created_at: '',
         user: UserDefaultValues
     }],
+    originalNotifications: [{
+        id: null,
+        type: '',
+        tweet_id: null,
+        is_read: false,
+        follower_id: null,
+        followed_id: null,
+        created_at: '',
+        user: UserDefaultValues
+    }],
+    setOriginalNotifications: () => null,
     setAllNotifications: () => null,
     notificationsCount: 0,
     setNotificationsCount: () => null,
     notificationsPageURL: '',
     setNotificationsPageURL: () => null,
-    getAllNotifications: () => null
+    getAllNotifications: () => null,
 });
 
 interface AppProviderProps {
@@ -140,18 +153,11 @@ const AppProvider = ({children}: AppProviderProps) => {
     })
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
     const [allNotifications, setAllNotifications] = useState<Notification[]>([])
+    const [originalNotifications, setOriginalNotifications] = useState<Notification[]>(allNotifications)
     const [notificationsCount, setNotificationsCount] = useState<number>(0)
     const [notificationsPageURL, setNotificationsPageURL] = useState<string>('')
 
     const baseUrl = 'http://api.twitter.test'
-
-    useEffect(() => {
-        const storedTweet = localStorage.getItem('tweet');
-        if(storedTweet) {
-            setClickedTweet(JSON.parse(storedTweet))
-        }
-
-    }, []);
 
     useEffect(() => {
         if( location.pathname === '/register' ){
@@ -180,6 +186,10 @@ const AppProvider = ({children}: AppProviderProps) => {
                     console.log(err)
                 })
         }
+
+        setOriginalNotifications([])
+        setAllNotifications([])
+
     }, [user])
 
     // Get all notifications
@@ -190,8 +200,23 @@ const AppProvider = ({children}: AppProviderProps) => {
                     ...prevNotifications,
                     ...res.data.data.notifications
                 ]))
+                setOriginalNotifications(prevNotifications => ([
+                    ...prevNotifications,
+                    ...res.data.data.notifications
+                ]))
                 setNotificationsPageURL(res.data.data.next_page_url)
                 setNotificationsCount(res.data.data.notifications_count)
+
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    const getTrendingtweets = () => {
+        ApiClient().get('/trending')
+            .then(res => {
+                console.log(res)
             })
             .catch(err => {
                 console.log(err)
@@ -200,6 +225,7 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     useEffect( () => {
         getAllNotifications('/notifications')
+        getTrendingtweets()
     }, [localStorage.getItem('token')])
 
     return (
@@ -225,6 +251,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 notificationsPageURL,
                 setNotificationsPageURL,
                 getAllNotifications,
+                originalNotifications,
+                setOriginalNotifications,
             }}>
             {children}
         </AppContext.Provider>

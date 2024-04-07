@@ -14,18 +14,7 @@ function NewTweetNotification(props: Props) {
 
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
-    const [isRead, setIsRead] = useState();
-
-    // let is_read: string | null;
-
-    useEffect(() => {
-        const is_read = localStorage.getItem(`isRead_${props.tweet_id}`)
-
-        setIsRead(() => is_read ? JSON.parse(is_read) : props.is_read)
-
-    }, [allNotifications]);
-
-
+    const [isRead, setIsRead] = useState(props.is_read);
 
     const popUpWindow = useRef<HTMLDivElement>(null)
     useEffect( () => {
@@ -43,6 +32,7 @@ function NewTweetNotification(props: Props) {
     const notificationInfo = {
         'user_id': props.follower_id,
         'tweet_id': props.tweet_id,
+        'type': props.type,
     }
     const markNotificationAsRead = () => {
         if(!isRead) {
@@ -50,7 +40,6 @@ function NewTweetNotification(props: Props) {
                 .then(res => {
                     setIsRead(res.data.data.notification.is_read)
                     setNotificationsCount(res.data.data.notifications_count)
-                    localStorage.setItem(`isRead_${props.tweet_id}`, JSON.stringify(res.data.data.notification.is_read));
 
                     allNotifications.map((notification: Notification) => {
                         notification.tweet_id === notificationInfo.tweet_id ? notification.is_read = true : ''
