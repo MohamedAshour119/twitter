@@ -189,6 +189,8 @@ function Tweet(props: Props) {
                         }
                     </div>
                     <div
+                        onTouchStart={() => setDisableLink(true)}
+                        onTouchEnd={() => setDisableLink(true)}
                         onClick={() => setTweetMenuOpen(!tweetMenuOpen)}
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}

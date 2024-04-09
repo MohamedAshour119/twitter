@@ -55,8 +55,8 @@ function NewTweetNotification(props: Props) {
     }
 
     const notificationCommonContent =
-        <div className={`flex mt-4 items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!isRead ? 'bg-sky-300/10' : ''} p-4 border-y border-zinc-700 relative transition`}>
-            <div className={`flex items-center gap-x-3`}>
+        <div className={`flex gap-x-4 mt-4 items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!isRead ? 'bg-sky-300/10' : ''} p-4 px-1 xxs:px-4 border-y border-zinc-700 relative transition`}>
+            <div className={`flex items-center gap-x-3 w-[75%] xxs:w-auto`}>
                 <img
                     src={`${baseUrl}/storage/${props.user?.avatar}`}
                     alt=""
@@ -73,7 +73,7 @@ function NewTweetNotification(props: Props) {
                     {props.type === 'tweet' ? 'posted a new tweet, check it out' : `followed you!`}
                 </div>
             </div>
-            <div className={`flex items-center gap-x-1`}>
+            <div className={`flex items-center gap-x-1 w-[15%] xxs:w-auto`}>
                 <div>{props.created_at}</div>
                 <div
                     onClick={() => setNotificationMenuOpen(true)}
