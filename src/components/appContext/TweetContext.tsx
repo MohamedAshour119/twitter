@@ -162,7 +162,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const sendRequest = () => {
         const formData = new FormData();
 
-        const hashtags = tweet.title.match(/#[a-zA-Z][a-zA-Z0-9]+/g)
+        const hashtags = tweet.title.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\d\s]/g);
         if(hashtags) {
             ApiClient().post('/add-hashtag', hashtags)
                 .then(res => {
@@ -201,6 +201,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                     }
                     setCommentsCount(commentDetails)
                     setIsCommentOpen(false)
+
                 })
                 .catch(err => {
                     console.log(err)
