@@ -28,6 +28,8 @@ interface AppContextType {
     setOriginalNotifications: Dispatch<SetStateAction<Notification[]>>
     hashtags: Hashtag[]
     setHashtags: Dispatch<SetStateAction<Hashtag[]>>
+    hashtagsPageURL: string
+    setHashtagsPageURL: Dispatch<SetStateAction<string>>
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -54,7 +56,9 @@ export const AppContext = createContext<AppContextType>({
     setNotificationsPageURL: () => null,
     getAllNotifications: () => null,
     hashtags: [],
-    setHashtags: () => null
+    setHashtags: () => null,
+    hashtagsPageURL: '',
+    setHashtagsPageURL: () => null
 });
 
 interface AppProviderProps {
@@ -82,9 +86,11 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
     const [allNotifications, setAllNotifications] = useState<Notification[]>([])
     const [originalNotifications, setOriginalNotifications] = useState<Notification[]>(allNotifications)
-    const [notificationsCount, setNotificationsCount] = useState<number>(0)
-    const [notificationsPageURL, setNotificationsPageURL] = useState<string>('')
+    const [notificationsCount, setNotificationsCount] = useState(0)
+    const [notificationsPageURL, setNotificationsPageURL] = useState('')
     const [hashtags, setHashtags] = useState<Hashtag[]>([])
+    const [hashtagsPageURL, setHashtagsPageURL] = useState('')
+
 
     const baseUrl = 'http://api.twitter.test'
 
@@ -142,19 +148,26 @@ const AppProvider = ({children}: AppProviderProps) => {
             })
     }
 
-    const getTrendingtweets = () => {
-        ApiClient().get('/trending')
-            .then(res => {
-                console.log(res)
-            })
-            .catch(err => {
-                console.log(err)
-            })
+    const getHashtags = () => {
+    ApiClient().get('/trending')
+        .then(res => {
+            setHashtags(res.data.data.hashtags)
+            setHashtagsPageURL(res.data.data.next_page_url)
+        })
+        .catch(err => {
+            console.log(err)
+        })
     }
+
+    useEffect(() => {
+        if(hashtags.length <= 1) {
+            getHashtags()
+        }
+    }, [hashtags.length]);
+
 
     useEffect( () => {
         getAllNotifications('/notifications')
-        getTrendingtweets()
     }, [localStorage.getItem('token')])
 
     return (
@@ -183,7 +196,9 @@ const AppProvider = ({children}: AppProviderProps) => {
                 originalNotifications,
                 setOriginalNotifications,
                 hashtags,
-                setHashtags
+                setHashtags,
+                hashtagsPageURL,
+                setHashtagsPageURL,
             }}>
             {children}
         </AppContext.Provider>

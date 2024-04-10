@@ -10,7 +10,13 @@ import {UserInfo} from "../../Interfaces.tsx";
 
 function TrendingSidebar() {
 
-    const {suggestedUsersToFollow} = useContext(AppContext)
+    const {
+        suggestedUsersToFollow,
+        hashtags,
+        setHashtags,
+        hashtagsPageURL,
+        setHashtagsPageURL,
+    } = useContext(AppContext)
     const [isOpen, setIsOpen] = useState(false)
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [pageURL, setPageURL] = useState('')
@@ -102,6 +108,12 @@ function TrendingSidebar() {
         )
     })
 
+    const trendingHashtags = hashtags.map(hashtag => {
+        return (
+            <TrendingTag key={hashtag.id} id={hashtag.id} hashtag={hashtag.hashtag} count={hashtag.count}/>
+        )
+    })
+
     return (
         <div className={`z-[300] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
             <div ref={searchRef} className={`mt-2 relative`}>
@@ -138,12 +150,7 @@ function TrendingSidebar() {
             <div className={`bg-[#2a2d32b3] rounded-2xl`}>
                 <h1 className={`font-bold text-2xl p-4`}>What's happening</h1>
 
-                <div className={`mt-6 flex flex-col gap-y-2 pb-3`}>
-                    <TrendingTag/>
-                    <TrendingTag/>
-                    <TrendingTag/>
-                    <TrendingTag/>
-                </div>
+                <div className={`mt-6 flex flex-col gap-y-2 pb-3`}>{trendingHashtags}</div>
 
             </div>
 

@@ -59,6 +59,7 @@ function Sidebar() {
 
     }, [] )
 
+
     // Clear the tweet when click on post btn in sidebar
     const openTweetModel = () => {
         setIsModelOpen(prev => !prev)
@@ -129,7 +130,7 @@ function Sidebar() {
                 </ul>
 
                 {/*Logout window*/}
-                <div className={`bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] -right-64 bottom-20 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
+                <div className={`bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] -right-64 bottom-20 2xl:-right-10 2xl:bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
                     <button disabled={!logoutWindowOpen} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Settings</button>
                     <button disabled={!logoutWindowOpen} onClick={logout} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Logout @{user?.username}</button>
                 </div>
