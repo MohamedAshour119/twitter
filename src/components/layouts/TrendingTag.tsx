@@ -1,7 +1,9 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
 import {HiMiniXMark} from "react-icons/hi2";
+import ApiClient from "../services/ApiClient.tsx";
+import {AppContext} from "../appContext/AppContext.tsx";
 
 interface Props {
     id: number
@@ -9,6 +11,8 @@ interface Props {
     count: number,
 }
 function TrendingTag(props: Props) {
+
+    const { setHashtags, hashtags, unWantedHashtags } = useContext(AppContext)
 
     const [disableLink, setDisableLink] = useState(false)
     const [isHashtagOpen, setIsHashtagOpen] = useState(false)
@@ -31,7 +35,26 @@ function TrendingTag(props: Props) {
         };
     }, []);
 
+    const closeWithAnimation = () => {
+        popupMenu.current?.classList.add('animate-fade-out')
+        setTimeout(() => {
+            setIsHashtagOpen(false)
+        }, 300)
+    }
 
+    const removeHashtag = () => {
+        closeWithAnimation()
+        unWantedHashtags.push(props.id)
+        const filteredHashtags = hashtags.filter(hashtag => hashtag.id !== props.id)
+        setHashtags(filteredHashtags)
+        // ApiClient().delete(`/remove-hashtag/${props.id}`)
+        //     .then(res => {
+        //         console.log(res)
+        //     })
+        //     .catch(err => {
+        //         console.log(err)
+        //     })
+    }
 
 
     return (
@@ -41,16 +64,15 @@ function TrendingTag(props: Props) {
                     ref={popupMenu}
                     className={`${isHashtagOpen ? 'animate-fade-in' : ''} bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-8 right-14 shadow-[-2px_2px_12px_#4f4e4e]`}>
                     <div
-                        onClick={() => {
-                            popupMenu.current?.classList.add('animate-fade-out')
-                            setTimeout(() => {
-                                setIsHashtagOpen(false)
-                            }, 300)
-                        }}
+                        onClick={closeWithAnimation}
                         className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
                         <HiMiniXMark/>
                     </div>
-                    <button className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>I'm not interested in this!</button>
+                    <button
+                        onClick={removeHashtag}
+                        className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                        I'm not interested in this!
+                    </button>
                 </div>
             }
             {disableLink &&

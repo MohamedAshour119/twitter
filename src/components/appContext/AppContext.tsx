@@ -30,6 +30,7 @@ interface AppContextType {
     setHashtags: Dispatch<SetStateAction<Hashtag[]>>
     hashtagsPageURL: string
     setHashtagsPageURL: Dispatch<SetStateAction<string>>
+    unWantedHashtags: number[]
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -58,7 +59,8 @@ export const AppContext = createContext<AppContextType>({
     hashtags: [],
     setHashtags: () => null,
     hashtagsPageURL: '',
-    setHashtagsPageURL: () => null
+    setHashtagsPageURL: () => null,
+    unWantedHashtags: [],
 });
 
 interface AppProviderProps {
@@ -148,8 +150,10 @@ const AppProvider = ({children}: AppProviderProps) => {
             })
     }
 
+    const unWantedHashtags: number[] = [];
+
     const getHashtags = () => {
-    ApiClient().get('/trending')
+    ApiClient().get(`/trending/${unWantedHashtags.length > 0 ? [unWantedHashtags] : [0]}`)
         .then(res => {
             setHashtags(res.data.data.hashtags)
             setHashtagsPageURL(res.data.data.next_page_url)
@@ -199,6 +203,7 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setHashtags,
                 hashtagsPageURL,
                 setHashtagsPageURL,
+                unWantedHashtags,
             }}>
             {children}
         </AppContext.Provider>
