@@ -1,7 +1,7 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
-import {ClickedTweet, Notification, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
+import {ClickedTweet, ClickedTweetDefaultValues, Hashtag, Notification, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
 
 interface AppContextType {
     isRegisterOpen: boolean
@@ -26,26 +26,14 @@ interface AppContextType {
     getAllNotifications: (pageURL: string) => void
     originalNotifications: Notification[]
     setOriginalNotifications: Dispatch<SetStateAction<Notification[]>>
+    hashtags: Hashtag[]
+    setHashtags: Dispatch<SetStateAction<Hashtag[]>>
 }
 
 export const AppContext = createContext<AppContextType>({
     isRegisterOpen: false,
     location: null,
-    user: {
-        id: 0,
-        username: '',
-        email: '',
-        gender: '',
-        avatar: '',
-        birth_date: '',
-        ban_status: null,
-        created_at: '',
-        updated_at: '',
-        following_number: null,
-        followers_number: null,
-        is_followed: false,
-        tweets_count: null,
-    },
+    user: UserDefaultValues,
     setUser: () => {},
     handleModelOpen: () => null,
     isModelOpen: false,
@@ -53,60 +41,11 @@ export const AppContext = createContext<AppContextType>({
     isCommentOpen: false,
     setIsCommentOpen: () => null,
     baseUrl: '',
-    suggestedUsersToFollow: [
-        {
-            id: 0,
-            username: '',
-            email: '',
-            gender: '',
-            avatar: '',
-            birth_date: '',
-            ban_status: null,
-            created_at: '',
-            updated_at: '',
-            following_number: null,
-            followers_number: null,
-            is_followed: false,
-            tweets_count: null,
-        }
-    ],
-
-    clickedTweet: {
-        user: {
-            id: 0,
-            username: '',
-            avatar: ''
-        },
-
-        tweet: {
-            title: '',
-            created_at: '',
-            id: null,
-            comments_count: 0,
-        },
-    },
-
+    suggestedUsersToFollow: [],
+    clickedTweet: ClickedTweetDefaultValues,
     setClickedTweet: () => null,
-    allNotifications: [{
-        id: null,
-        type: '',
-        tweet_id: null,
-        is_read: false,
-        follower_id: null,
-        followed_id: null,
-        created_at: '',
-        user: UserDefaultValues
-    }],
-    originalNotifications: [{
-        id: null,
-        type: '',
-        tweet_id: null,
-        is_read: false,
-        follower_id: null,
-        followed_id: null,
-        created_at: '',
-        user: UserDefaultValues
-    }],
+    allNotifications: [],
+    originalNotifications: [],
     setOriginalNotifications: () => null,
     setAllNotifications: () => null,
     notificationsCount: 0,
@@ -114,6 +53,8 @@ export const AppContext = createContext<AppContextType>({
     notificationsPageURL: '',
     setNotificationsPageURL: () => null,
     getAllNotifications: () => null,
+    hashtags: [],
+    setHashtags: () => null
 });
 
 interface AppProviderProps {
@@ -131,31 +72,19 @@ interface Pathname {
 
 const AppProvider = ({children}: AppProviderProps) => {
 
+    const location: Pathname = useLocation();
+
     const [isModelOpen, setIsModelOpen] = useState(false)
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
     const [isCommentOpen, setIsCommentOpen] = useState(false);
-    const location: Pathname = useLocation();
     const [user, setUser] = useState<UserInfo | null>(UserDefaultValues)
-
-
-    const [clickedTweet, setClickedTweet] = useState<ClickedTweet>({
-        user: {
-            id: 0,
-            username: '',
-            avatar: ''
-        },
-        tweet: {
-            title: '',
-            created_at: '',
-            id: null,
-            comments_count: 0,
-        },
-    })
+    const [clickedTweet, setClickedTweet] = useState<ClickedTweet>(ClickedTweetDefaultValues)
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
     const [allNotifications, setAllNotifications] = useState<Notification[]>([])
     const [originalNotifications, setOriginalNotifications] = useState<Notification[]>(allNotifications)
     const [notificationsCount, setNotificationsCount] = useState<number>(0)
     const [notificationsPageURL, setNotificationsPageURL] = useState<string>('')
+    const [hashtags, setHashtags] = useState<Hashtag[]>([])
 
     const baseUrl = 'http://api.twitter.test'
 
@@ -253,6 +182,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 getAllNotifications,
                 originalNotifications,
                 setOriginalNotifications,
+                hashtags,
+                setHashtags
             }}>
             {children}
         </AppContext.Provider>
