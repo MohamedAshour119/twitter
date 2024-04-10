@@ -12,7 +12,7 @@ interface Props {
 }
 function TrendingTag(props: Props) {
 
-    const { setHashtags, hashtags, unWantedHashtags } = useContext(AppContext)
+    const { setHashtags, hashtags, setHashtagsPageURL } = useContext(AppContext)
 
     const [disableLink, setDisableLink] = useState(false)
     const [isHashtagOpen, setIsHashtagOpen] = useState(false)
@@ -44,16 +44,15 @@ function TrendingTag(props: Props) {
 
     const removeHashtag = () => {
         closeWithAnimation()
-        unWantedHashtags.push(props.id)
-        const filteredHashtags = hashtags.filter(hashtag => hashtag.id !== props.id)
-        setHashtags(filteredHashtags)
-        // ApiClient().delete(`/remove-hashtag/${props.id}`)
-        //     .then(res => {
-        //         console.log(res)
-        //     })
-        //     .catch(err => {
-        //         console.log(err)
-        //     })
+
+        ApiClient().get(`/trending/${props.id}`)
+            .then(res => {
+                setHashtags(res.data.data.hashtags)
+                setHashtagsPageURL(res.data.data.next_page_url)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
 
