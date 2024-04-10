@@ -136,7 +136,7 @@ function Sidebar() {
                 </div>
 
 
-                <div ref={logoutRef} onClick={handleClick} className={`mx-4 self-end flex justify-between justify-self-end 2xl:w-[80%] items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
+                <div ref={logoutRef} onClick={handleClick} className={`mx-4 self-end flex justify-between justify-self-end 2xl:w-[80%] xl:w-[18rem] items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
                     <div className={`flex items-center gap-x-4`}>
 
                         <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>

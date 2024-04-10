@@ -1,35 +1,52 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
 import {HiMiniXMark} from "react-icons/hi2";
 
 interface Props {
     id: number
     hashtag: string
-    count: number
+    count: number,
 }
 function TrendingTag(props: Props) {
 
     const [disableLink, setDisableLink] = useState(false)
     const [isHashtagOpen, setIsHashtagOpen] = useState(false)
 
+    const popupMenu = useRef<HTMLDivElement>(null);
 
-    const popupMenu = useRef<HTMLDivElement>(null)
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (popupMenu.current && !popupMenu.current.contains(e.target as Node)) {
+                popupMenu.current.classList.add('animate-fade-out')
+                setTimeout(() => {
+                    setIsHashtagOpen(false);
+                }, 300)
+            }
+        };
 
-    const handleClickOutside = (e: MouseEvent) => {
-        if() {
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
 
-        }
-    }
+
+
 
     return (
         <div className={`relative`}>
             {isHashtagOpen &&
                 <div
                     ref={popupMenu}
-                    className={`bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-8 right-14 shadow-[-2px_2px_12px_#4f4e4e]`}>
+                    className={`${isHashtagOpen ? 'animate-fade-in' : ''} bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-8 right-14 shadow-[-2px_2px_12px_#4f4e4e]`}>
                     <div
-                        onClick={() => setIsHashtagOpen(false)}
+                        onClick={() => {
+                            popupMenu.current?.classList.add('animate-fade-out')
+                            setTimeout(() => {
+                                setIsHashtagOpen(false)
+                            }, 300)
+                        }}
                         className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
                         <HiMiniXMark/>
                     </div>

@@ -110,7 +110,7 @@ input:-webkit-autofill {
 
 /* Fade in */
 .animate-fade-in{
-    animation: fadeIn 0.5s;
+    animation: fadeIn 0.3s;
 }
 @keyframes fadeIn {
     0% { opacity: 0; }
@@ -119,7 +119,7 @@ input:-webkit-autofill {
 
 /* Fade out */
 .animate-fade-out{
-    animation: fadeOut 0.5s;
+    animation: fadeOut 0.3s;
 }
 @keyframes fadeOut {
     0% { opacity: 1; }

@@ -131,8 +131,11 @@ function Tweet(props: Props) {
     const tweetMenuRef = useRef<HTMLDivElement>(null)
     useEffect( () => {
         const handleOutside = (e: MouseEvent) => {
-            if(!tweetMenuRef.current?.contains(e.target as Node)){
-                setTweetMenuOpen(false)
+            if(tweetMenuRef.current && !tweetMenuRef.current?.contains(e.target as Node)){
+                tweetMenuRef.current.classList.add('animate-fade-out')
+                setTimeout(() => {
+                    setTweetMenuOpen(false)
+                }, 300)
             }
         }
         document.addEventListener('mousedown', handleOutside)
@@ -250,9 +253,14 @@ function Tweet(props: Props) {
                         ref={tweetMenuRef}
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
-                        className={`shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
+                        className={`${tweetMenuOpen ? 'animate-fade-in' : ''} shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
                         <div
-                            onClick={() => setTweetMenuOpen(false)}
+                            onClick={() => {
+                                tweetMenuRef.current?.classList.add('animate-fade-out')
+                                setTimeout(() => {
+                                    setTweetMenuOpen(false)
+                                }, 300)
+                            }}
                             className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
                             <HiMiniXMark/>
                         </div>
