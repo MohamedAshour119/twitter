@@ -77,6 +77,7 @@ interface Pathname {
 const AppProvider = ({children}: AppProviderProps) => {
 
     const location: Pathname = useLocation();
+    const token = localStorage.getItem('token');
 
     const [isModelOpen, setIsModelOpen] = useState(false)
     const [isRegisterOpen, setIsRegisterOpen] = useState(false)
@@ -149,7 +150,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     }
 
     const getHashtags = () => {
-    ApiClient().get(`/trending`)
+    ApiClient().get(`/hashtags`)
         .then(res => {
             setHashtags(res.data.data.hashtags)
             setHashtagsPageURL(res.data.data.next_page_url)
@@ -159,16 +160,17 @@ const AppProvider = ({children}: AppProviderProps) => {
         })
     }
 
-    useEffect(() => {
-        if(hashtags.length <= 1) {
-            getHashtags()
-        }
-    }, [hashtags.length]);
+    // useEffect(() => {
+    //     if(hashtags.length <= 1) {
+    //         getHashtags()
+    //     }
+    // }, [hashtags.length]);
 
 
     useEffect( () => {
         getAllNotifications('/notifications')
-    }, [localStorage.getItem('token')])
+        getHashtags()
+    }, [token])
 
     return (
         <AppContext.Provider
