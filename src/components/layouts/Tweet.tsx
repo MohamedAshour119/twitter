@@ -169,8 +169,8 @@ function Tweet(props: Props) {
             .finally(() => setTweetMenuOpen(false))
     }
 
-
     const tweetText = props.main_tweet ? props.main_tweet.title : props.title;
+
     const detectHashtag = () => {
         const hashtags = tweetText?.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
 
@@ -180,15 +180,19 @@ function Tweet(props: Props) {
             )
         })
 
-        const startHashtagIndex = (hashtags !== null && hashtags !== undefined) ? tweetText?.indexOf(hashtags[0]) : undefined
-        const endHashtagIndex = hashtags && startHashtagIndex && startHashtagIndex + hashtags[0].length - 1
+        let fullText = tweetText;
 
-        const tweetTextToStartHashtag = tweetText?.substring(0, startHashtagIndex)
-        const tweetTextToEndHashtag = endHashtagIndex && tweetText?.substring(endHashtagIndex + 1)
+        if (hashtags && hashtags.length > 0) {
+            const firstHashtag = hashtags[0];
 
-        const fullText = (tweetTextToStartHashtag !== undefined && tweetTextToEndHashtag !== undefined) && tweetTextToStartHashtag + tweetTextToEndHashtag
+            const startHashtagIndex: number | undefined = tweetText?.indexOf(firstHashtag);
+            const endHashtagIndex: number | undefined = startHashtagIndex !== undefined ? startHashtagIndex + firstHashtag.length : undefined;
 
-        console.log(tweetTextToStartHashtag)
+            const tweetTextToStartHashtag: string = tweetText?.substring(0, startHashtagIndex ?? 0) ?? '';
+            const tweetTextToEndHashtag: string | undefined = endHashtagIndex && typeof tweetText?.substring(endHashtagIndex) === 'string' ? tweetText?.substring(endHashtagIndex) : undefined;
+
+            fullText = tweetTextToStartHashtag + tweetTextToEndHashtag;
+        }
 
         return (
             <div>
@@ -201,6 +205,8 @@ function Tweet(props: Props) {
             </div>
         )
     }
+
+
 
 
     const tweetCommonContent =

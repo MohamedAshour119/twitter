@@ -2,11 +2,15 @@ import {FaXTwitter} from "react-icons/fa6";
 import {IoSettingsOutline} from "react-icons/io5";
 import {LuArrowBigUp} from "react-icons/lu";
 import Sidebar from "../partials/Sidebar.tsx";
-import TweetTextAreaAndPreview from "../layouts/TweetTextAreaAndPreview.tsx";
 import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import TweetModel from "../layouts/TweetModel.tsx";
-import {useContext} from "react";
+import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
+import ApiClient from "../services/ApiClient.tsx";
+import {useParams} from "react-router-dom";
+import {TweetInfo} from "../../Interfaces.tsx";
+import * as React from "react";
+import Tweet from "../layouts/Tweet.tsx";
 
 function HashtagTweets() {
 
@@ -16,6 +20,27 @@ function HashtagTweets() {
         baseUrl,
         user,
     } = useContext(AppContext)
+
+    const { hashtag } = useParams()
+
+    const [hashtagsTweets, setHashtagsTweets] = useState<TweetInfo[]>([])
+
+    useEffect(() => {
+        ApiClient().get(`/${hashtag}`)
+            .then(res => {
+                setHashtagsTweets(res.data.data)
+            })
+            .catch(() => {
+
+            })
+    }, [hashtag]);
+
+    const displayHashtagsTweets: React.ReactNode = hashtagsTweets?.slice(0, hashtagsTweets.length - 1).map(tweetInfo => (
+        <Tweet
+            key={tweetInfo.id}
+            {...tweetInfo}
+        />
+    ));
 
     return (
         <div
@@ -61,7 +86,7 @@ function HashtagTweets() {
 
                     {/*  All Tweets  */}
                     <div>
-                        {/*{displayRandomTweets}*/}
+                        {displayHashtagsTweets}
                         {/*<div ref={lastTweetRef}>*/}
                         {/*    {randomTweets.length > 0 && (*/}
                         {/*        <Tweet {...randomTweets[randomTweets.length - 1]} />*/}
