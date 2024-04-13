@@ -165,12 +165,8 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         const hashtags = tweet.title.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
         if(hashtags) {
             ApiClient().post('/add-hashtag', hashtags)
-                .then(res => {
-                    console.log(res)
-                })
-                .catch(err => {
-                    console.log(err)
-                })
+                .then()
+                .catch()
         }
 
         formData.append('title', tweet.title);

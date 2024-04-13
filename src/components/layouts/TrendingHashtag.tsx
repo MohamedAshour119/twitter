@@ -10,7 +10,7 @@ interface Props {
     hashtag: string
     count: number,
 }
-function TrendingTag(props: Props) {
+function TrendingHashtag(props: Props) {
 
     const { setHashtags, hashtags } = useContext(AppContext)
 
@@ -56,6 +56,7 @@ function TrendingTag(props: Props) {
             })
     }
 
+    const hashtagWithoutSymbol = props.hashtag.replace('#', '');
 
     return (
         <div className={`relative`}>
@@ -100,7 +101,7 @@ function TrendingTag(props: Props) {
                 </div>
             }
             {disableLink ||
-                <Link to={`/`} className={`flex justify-between ${!disableLink ? 'hover:bg-[#25323f30]' : ''}  transition `}>
+                <Link to={`/${hashtagWithoutSymbol}`} className={`flex justify-between ${!disableLink ? 'hover:bg-[#25323f30]' : ''}  transition `}>
                     <div className={`px-4 py-2 cursor-pointer`}>
                         <div className={`text-[#71767b]`}>Trending</div>
 
@@ -129,4 +130,4 @@ function TrendingTag(props: Props) {
     )
 }
 
-export default TrendingTag
+export default TrendingHashtag

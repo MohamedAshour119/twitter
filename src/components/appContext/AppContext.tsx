@@ -152,19 +152,19 @@ const AppProvider = ({children}: AppProviderProps) => {
     const getHashtags = () => {
     ApiClient().get(`/hashtags`)
         .then(res => {
-            setHashtags(res.data.data.hashtags)
-            setHashtagsPageURL(res.data.data.next_page_url)
+            setHashtags(res.data.data)
+            // setHashtagsPageURL(res.data.data.next_page_url)
         })
         .catch(err => {
             console.log(err)
         })
     }
 
-    // useEffect(() => {
-    //     if(hashtags.length <= 1) {
-    //         getHashtags()
-    //     }
-    // }, [hashtags.length]);
+    useEffect(() => {
+        if(hashtags?.length <= 1) {
+            getHashtags()
+        }
+    }, [hashtags?.length]);
 
 
     useEffect( () => {

@@ -169,6 +169,40 @@ function Tweet(props: Props) {
             .finally(() => setTweetMenuOpen(false))
     }
 
+
+    const tweetText = props.main_tweet ? props.main_tweet.title : props.title;
+    const detectHashtag = () => {
+        const hashtags = tweetText?.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
+
+        const renderHashtags = hashtags?.map((hashtag, index) => {
+            return (
+                <Link to={'/'} key={index} className={`text-sky-600`}>{hashtag}</Link>
+            )
+        })
+
+        const startHashtagIndex = (hashtags !== null && hashtags !== undefined) ? tweetText?.indexOf(hashtags[0]) : undefined
+        const endHashtagIndex = hashtags && startHashtagIndex && startHashtagIndex + hashtags[0].length - 1
+
+        const tweetTextToStartHashtag = tweetText?.substring(0, startHashtagIndex)
+        const tweetTextToEndHashtag = endHashtagIndex && tweetText?.substring(endHashtagIndex + 1)
+
+        const fullText = (tweetTextToStartHashtag !== undefined && tweetTextToEndHashtag !== undefined) && tweetTextToStartHashtag + tweetTextToEndHashtag
+
+        console.log(tweetTextToStartHashtag)
+
+        return (
+            <div>
+                <div>
+                    {renderHashtags}
+                </div>
+                <div>
+                    {fullText}
+                </div>
+            </div>
+        )
+    }
+
+
     const tweetCommonContent =
         <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
             <div className={`flex gap-x-2`}>
@@ -205,7 +239,7 @@ function Tweet(props: Props) {
 
             <div className={`w-[90%] justify-self-end`}>
                 <div className={`grid grid-cols-1`}>
-                    <p className={`w-fit break-all`}>{!props.main_tweet ? props.title : props.main_tweet.title}</p>
+                    <p className={`w-fit break-all`}>{ tweetText && tweetText?.length <= 1 ? tweetText : detectHashtag()}</p>
                     <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>
                         {(props.image || props.main_tweet?.image) &&
                             <img

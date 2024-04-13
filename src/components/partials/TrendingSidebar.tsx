@@ -1,5 +1,5 @@
 import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
-import TrendingTag from "../layouts/TrendingTag.tsx";
+import TrendingHashtag from "../layouts/TrendingHashtag.tsx";
 import FollowUser from "../layouts/FollowUser.tsx";
 import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
@@ -13,9 +13,6 @@ function TrendingSidebar() {
     const {
         suggestedUsersToFollow,
         hashtags,
-        setHashtags,
-        hashtagsPageURL,
-        setHashtagsPageURL,
     } = useContext(AppContext)
     const [isOpen, setIsOpen] = useState(false)
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
@@ -110,9 +107,9 @@ function TrendingSidebar() {
 
     const popupMenu = useRef<HTMLDivElement>(null)
 
-    const trendingHashtags = hashtags.map(hashtag => {
+    const trendingHashtags = hashtags?.map(hashtag => {
         return (
-            <TrendingTag key={hashtag.id} id={hashtag.id} hashtag={hashtag.hashtag} count={hashtag.count}/>
+            <TrendingHashtag key={hashtag.id} id={Number(hashtag.id)} hashtag={hashtag.hashtag} count={hashtag.count}/>
         )
     })
 

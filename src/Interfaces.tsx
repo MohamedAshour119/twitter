@@ -68,7 +68,7 @@ export interface Notification {
 }
 
 export interface Hashtag {
-    id: number
+    id: number | string
     hashtag: string
     count: number
 }
