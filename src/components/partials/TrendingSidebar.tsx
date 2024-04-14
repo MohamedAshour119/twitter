@@ -67,9 +67,7 @@ function TrendingSidebar() {
         const handleClick = (e: MouseEvent) => {
             searchRef.current && !searchRef.current.contains(e.target as Node) ? setIsOpen(false) : ''
         }
-
         document.addEventListener('mousedown', handleClick)
-
         return () => {
             document.removeEventListener('mousedown', handleClick)
         }

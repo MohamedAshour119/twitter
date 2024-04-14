@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 import {HiMiniXMark} from "react-icons/hi2";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
+import {FaRegFaceAngry} from "react-icons/fa6";
 
 interface Props {
     id: number
@@ -49,7 +50,6 @@ function TrendingHashtag(props: Props) {
             .then(() => {
                 const filteredHashtags = hashtags.filter(hashtag => hashtag.id !== props.id)
                 setHashtags(filteredHashtags)
-                // setHashtagsPageURL(res.data.data.next_page_url)
             })
             .catch(err => {
                 console.log(err)
@@ -71,7 +71,8 @@ function TrendingHashtag(props: Props) {
                     </div>
                     <button
                         onClick={removeHashtag}
-                        className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                        className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                        <FaRegFaceAngry className={`size-5`}/>
                         I'm not interested in this!
                     </button>
                 </div>

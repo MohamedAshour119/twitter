@@ -10,6 +10,8 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {ToastContainer} from "react-toastify";
 import {TweetContext} from "../appContext/TweetContext.tsx";
+import {IoSettingsOutline} from "react-icons/io5";
+import {TbLogout} from "react-icons/tb";
 
 function Sidebar() {
 
@@ -131,8 +133,14 @@ function Sidebar() {
 
                 {/*Logout window*/}
                 <div className={`bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] -right-64 bottom-20 2xl:-right-10 2xl:bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
-                    <button disabled={!logoutWindowOpen} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Settings</button>
-                    <button disabled={!logoutWindowOpen} onClick={logout} className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>Logout @{user?.username}</button>
+                    <button disabled={!logoutWindowOpen} className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                        <IoSettingsOutline className={`size-5`}/>
+                        Settings
+                    </button>
+                    <button disabled={!logoutWindowOpen} onClick={logout} className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                        <TbLogout className={`size-5`}/>
+                        Logout @{user?.username}
+                    </button>
                 </div>
 
 

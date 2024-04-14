@@ -11,6 +11,7 @@ import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
+import {FaRegFaceAngry} from "react-icons/fa6";
 
 interface Props extends  TweetInfo {
     allProfileUserTweets?: TweetInfo[]
@@ -27,6 +28,8 @@ function Tweet(props: Props) {
         clickedTweet,
         setClickedTweet,
     } = useContext(AppContext);
+
+    const {randomTweets ,setRandomTweets} = useContext(TweetContext)
 
     const {commentsCount} = useContext(TweetContext)
 
@@ -99,6 +102,17 @@ function Tweet(props: Props) {
             });
         }
 
+    }
+
+    // Hide Tweet from feed
+    const hideTweet = () => {
+        ApiClient().post(`/uninterested-tweet/${tweetId}`)
+            .then(() => {
+                const filteredTweets = randomTweets.filter(tweet => (tweet.id || tweet.main_tweet.id) !== tweetId)
+                setRandomTweets(filteredTweets)
+            })
+            .catch()
+            .finally(() => setTweetMenuOpen(false))
     }
 
     // Add tweet info which user clicked
@@ -320,12 +334,22 @@ function Tweet(props: Props) {
                             </>
                         }
                         {props.user_id !== user?.id &&
-                            <button
-                                onClick={handleRetweet}
-                                disabled={!tweetMenuOpen}
-                                className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
-                                Retweet
-                            </button>
+                            <>
+                                <button
+                                    onClick={handleRetweet}
+                                    disabled={!tweetMenuOpen}
+                                    className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    <BsRepeat className={`size-5`}/>
+                                    Retweet
+                                </button>
+                                <button
+                                    onClick={hideTweet}
+                                    disabled={!tweetMenuOpen}
+                                    className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    <FaRegFaceAngry className={`size-5`}/>
+                                    Not interested in this post
+                                </button>
+                            </>
                         }
                     </div>
                 }
