@@ -8,9 +8,9 @@ import {LuArrowBigUp} from "react-icons/lu";
 import * as React from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import TweetModel from "../layouts/TweetModel.tsx";
-import apiClient from "../services/ApiClient.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import TweetTextAreaAndPreview from "../layouts/TweetTextAreaAndPreview.tsx";
+import ApiClient from "../services/ApiClient.tsx";
 
 interface Tweet {
     title: string
@@ -33,11 +33,12 @@ function UserHomePage() {
 
 
     const [pageURL, setPageURL] = useState('')
+    const [followedUsersTweetsClicked, setFollowedUsersTweetsClicked] = useState(false)
 
 
     // Fetch random tweets
     const getHomeTweets = (pageURL: string) => {
-        apiClient().get(pageURL)
+        ApiClient().get(pageURL)
             .then(res => {
                 setPageURL(res.data.data.pagination.next_page_url)
                 setRandomTweets(prevRandomTweets => ([
@@ -59,8 +60,11 @@ function UserHomePage() {
     const lastTweetRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
+            if (entries[0].isIntersecting && !followedUsersTweetsClicked) {
                 getHomeTweets(pageURL)
+            }
+            if (entries[0].isIntersecting && followedUsersTweetsClicked) {
+                followUsersTweets(pageURL)
             }
         }, {
             threshold: 0.5 // Trigger when 50% of the last tweet is visible
@@ -87,6 +91,20 @@ function UserHomePage() {
         />
     ));
 
+    const followUsersTweets = (pageUrl: string) => {
+        setPageURL('')
+        ApiClient().post(pageUrl)
+            .then(res => {
+                setRandomTweets(prevFollowedUsersTweets => ([
+                    ...prevFollowedUsersTweets,
+                    ...res.data.data.followed_users_tweets
+                ]))
+                setPageURL(res.data.data.pagination)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
 
     return (
         <div
@@ -105,8 +123,17 @@ function UserHomePage() {
                     </div>
                     {/* Header for the rest of screens */}
                     <div className={`w-full text-neutral-200`}>
-                        <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
-                        <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
+                        <button onClick={() => {
+                            setFollowedUsersTweetsClicked(false)
+                            setRandomTweets([])
+                            setPageURL('')
+                            getHomeTweets('home-tweets')
+                        }} className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
+                        <button onClick={() => {
+                            setFollowedUsersTweetsClicked(true)
+                            setRandomTweets([])
+                            followUsersTweets('/followed-users-tweets')
+                        }} className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
                     </div>
                 </header>
                 <div></div>

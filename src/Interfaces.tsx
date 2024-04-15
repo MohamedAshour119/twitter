@@ -21,6 +21,7 @@ export interface TweetInfo extends Tweet{
         id: number
         username: string
         avatar: string
+        is_followed: boolean
     }
 
     main_tweet: Tweet
