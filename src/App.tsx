@@ -14,6 +14,7 @@ import Profile from "./components/pages/Profile.tsx";
 import ShowTweet from "./components/pages/ShowTweet.tsx";
 import Notifications from "./components/pages/Notifications.tsx";
 import HashtagTweets from "./components/pages/HashtagTweets.tsx";
+import Explore from "./components/pages/Explore.tsx";
 
 
 function App() {
@@ -59,6 +60,7 @@ function App() {
                 <Route path={`/tweets/:id`} element={<ShowTweet />}/>
                 <Route path={`/notifications`} element={<Notifications />}/>
                 <Route path={`/:hashtag`} element={<HashtagTweets />} />
+                <Route path={`/explore`} element={<Explore />} />
             </Route>
 
             <Route path={`/`} element={<Home />}/>
