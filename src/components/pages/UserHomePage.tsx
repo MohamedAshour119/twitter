@@ -52,6 +52,7 @@ function UserHomePage() {
     }
 
     useEffect(() => {
+        setRandomTweets([])
         getHomeTweets('home-tweets')
     }, [])
 

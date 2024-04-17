@@ -15,7 +15,7 @@ function SearchResult(props: Props) {
         <Link
             onClick={() => props.setIsOpen(false)}
             to={`/users/${props.username}`}
-            className={`text-white flex items-center gap-x-3 hover:bg-[#1c1e2182] p-4`}
+            className={`text-white flex items-center gap-x-3 hover:bg-[#1c1e2182] transition p-4`}
         >
             <img
                 src={`${baseUrl}/storage/${props.avatar}`}

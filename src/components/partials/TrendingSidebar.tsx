@@ -7,6 +7,7 @@ import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import SearchResult from "../layouts/SearchResult.tsx";
 import {UserInfo} from "../../Interfaces.tsx";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
 function TrendingSidebar() {
 
@@ -14,6 +15,12 @@ function TrendingSidebar() {
         suggestedUsersToFollow,
         hashtags,
     } = useContext(AppContext)
+
+    const {
+        setRandomTweets,
+        randomTweets,
+    } = useContext(TweetContext)
+
     const [isOpen, setIsOpen] = useState(false)
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [pageURL, setPageURL] = useState('')
@@ -84,7 +91,7 @@ function TrendingSidebar() {
             threshold: 0.5 // Trigger when 50% of the last tweet is visible
         });
 
-        // Watch the last tweet
+        // Watch the last result
         if (lastResultRef.current) {
             observer.observe(lastResultRef.current)
         }
@@ -95,7 +102,7 @@ function TrendingSidebar() {
                 observer.unobserve(lastResultRef.current);
             }
         };
-    }, [pageURL])
+    }, [lastResultRef])
 
     const users = searchResults.slice(0, searchResults.length - 1).map(user => {
         return(
@@ -111,6 +118,20 @@ function TrendingSidebar() {
         )
     })
 
+        const searchForKeyword = (keyword: string) => {
+            ApiClient().get(`/search/${keyword}`)
+                .then((res) => {
+                    setPageURL(res.data.data.pagination)
+                    setRandomTweets( prevResults => ([
+                        ...prevResults,
+                        ...res.data.data.tweets
+                    ]))
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+
 
     return (
         <div className={`z-[300] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
@@ -125,23 +146,41 @@ function TrendingSidebar() {
                 />
                 <HiMiniMagnifyingGlass className={`absolute top-1/2 left-3 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>
                 {(isOpen && searchValue !== '') &&
-                    <div className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-5 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
+                    <div
+                        onClick={() => setSearchValue('')}
+                        className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-5 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
                         <HiMiniXMark
-                            onClick={() => setSearchValue('')}
                             className={`size-5`}/>
                     </div>
                 }
 
             {/*  Search result  */}
-                {isOpen && <div
-                    className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                    {users}
-                    <div ref={lastResultRef}>
-                        {searchResults.length > 0 && (
-                            <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>
-                        )}
+                {
+                    isOpen &&
+                    <div
+                        className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
+                        {(isOpen && debounceValue) &&
+                            <div
+                                onClick={() => {
+                                    setRandomTweets([])
+                                    searchForKeyword(debounceValue)
+                                    setIsOpen(false)
+                                    setSearchValue('')
+                                }}
+                                className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''}  border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                            >
+                                Search for "{debounceValue}"
+                            </div>
+                        }
+
+                        {users}
+                        <div ref={lastResultRef}>
+                            {searchResults.length > 0 && (
+                                <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>
+                            )}
+                        </div>
                     </div>
-                </div>}
+                }
 
             </div>
 

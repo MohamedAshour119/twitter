@@ -9,6 +9,9 @@ import ApiClient from "../services/ApiClient.tsx";
 import {UserInfo} from "../../Interfaces.tsx";
 import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
 import SearchResult from "../layouts/SearchResult.tsx";
+import {TweetContext} from "../appContext/TweetContext.tsx";
+import * as React from "react";
+import Tweet from "../layouts/Tweet.tsx";
 
 
 function Explore() {
@@ -17,6 +20,11 @@ function Explore() {
         isModelOpen,
         isCommentOpen,
     } = useContext(AppContext)
+
+    const {
+        randomTweets,
+        setRandomTweets,
+    } = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
     const [searchValue, setSearchValue] = useState('')
@@ -32,20 +40,9 @@ function Explore() {
     }
 
     const getSearchResult = (keyword: string) => {
-
-        ApiClient().get(`/search/${keyword}`)
-            .then((res) => {
-                console.log(res)
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-
-
         ApiClient().get(`/search-user/${keyword}`)
             .then(res => {
-                setSearchResults(prevUsers => ([
-                    ...prevUsers,
+                setSearchResults(() => ([
                     ...res.data.data.users
                 ]))
                 const nextPageUrl = res.data.data.pagination.next_page_url
@@ -64,10 +61,10 @@ function Explore() {
         }
     }, [debounceValue]);
 
-    const searchRef = useRef<HTMLDivElement>(null);
+    const exploreSearchRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
-            searchRef.current && !searchRef.current.contains(e.target as Node) ? setIsOpen(false) : ''
+            !exploreSearchRef.current?.contains(e.target as Node) ? setIsOpen(false) : ''
         }
         document.addEventListener('mousedown', handleClick)
         return () => {
@@ -91,7 +88,7 @@ function Explore() {
             threshold: 0.5 // Trigger when 50% of the last tweet is visible
         });
 
-        // Watch the last tweet
+        // Watch the last result
         if (lastResultRef.current) {
             observer.observe(lastResultRef.current)
         }
@@ -104,13 +101,39 @@ function Explore() {
         };
     }, [pageURL])
 
+    const searchForKeyword = (keyword: string) => {
+        ApiClient().get(`/search/${keyword}`)
+            .then((res) => {
+                setRandomTweets( prevResults => ([
+                    ...prevResults,
+                    ...res.data.data.tweets
+                ]))
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+
+    useEffect(() => {
+        setRandomTweets([])
+    }, []);
+
+    const displayResults: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
+        <Tweet
+            key={tweetInfo.id}
+            {...tweetInfo}
+        />
+    ));
+
     return (
         <div className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header className={`px-20 pb-3 pt-3 flex border ${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 pt-1 text-neutral-200 bg-black/50 backdrop-blur-sm`}>
-                   <div className={`w-full`}>
+                   <div
+                       ref={exploreSearchRef}
+                       className={`w-full`}>
                        <input
                            onClick={handleOpen}
                            onChange={handleSearchChange}
@@ -123,6 +146,19 @@ function Explore() {
                            isOpen &&
                            <div
                                className={`bg-black absolute w-[77%] rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
+                               {(isOpen && debounceValue) &&
+                                   <div
+                                       onClick={() => {
+                                           setRandomTweets([])
+                                           searchForKeyword(debounceValue)
+                                           setIsOpen(false)
+                                           setSearchValue('')
+                                       }}
+                                       className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''}  border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                                   >
+                                       Search for "{debounceValue}"
+                                   </div>
+                               }
                                {users}
                                <div ref={lastResultRef}>
                                    {searchResults.length > 0 && (
@@ -131,17 +167,17 @@ function Explore() {
                                </div>
                            </div>
                        }
+
+                       <HiMiniMagnifyingGlass className={`absolute top-1/2 left-24 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>
+                       {(isOpen && searchValue !== '') &&
+                           <div
+                               onClick={() => setSearchValue('')}
+                               className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-24 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
+                               <HiMiniXMark
+                                   className={`size-5`}/>
+                           </div>
+                       }
                    </div>
-
-
-                    <HiMiniMagnifyingGlass className={`absolute top-1/2 left-24 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>
-                    {(isOpen && searchValue !== '') &&
-                        <div className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-24 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
-                            <HiMiniXMark
-                                onClick={() => setSearchValue('')}
-                                className={`size-5`}/>
-                        </div>
-                    }
                 </header>
                 <div></div>
             </div>
@@ -159,8 +195,14 @@ function Explore() {
                 </div>
                 {/* Middle section */}
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
-
-
+                    <div className={`mt-20`}>
+                        {displayResults}
+                        <div ref={lastResultRef}>
+                            {randomTweets.length > 0 && (
+                                <Tweet {...randomTweets[randomTweets.length - 1]} />
+                            )}
+                        </div>
+                    </div>
                 </div>
 
                 <TrendingSidebar/>
