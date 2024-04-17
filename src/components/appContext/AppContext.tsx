@@ -28,8 +28,6 @@ interface AppContextType {
     setOriginalNotifications: Dispatch<SetStateAction<Notification[]>>
     hashtags: Hashtag[]
     setHashtags: Dispatch<SetStateAction<Hashtag[]>>
-    hashtagsPageURL: string
-    setHashtagsPageURL: Dispatch<SetStateAction<string>>
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -57,8 +55,6 @@ export const AppContext = createContext<AppContextType>({
     getAllNotifications: () => null,
     hashtags: [],
     setHashtags: () => null,
-    hashtagsPageURL: '',
-    setHashtagsPageURL: () => null,
 });
 
 interface AppProviderProps {
@@ -90,8 +86,6 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [notificationsCount, setNotificationsCount] = useState(0)
     const [notificationsPageURL, setNotificationsPageURL] = useState('')
     const [hashtags, setHashtags] = useState<Hashtag[]>([])
-    const [hashtagsPageURL, setHashtagsPageURL] = useState('')
-
 
     const baseUrl = 'http://api.twitter.test'
 
@@ -153,7 +147,6 @@ const AppProvider = ({children}: AppProviderProps) => {
     ApiClient().get(`/hashtags`)
         .then(res => {
             setHashtags(res.data.data)
-            // setHashtagsPageURL(res.data.data.next_page_url)
         })
         .catch(err => {
             console.log(err)
@@ -199,8 +192,6 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setOriginalNotifications,
                 hashtags,
                 setHashtags,
-                hashtagsPageURL,
-                setHashtagsPageURL,
             }}>
             {children}
         </AppContext.Provider>

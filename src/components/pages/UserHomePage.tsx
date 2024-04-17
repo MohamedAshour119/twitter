@@ -11,6 +11,7 @@ import TweetModel from "../layouts/TweetModel.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import TweetTextAreaAndPreview from "../layouts/TweetTextAreaAndPreview.tsx";
 import ApiClient from "../services/ApiClient.tsx";
+import {CgSmileSad} from "react-icons/cg";
 
 interface Tweet {
     title: string
@@ -34,7 +35,8 @@ function UserHomePage() {
 
     const [pageURL, setPageURL] = useState('')
     const [followedUsersTweetsClicked, setFollowedUsersTweetsClicked] = useState(false)
-
+    const [isResultsFound, setIsResultsFound] = useState(true);
+    const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
 
     // Fetch random tweets
     const getHomeTweets = (pageURL: string) => {
@@ -45,6 +47,7 @@ function UserHomePage() {
                     ...prevRandomTweets,
                     ...res.data.data.tweets,
                 ]))
+                res.data.data.tweets.length === 0 ? setDisplayNotFoundMsg(true) : ''
             })
             .catch(err => {
                 console.log(err)
@@ -167,11 +170,18 @@ function UserHomePage() {
                                 <Tweet {...randomTweets[randomTweets.length - 1]} />
                             )}
                         </div>
+
+                        {displayNotFoundMsg &&
+                            <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
+                                No {isResultsFound ? 'tweets' : 'results found'}!, {isResultsFound ? 'come back later' : ''}
+                                <CgSmileSad  className={`size-20 text-sky-500`}/>
+                            </div>
+                        }
                     </div>
 
                 </div>
 
-                <TrendingSidebar/>
+                <TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setIsResultsFound={setIsResultsFound} setPageUrl={setPageURL} />
 
             </div>
 

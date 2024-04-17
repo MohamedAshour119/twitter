@@ -6,12 +6,14 @@ import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../services/ApiClient.tsx";
-import {UserInfo} from "../../Interfaces.tsx";
+import {Hashtag, UserInfo} from "../../Interfaces.tsx";
 import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
 import SearchResult from "../layouts/SearchResult.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
+import {CgSmileSad} from "react-icons/cg";
+import ExploreHashtag from "../layouts/ExploreHashtag.tsx";
 
 
 function Explore() {
@@ -30,6 +32,9 @@ function Explore() {
     const [searchValue, setSearchValue] = useState('')
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [pageURL, setPageURL] = useState('')
+    const [isResultsFound, setIsResultsFound] = useState(true);
+    const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
+    const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const debounceValue = useDebounce(searchValue)
     const handleOpen = () => {
         setIsOpen(true)
@@ -60,6 +65,18 @@ function Explore() {
             setSearchResults([])
         }
     }, [debounceValue]);
+
+    useEffect(() => {
+        ApiClient().post('/explore-page-hashtags')
+            .then(res => {
+                setExplorePageHashtags([...res.data.data.hashtags])
+            })
+            .catch(err => {
+                console.log(err)
+            })
+
+    }, []);
+
 
     const exploreSearchRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -102,12 +119,18 @@ function Explore() {
     }, [pageURL])
 
     const searchForKeyword = (keyword: string) => {
+        setDisplayNotFoundMsg(false)
+        setExplorePageHashtags([])
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {
                 setRandomTweets( prevResults => ([
                     ...prevResults,
                     ...res.data.data.tweets
                 ]))
+                if(res.data.data.tweets.length === 0) {
+                    setIsResultsFound(false)
+                    setDisplayNotFoundMsg(true)
+                }
             })
             .catch((err) => {
                 console.log(err)
@@ -125,6 +148,30 @@ function Explore() {
         />
     ));
 
+    const inputRef = useRef<HTMLInputElement>(null)
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setPageURL('')
+        setRandomTweets([])
+        searchForKeyword(searchValue)
+        setIsOpen(false)
+        setSearchValue('')
+        inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
+    }
+
+    const hashtags = explorePageHashtags.map(hashtag => {
+        return (
+            <ExploreHashtag
+                key={hashtag.id}
+                id={Number(hashtag.id)}
+                hashtag={hashtag.hashtag}
+                count={hashtag.count}
+                setExplorePageHashtags={setExplorePageHashtags}
+                explorePageHashtags={explorePageHashtags}
+            />
+        )
+    })
+
     return (
         <div className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
 
@@ -134,14 +181,18 @@ function Explore() {
                    <div
                        ref={exploreSearchRef}
                        className={`w-full`}>
-                       <input
-                           onClick={handleOpen}
-                           onChange={handleSearchChange}
-                           value={searchValue}
-                           type="text"
-                           placeholder={`Search`}
-                           className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
-                       />
+                       <form onSubmit={handleSubmit}>
+                           <input
+                               ref={inputRef}
+                               onClick={handleOpen}
+                               onChange={handleSearchChange}
+                               value={searchValue}
+                               type="text"
+                               placeholder={`Search`}
+                               className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
+                           />
+                       </form>
+
                        {
                            isOpen &&
                            <div
@@ -196,12 +247,20 @@ function Explore() {
                 {/* Middle section */}
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
                     <div className={`mt-20`}>
+                        {hashtags}
                         {displayResults}
                         <div ref={lastResultRef}>
                             {randomTweets.length > 0 && (
                                 <Tweet {...randomTweets[randomTweets.length - 1]} />
                             )}
                         </div>
+
+                        {displayNotFoundMsg && randomTweets.length === 0 &&
+                            <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
+                                No {isResultsFound ? 'tweets' : 'results found'}!, {isResultsFound ? 'come back later' : ''}
+                                <CgSmileSad  className={`size-20 text-sky-500`}/>
+                            </div>
+                        }
                     </div>
                 </div>
 

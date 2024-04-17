@@ -257,7 +257,7 @@ function Tweet(props: Props) {
                 </div>
             </div>
 
-            <div className={`w-[90%] justify-self-end`}>
+            <div className={`xxs:w-[90%] w-[85%] justify-self-end`}>
                 <div className={`grid grid-cols-1`}>
                     <p className={`w-fit break-all`}>{ tweetText && tweetText?.length <= 1 ? tweetText : detectHashtag()}</p>
                     <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>

@@ -79,6 +79,7 @@ export const tweetDefaultValues = {
         id: 0,
         username: '',
         avatar: '',
+        is_followed: false,
     },
     title: '',
     user_id: 0,

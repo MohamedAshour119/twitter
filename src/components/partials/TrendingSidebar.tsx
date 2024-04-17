@@ -1,15 +1,22 @@
 import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
 import TrendingHashtag from "../layouts/TrendingHashtag.tsx";
 import FollowUser from "../layouts/FollowUser.tsx";
-import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
+import {ChangeEvent, Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import SearchResult from "../layouts/SearchResult.tsx";
 import {UserInfo} from "../../Interfaces.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
+import * as React from "react";
 
-function TrendingSidebar() {
+interface Props {
+    setPageUrl?: Dispatch<SetStateAction<string>>
+    setIsResultsFound?: Dispatch<SetStateAction<boolean>>
+    setDisplayNotFoundMsg?: Dispatch<SetStateAction<boolean>>
+}
+
+function TrendingSidebar(props: Props) {
 
     const {
         suggestedUsersToFollow,
@@ -18,7 +25,6 @@ function TrendingSidebar() {
 
     const {
         setRandomTweets,
-        randomTweets,
     } = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
@@ -118,32 +124,51 @@ function TrendingSidebar() {
         )
     })
 
-        const searchForKeyword = (keyword: string) => {
-            ApiClient().get(`/search/${keyword}`)
-                .then((res) => {
-                    setPageURL(res.data.data.pagination)
-                    setRandomTweets( prevResults => ([
-                        ...prevResults,
-                        ...res.data.data.tweets
-                    ]))
-                })
-                .catch((err) => {
-                    console.log(err)
-                })
-        }
+    const searchForKeyword = (keyword: string) => {
+        ApiClient().get(`/search/${keyword}`)
+            .then((res) => {
+                props.setPageUrl && props.setPageUrl(res.data.data.pagination)
+                setRandomTweets( prevResults => ([
+                    ...prevResults,
+                    ...res.data.data.tweets
+                ]))
+                setIsOpen(false)
+                if(res.data.data.tweets.length === 0 && props.setIsResultsFound && props.setDisplayNotFoundMsg) {
+                    props.setIsResultsFound(false)
+                    props.setDisplayNotFoundMsg(true)
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
 
+    const inputRef = useRef<HTMLInputElement>(null)
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        props.setPageUrl && props.setPageUrl('')
+        setRandomTweets([])
+        searchForKeyword(searchValue)
+        setIsOpen(false)
+        setSearchValue('')
+        inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
+    }
 
     return (
         <div className={`z-[300] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
             <div ref={searchRef} className={`mt-2 relative`}>
-                <input
-                    onClick={handleOpen}
-                    onChange={handleSearchChange}
-                    value={searchValue}
-                    type="text"
-                    placeholder={`Search`}
-                    className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
-                />
+                <form onSubmit={handleSubmit}>
+                    <input
+                        ref={inputRef}
+                        onClick={handleOpen}
+                        onChange={handleSearchChange}
+                        value={searchValue}
+                        type="text"
+                        placeholder={`Search`}
+                        className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
+                    />
+                </form>
+
                 <HiMiniMagnifyingGlass className={`absolute top-1/2 left-3 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>
                 {(isOpen && searchValue !== '') &&
                     <div
@@ -162,6 +187,7 @@ function TrendingSidebar() {
                         {(isOpen && debounceValue) &&
                             <div
                                 onClick={() => {
+                                    props.setPageUrl && props.setPageUrl('')
                                     setRandomTweets([])
                                     searchForKeyword(debounceValue)
                                     setIsOpen(false)
