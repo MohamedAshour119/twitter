@@ -34,8 +34,11 @@ function UserHomePage() {
 
 
     const [pageURL, setPageURL] = useState('')
-    const [followedUsersTweetsClicked, setFollowedUsersTweetsClicked] = useState(false)
     const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
+    const [isActive, setIsActive] = useState({
+        forYou: true,
+        following: false,
+    })
 
     // Fetch random tweets
     const getHomeTweets = (pageURL: string) => {
@@ -63,10 +66,10 @@ function UserHomePage() {
     const lastTweetRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && !followedUsersTweetsClicked) {
+            if (entries[0].isIntersecting && !isActive.following) {
                 getHomeTweets(pageURL)
             }
-            if (entries[0].isIntersecting && followedUsersTweetsClicked) {
+            if (entries[0].isIntersecting && isActive.following) {
                 followUsersTweets(pageURL)
             }
         }, {
@@ -109,6 +112,20 @@ function UserHomePage() {
             })
     }
 
+    const handleFollowingBtnClick = () => {
+        setIsActive({
+            forYou: false,
+            following: true,
+        })
+    }
+
+    const handleForYouBtnClick = () => {
+        setIsActive({
+            forYou: true,
+            following: false,
+        })
+    }
+
     return (
         <div
             className={`${(isModelOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
@@ -126,17 +143,25 @@ function UserHomePage() {
                     </div>
                     {/* Header for the rest of screens */}
                     <div className={`w-full text-neutral-200`}>
-                        <button onClick={() => {
-                            setFollowedUsersTweetsClicked(false)
-                            setRandomTweets([])
-                            setPageURL('')
-                            getHomeTweets('home-tweets')
-                        }} className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
-                        <button onClick={() => {
-                            setFollowedUsersTweetsClicked(true)
-                            setRandomTweets([])
-                            followUsersTweets('/followed-users-tweets')
-                        }} className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
+                        <button
+                            onClick={() => {
+                                handleForYouBtnClick()
+                                setRandomTweets([])
+                                setPageURL('')
+                                getHomeTweets('home-tweets')
+                            }}
+                            className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
+                            <span className={`${isActive.forYou && 'border-b-2 px-4 border-sky-500 pb-4'}`}>For you</span>
+                        </button>
+                        <button
+                            onClick={() => {
+                                handleFollowingBtnClick()
+                                setRandomTweets([])
+                                followUsersTweets('/followed-users-tweets')
+                            }}
+                            className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
+                            <span className={`${isActive.following && 'border-b-2 px-4 border-sky-500 pb-4'}`}>Following</span>
+                        </button>
                     </div>
                 </header>
                 <div></div>
