@@ -28,6 +28,8 @@ interface AppContextType {
     setOriginalNotifications: Dispatch<SetStateAction<Notification[]>>
     hashtags: Hashtag[]
     setHashtags: Dispatch<SetStateAction<Hashtag[]>>
+    showExplorePageHashtags: boolean
+    setShowExplorePageHashtags: Dispatch<SetStateAction<boolean>>
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -55,6 +57,8 @@ export const AppContext = createContext<AppContextType>({
     getAllNotifications: () => null,
     hashtags: [],
     setHashtags: () => null,
+    showExplorePageHashtags: true,
+    setShowExplorePageHashtags: () => null,
 });
 
 interface AppProviderProps {
@@ -82,11 +86,11 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [clickedTweet, setClickedTweet] = useState<ClickedTweet>(ClickedTweetDefaultValues)
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
     const [allNotifications, setAllNotifications] = useState<Notification[]>([])
-    const [originalNotifications, setOriginalNotifications] = useState<Notification[]>(allNotifications)
+    const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
     const [notificationsCount, setNotificationsCount] = useState(0)
     const [notificationsPageURL, setNotificationsPageURL] = useState('')
     const [hashtags, setHashtags] = useState<Hashtag[]>([])
-
+    const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const baseUrl = 'http://api.twitter.test'
 
     useEffect(() => {
@@ -192,6 +196,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setOriginalNotifications,
                 hashtags,
                 setHashtags,
+                showExplorePageHashtags,
+                setShowExplorePageHashtags,
             }}>
             {children}
         </AppContext.Provider>

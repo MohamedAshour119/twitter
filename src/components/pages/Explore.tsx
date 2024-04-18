@@ -21,6 +21,7 @@ function Explore() {
     const {
         isModelOpen,
         isCommentOpen,
+        showExplorePageHashtags,
     } = useContext(AppContext)
 
     const {
@@ -32,8 +33,7 @@ function Explore() {
     const [searchValue, setSearchValue] = useState('')
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [pageURL, setPageURL] = useState('')
-    const [isResultsFound, setIsResultsFound] = useState(true);
-    const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
+    const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const debounceValue = useDebounce(searchValue)
     const handleOpen = () => {
@@ -119,7 +119,7 @@ function Explore() {
     }, [pageURL])
 
     const searchForKeyword = (keyword: string) => {
-        setDisplayNotFoundMsg(false)
+        setDisplayNotResultsFound(false)
         setExplorePageHashtags([])
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {
@@ -128,8 +128,7 @@ function Explore() {
                     ...res.data.data.tweets
                 ]))
                 if(res.data.data.tweets.length === 0) {
-                    setIsResultsFound(false)
-                    setDisplayNotFoundMsg(true)
+                    setDisplayNotResultsFound(true)
                 }
             })
             .catch((err) => {
@@ -150,6 +149,7 @@ function Explore() {
 
     const inputRef = useRef<HTMLInputElement>(null)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        setDisplayNotResultsFound(false)
         e.preventDefault()
         setPageURL('')
         setRandomTweets([])
@@ -197,7 +197,7 @@ function Explore() {
                            isOpen &&
                            <div
                                className={`bg-black absolute w-[77%] rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                               {(isOpen && debounceValue) &&
+                               {(searchResults.length > 0 && debounceValue) &&
                                    <div
                                        onClick={() => {
                                            setRandomTweets([])
@@ -247,7 +247,11 @@ function Explore() {
                 {/* Middle section */}
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
                     <div className={`mt-20`}>
-                        {hashtags}
+                        {showExplorePageHashtags &&
+                            <div>
+                                {hashtags}
+                            </div>
+                        }
                         {displayResults}
                         <div ref={lastResultRef}>
                             {randomTweets.length > 0 && (
@@ -255,16 +259,16 @@ function Explore() {
                             )}
                         </div>
 
-                        {displayNotFoundMsg && randomTweets.length === 0 &&
+                        {displayNotResultsFound && randomTweets.length === 0 &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
-                                No {isResultsFound ? 'tweets' : 'results found'}!, {isResultsFound ? 'come back later' : ''}
+                                No {displayNotResultsFound ? 'results found' : 'tweets,'}! {!displayNotResultsFound ? 'come back later' : ''}
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>
                             </div>
                         }
                     </div>
                 </div>
 
-                <TrendingSidebar/>
+                <TrendingSidebar setDisplayNotResultsFound={setDisplayNotResultsFound} />
             </div>
             <TweetModel />
         </div>

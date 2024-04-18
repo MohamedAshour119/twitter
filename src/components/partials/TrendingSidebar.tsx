@@ -9,10 +9,11 @@ import SearchResult from "../layouts/SearchResult.tsx";
 import {UserInfo} from "../../Interfaces.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import * as React from "react";
+import {useNavigate} from "react-router-dom";
 
 interface Props {
     setPageUrl?: Dispatch<SetStateAction<string>>
-    setIsResultsFound?: Dispatch<SetStateAction<boolean>>
+    setDisplayNotResultsFound?: Dispatch<SetStateAction<boolean>>
     setDisplayNotFoundMsg?: Dispatch<SetStateAction<boolean>>
 }
 
@@ -21,6 +22,8 @@ function TrendingSidebar(props: Props) {
     const {
         suggestedUsersToFollow,
         hashtags,
+        setShowExplorePageHashtags,
+        location,
     } = useContext(AppContext)
 
     const {
@@ -124,7 +127,12 @@ function TrendingSidebar(props: Props) {
         )
     })
 
+    const navigate = useNavigate()
+
     const searchForKeyword = (keyword: string) => {
+        props.setDisplayNotResultsFound && props.setDisplayNotResultsFound(false)
+        setShowExplorePageHashtags(false)
+        location?.pathname !== '/explore' ? navigate('/explore') : ''
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {
                 props.setPageUrl && props.setPageUrl(res.data.data.pagination)
@@ -133,9 +141,9 @@ function TrendingSidebar(props: Props) {
                     ...res.data.data.tweets
                 ]))
                 setIsOpen(false)
-                if(res.data.data.tweets.length === 0 && props.setIsResultsFound && props.setDisplayNotFoundMsg) {
-                    props.setIsResultsFound(false)
-                    props.setDisplayNotFoundMsg(true)
+                if(res.data.data.tweets.length === 0) {
+                    props.setDisplayNotResultsFound && props.setDisplayNotResultsFound(true)
+                    props.setDisplayNotFoundMsg && props.setDisplayNotFoundMsg(false)
                 }
             })
             .catch((err) => {
@@ -184,7 +192,7 @@ function TrendingSidebar(props: Props) {
                     isOpen &&
                     <div
                         className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                        {(isOpen && debounceValue) &&
+                        {(searchResults.length > 0 && debounceValue) &&
                             <div
                                 onClick={() => {
                                     props.setPageUrl && props.setPageUrl('')

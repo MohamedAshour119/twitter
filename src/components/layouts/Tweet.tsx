@@ -290,7 +290,7 @@ function Tweet(props: Props) {
     return (
         <>
             <div
-                className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} border-b-1 border-zinc-700/70 relative group`}>
+                className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} relative group`}>
                 {((isRetweeted || props.main_tweet) && username !== props.user?.username && location?.pathname === `/users/${username}` ) &&
                     <div className={` group-hover:bg-zinc-800/20 transition`}>
                         <Link to={`/users/${username}`} className={`w-fit flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>

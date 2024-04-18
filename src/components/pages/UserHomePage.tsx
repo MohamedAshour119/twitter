@@ -35,7 +35,6 @@ function UserHomePage() {
 
     const [pageURL, setPageURL] = useState('')
     const [followedUsersTweetsClicked, setFollowedUsersTweetsClicked] = useState(false)
-    const [isResultsFound, setIsResultsFound] = useState(true);
     const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
 
     // Fetch random tweets
@@ -173,7 +172,7 @@ function UserHomePage() {
 
                         {displayNotFoundMsg &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
-                                No {isResultsFound ? 'tweets' : 'results found'}!, {isResultsFound ? 'come back later' : ''}
+                                No tweets!, come back later
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>
                             </div>
                         }
@@ -181,7 +180,7 @@ function UserHomePage() {
 
                 </div>
 
-                <TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setIsResultsFound={setIsResultsFound} setPageUrl={setPageURL} />
+                <TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setPageUrl={setPageURL} />
 
             </div>
 
