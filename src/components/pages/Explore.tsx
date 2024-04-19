@@ -1,7 +1,7 @@
 import {LuArrowBigUp} from "react-icons/lu";
 import Sidebar from "../partials/Sidebar.tsx";
 import TrendingSidebar from "../partials/TrendingSidebar.tsx";
-import TweetModel from "../layouts/TweetModel.tsx";
+import Model from "../layouts/Model.tsx";
 import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
@@ -270,7 +270,7 @@ function Explore() {
 
                 <TrendingSidebar setDisplayNotResultsFound={setDisplayNotResultsFound} />
             </div>
-            <TweetModel />
+            <Model />
         </div>
     )
 }

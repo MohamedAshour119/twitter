@@ -3,7 +3,7 @@ import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import {FaXTwitter} from "react-icons/fa6";
 import {IoSettingsOutline} from "react-icons/io5";
 import {LuArrowBigUp} from "react-icons/lu";
-import TweetModel from "../layouts/TweetModel.tsx";
+import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {Link, useParams} from "react-router-dom";
@@ -144,7 +144,7 @@ function ShowTweet() {
             </div>
 
             {/* Tweet model  */}
-            <TweetModel/>
+            <Model/>
         </div>
 
     )

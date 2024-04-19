@@ -52,23 +52,26 @@ function App() {
     }
 
     return (
-        <Routes>
+        <div className={`overflow-x-hidden`}>
+            <Routes>
+                <Route element={<AuthRoute />}>
+                    <Route path={`/home`} element={<UserHomePage />}/>
+                    <Route path={`/users/:username`} element={<Profile />}/>
+                    <Route path={`/tweets/:id`} element={<ShowTweet />}/>
+                    <Route path={`/notifications`} element={<Notifications />}/>
+                    <Route path={`/:hashtag`} element={<HashtagTweets />} />
+                    <Route path={`/explore`} element={<Explore />} />
+                </Route>
 
-            <Route element={<AuthRoute />}>
-                <Route path={`/home`} element={<UserHomePage />}/>
-                <Route path={`/users/:username`} element={<Profile />}/>
-                <Route path={`/tweets/:id`} element={<ShowTweet />}/>
-                <Route path={`/notifications`} element={<Notifications />}/>
-                <Route path={`/:hashtag`} element={<HashtagTweets />} />
-                <Route path={`/explore`} element={<Explore />} />
-            </Route>
 
-            <Route path={`/`} element={<Home />}/>
-            <Route path={`/register`} element={<Register />}/>
-            <Route path={`/login`} element={<Login />}/>
+                <Route path={`/`} element={<Home />}/>
+                <Route path={`/register`} element={<Register />}/>
+                <Route path={`/login`} element={<Login />}/>
 
-            <Route path={"*"} element={<PageNotFound />}/>
-        </Routes>
+                <Route path={"*"} element={<PageNotFound />}/>
+            </Routes>
+        </div>
+
     )
 }
 

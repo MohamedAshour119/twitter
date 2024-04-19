@@ -3,7 +3,7 @@ import {IoSettingsOutline} from "react-icons/io5";
 import {LuArrowBigUp} from "react-icons/lu";
 import Sidebar from "../partials/Sidebar.tsx";
 import TrendingSidebar from "../partials/TrendingSidebar.tsx";
-import TweetModel from "../layouts/TweetModel.tsx";
+import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
@@ -35,7 +35,7 @@ function HashtagTweets() {
             })
     }, [hashtag]);
 
-    const displayHashtagsTweets: React.ReactNode = hashtagsTweets?.slice(0, hashtagsTweets.length - 1).map(tweetInfo => (
+    const displayHashtagsTweets: React.ReactNode = hashtagsTweets?.map(tweetInfo => (
         <Tweet
             key={tweetInfo.id}
             {...tweetInfo}
@@ -101,7 +101,7 @@ function HashtagTweets() {
             </div>
 
             {/* Tweet model  */}
-            <TweetModel/>
+            <Model/>
         </div>
     )
 }
