@@ -129,3 +129,7 @@ input:-webkit-autofill {
 .custom-toast{
     top: 3rem;
 }
+
+::-webkit-scrollbar:horizontal {
+    height: 0; /* Adjust the height of the scrollbar */
+}

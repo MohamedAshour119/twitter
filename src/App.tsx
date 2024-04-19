@@ -15,6 +15,9 @@ import ShowTweet from "./components/pages/ShowTweet.tsx";
 import Notifications from "./components/pages/Notifications.tsx";
 import HashtagTweets from "./components/pages/HashtagTweets.tsx";
 import Explore from "./components/pages/Explore.tsx";
+import NavbarSmScreens from "./components/partials/NavbarSmScreens.tsx";
+import {LuArrowBigUp} from "react-icons/lu";
+import {animateScroll as scroll} from "react-scroll";
 
 
 function App() {
@@ -24,6 +27,14 @@ function App() {
     const location = useLocation();
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
+
+    const options = {
+        duration: 700,
+        smooth: true,
+    }
+    const scrollToTop = () => {
+        scroll.scrollToTop(options)
+    }
 
     // Check if user still logged in or not
     useEffect( ()=> {
@@ -52,7 +63,7 @@ function App() {
     }
 
     return (
-        <div className={`overflow-x-hidden`}>
+        <div className={``}>
             <Routes>
                 <Route element={<AuthRoute />}>
                     <Route path={`/home`} element={<UserHomePage />}/>
@@ -70,6 +81,13 @@ function App() {
 
                 <Route path={"*"} element={<PageNotFound />}/>
             </Routes>
+            <NavbarSmScreens/>
+            {/* Scroll to top button */}
+            <div
+                onClick={scrollToTop}
+                className={`bg-sky-500 z-50 fixed bottom-24 left-2 p-2 rounded-full cursor-pointer block sm:hidden`}>
+                <LuArrowBigUp className={`size-7 text-white/90`}/>
+            </div>
         </div>
 
     )

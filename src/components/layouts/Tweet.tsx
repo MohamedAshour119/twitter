@@ -257,7 +257,7 @@ function Tweet(props: Props) {
                 </div>
             </div>
 
-            <div className={`xxs:w-[90%] w-[85%] justify-self-end`}>
+            <div className={`md:w-[90%] w-[86%] justify-self-end mt-4`}>
                 <div className={`grid grid-cols-1`}>
                     <p className={`w-fit break-all`}>{ tweetText && tweetText?.length <= 1 ? tweetText : detectHashtag()}</p>
                     <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>
@@ -364,7 +364,7 @@ function Tweet(props: Props) {
                             {tweetCommonContent}
                         </div>
                     ) }
-                    <div className={`flex ml-20 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-4 text-zinc-400/70`}>
+                    <div className={`flex sm:mx-20 xs:mx-16 xxs:mx-14 mx-12 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-8 text-zinc-400/70`}>
                         <div onClick={handleOpenComments} className={`flex items-center cursor-pointer group/icon`}>
                             <div
                                 className={`text-xl flex justify-center items-center group-hover/icon:text-sky-500 transition group-hover/icon:bg-sky-500/20 rounded-full p-2`}>

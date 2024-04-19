@@ -18,10 +18,7 @@ function Model() {
         clickedTweet,
     } = useContext(AppContext);
 
-    const {
-        tweet,
-        setTweet,
-    } = useContext(TweetContext)
+    const {setTweet,} = useContext(TweetContext)
 
 
     // Handle start animation when page loaded

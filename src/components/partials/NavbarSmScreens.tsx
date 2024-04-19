@@ -7,10 +7,10 @@ import {AppContext} from "../appContext/AppContext.tsx";
 
 function NavbarSmScreens() {
 
-    const {notificationsCount} = useContext(AppContext)
+    const {notificationsCount, isModelOpen, isCommentOpen} = useContext(AppContext)
 
     return (
-        <ul>
+        <ul className={`xs:hidden fixed bottom-0 bg-black flex w-full justify-center py-2 gap-x-16 text-neutral-200 border-t border-zinc-700/70 ${isModelOpen || isCommentOpen ? 'opacity-20' : ''}`}>
             <li className={``}>
                 <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                       to={`/home`}>

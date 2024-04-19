@@ -4,7 +4,6 @@ import {useContext, useEffect, useRef, useState} from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
-import {LuArrowBigUp} from "react-icons/lu";
 import * as React from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import Model from "../layouts/Model.tsx";
@@ -32,14 +31,12 @@ function UserHomePage() {
         setRandomTweets,
     } = useContext(TweetContext)
 
-
     const [pageURL, setPageURL] = useState('')
     const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
     const [isActive, setIsActive] = useState({
         forYou: true,
         following: false,
     })
-
 
     const parentRef = useRef<HTMLDivElement>(null)
     // Fetch random tweets
@@ -136,12 +133,13 @@ function UserHomePage() {
         bodyEl.style.backgroundColor = 'black'
     }
 
+
     return (
         <div
             ref={parentRef}
             className={`${(isModelOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} h-screen w-screen flex justify-center`}>
 
-            <div className={`z-[200] container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+            <div className={`z-[200] container fixed 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
                 <div></div>
                 <header
                     className={`w-full grid grid-cols-1 border ${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-md'} border-zinc-700/70 2xl:max-w-[43rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] `}>
@@ -181,12 +179,6 @@ function UserHomePage() {
             <div
                 className={`${(isModelOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
-                {/* Scroll to top button */}
-                <div
-                    className={`bg-sky-500 z-50 absolute bottom-5 left-2 p-2 rounded-full cursor-pointer block sm:hidden`}>
-                    <LuArrowBigUp className={`size-7 text-white/90`}/>
-                </div>
-
                 {/* Sidebar */}
                 <div className={`justify-end hidden sm:flex relative`}>
                     <Sidebar/>
@@ -212,14 +204,13 @@ function UserHomePage() {
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>
                             </div>
                         }
+
                     </div>
 
                 </div>
 
                 <TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setPageUrl={setPageURL} />
-
             </div>
-
             {/* Tweet model  */}
             <Model/>
         </div>
