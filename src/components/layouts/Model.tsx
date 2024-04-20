@@ -4,6 +4,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import {Link} from "react-router-dom";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
+import EmojiPicker, {Categories, EmojiStyle, SuggestionMode, Theme} from "emoji-picker-react";
 
 
 function Model() {
@@ -18,7 +19,13 @@ function Model() {
         clickedTweet,
     } = useContext(AppContext);
 
-    const {setTweet,} = useContext(TweetContext)
+    const {
+        setTweet,
+        setShowEmojiElInModel,
+        showEmojiElInModel,
+        onEmojiClick,
+        tweet,
+    } = useContext(TweetContext)
 
 
     // Handle start animation when page loaded
@@ -32,9 +39,10 @@ function Model() {
     // Close model post when clicked outside it
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
-            if(!model.current?.contains(e.target as Node) && (isModelOpen || isCommentOpen)){
+            if(!model.current?.contains(e.target as Node) && (isModelOpen || isCommentOpen) && !showEmojiElInModel){
                 setIsModelOpen(false)
                 setIsCommentOpen(false)
+                setShowEmojiElInModel(false)
 
                 setTweet(() => ({
                     id: null,
@@ -53,8 +61,22 @@ function Model() {
     }, [isModelOpen, isCommentOpen] )
 
 
+    const emojiModelpickerRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if(!emojiModelpickerRef.current?.contains(e.target as Node)) {
+                setShowEmojiElInModel(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, []);
+
+
     return (
-        <div ref={model} className={`absolute overflow-y-hidden bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModelOpen || isCommentOpen) ? 'animate-slide-down z-[250]' : 'close-slide-down'} `}>
+        <div ref={model} className={`fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModelOpen || isCommentOpen) ? 'animate-slide-down z-[250]' : 'close-slide-down'} `}>
             <div
                 onClick={handleModelOpen}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">
@@ -90,6 +112,40 @@ function Model() {
                 </>
             }
             <TweetTextAreaAndPreview/>
+            <div >
+                {showEmojiElInModel && (isModelOpen || isCommentOpen) &&
+                    <div ref={emojiModelpickerRef}>
+                        <EmojiPicker
+                            theme={Theme.DARK}
+                            emojiStyle={EmojiStyle.TWITTER}
+                            autoFocusSearch
+                            lazyLoadEmojis={false}
+                            suggestedEmojisMode={SuggestionMode.RECENT}
+                            searchDisabled
+                            width={320}
+                            height={400}
+                            onEmojiClick={onEmojiClick}
+                            className={`${tweet.image || tweet.video ? 'top-[18rem]' : ''}`}
+                            style={{
+                                position: 'absolute',
+                                backgroundColor: 'black',
+                                boxShadow: '0 3px 12px #ffffff73',
+                                borderRadius: '8px',
+                                padding: '10px',
+                                zIndex: '260',
+                                left: '7rem'
+                            }}
+                            previewConfig={{showPreview: false}}
+                            categories={[
+                                { name: 'Smileys & People', category: Categories.SMILEYS_PEOPLE },
+                                { name: 'Animals & Nature', category: Categories.ANIMALS_NATURE },
+                                { name: 'Food & Drink', category: Categories.FOOD_DRINK },
+                            ]}
+                        />
+                    </div>
+                }
+
+            </div>
         </div>
     )
 }

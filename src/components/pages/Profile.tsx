@@ -10,6 +10,7 @@ import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
+import EditProfileModel from "../layouts/EditProfileModel.tsx";
 
 
 function Profile() {
@@ -27,6 +28,11 @@ function Profile() {
     })
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo>()
+    const [isShowEditInfoModel, setIsShowEditInfoModel] = useState(false)
+
+    const toggleModel = () => {
+        setIsShowEditInfoModel(!isShowEditInfoModel)
+    }
 
     // Reset allProfileUserTweets state when username changes
     useEffect(() => {
@@ -204,11 +210,16 @@ function Profile() {
     }, [pageURL])
 
     return (
-        <div className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+        <div className={`${isModelOpen || isCommentOpen || isShowEditInfoModel ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+
+            {/* Edit user info model */}
+            {isShowEditInfoModel &&
+                <EditProfileModel setIsShowEditInfoModel={setIsShowEditInfoModel}/>
+            }
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
-                <header className={`flex border ${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
+                <header className={`flex border ${isModelOpen || isCommentOpen || isShowEditInfoModel ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
                     <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
                     </Link>
@@ -230,7 +241,7 @@ function Profile() {
                 <div></div>
             </div>
 
-            <div className={`${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
+            <div className={`${isModelOpen || isCommentOpen || isShowEditInfoModel ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
 
                 {/* Sidebar */}
                 <div className={`justify-end hidden sm:flex relative`}>
@@ -260,8 +271,10 @@ function Profile() {
                                 </div>
 
                                 {(username === user?.username && userInfo) &&
-                                    <Link to={'/home'}
-                                       className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile</Link>
+                                    <button
+                                        onClick={toggleModel}
+                                        className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile
+                                    </button>
                                 }
                                 {(username === user?.username || !userInfo) ||
                                     <button

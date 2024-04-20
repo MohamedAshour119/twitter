@@ -11,6 +11,7 @@ import {TweetContext} from "../appContext/TweetContext.tsx";
 import TweetTextAreaAndPreview from "../layouts/TweetTextAreaAndPreview.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {CgSmileSad} from "react-icons/cg";
+import {Link} from "react-router-dom";
 
 interface Tweet {
     title: string
@@ -137,7 +138,7 @@ function UserHomePage() {
     return (
         <div
             ref={parentRef}
-            className={`${(isModelOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} h-screen w-screen flex justify-center`}>
+            className={`${(isModelOpen || isCommentOpen) ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} h-screen w-screen flex justify-center`}>
 
             <div className={`z-[200] container fixed 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
                 <div></div>
@@ -145,8 +146,10 @@ function UserHomePage() {
                     className={`w-full grid grid-cols-1 border ${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-md'} border-zinc-700/70 2xl:max-w-[43rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] `}>
                     {/* Header but only on small screens */}
                     <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
-                        <img className={`size-11 rounded-full object-cover`}
-                             src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
+                        <Link to={`/users/${user?.username}`}>
+                            <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
+                        </Link>
+
                         <FaXTwitter className={`size-9`}/>
                         <IoSettingsOutline className={`size-9`}/>
                     </div>

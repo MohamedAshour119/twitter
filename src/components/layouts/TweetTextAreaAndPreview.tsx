@@ -4,7 +4,7 @@ import {TweetContext} from "../appContext/TweetContext.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {MdOutlinePermMedia} from "react-icons/md";
 import {CiFaceSmile} from "react-icons/ci";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, {Categories, EmojiStyle, SuggestionMode, Theme} from "emoji-picker-react";
 
 function TweetTextAreaAndPreview() {
 
@@ -24,8 +24,10 @@ function TweetTextAreaAndPreview() {
         handleTextAreaChange,
         onEmojiClick,
         displayMainEmojiPicker,
+        displayModelEmojiPicker,
         handleFileChange,
         sendRequest,
+        setShowEmojiEl,
     } = useContext(TweetContext)
 
     const [isPostBtnDisabled, setIsPostBtnDisabled] = useState(true)
@@ -66,14 +68,30 @@ function TweetTextAreaAndPreview() {
 
     }, [tweet.title, tweet.image, tweet.video])
 
+    const emojipickerRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            const emojiPicker = document.querySelector('.emoji-picker-react');
+            if (
+                !emojipickerRef.current?.contains(e.target as Node) &&
+                (!emojiPicker || !emojiPicker.contains(e.target as Node))
+            ) {
+                setShowEmojiEl(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, []);
+
 
     return (
         <div className={`${location?.pathname !== `/home` && !isModelOpen && !isCommentOpen ? 'border-t border-zinc-700/70' : ''}`}>
             <div className={`flex flex-col py-3 sm:px-6 px-2 ${location?.pathname !== `/home` || isModelOpen || isCommentOpen ? 'mt-0' : 'sm:mt-16 mt-36 border-b'} border-zinc-700/70 z-10`}>
                 <div className={`flex gap-x-3`}>
-
-                    <img className={`size-11 object-cover rounded-full`}
-                         src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
+                        <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
 
                     <div className={`flex flex-wrap w-full ${!tweet.image ? 'gap-y-3' : ''}`}>
                                 <textarea
@@ -94,7 +112,7 @@ function TweetTextAreaAndPreview() {
                                      className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                                     <HiMiniXMark className={`size-6`}/>
                                 </div>
-                                <img className={`w-full max-h-[40rem] rounded-2xl transition`}
+                                <img className={`w-full max-h-[30rem] rounded-2xl transition`}
                                      src={tweet?.image ? URL.createObjectURL(tweet?.image as File) : ''}
                                      alt=""/>
                             </div>
@@ -131,34 +149,37 @@ function TweetTextAreaAndPreview() {
                                 </label>
 
                                 <div >
-                                    <div className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
-                                        <CiFaceSmile onClick={displayMainEmojiPicker}/>
+                                    <div
+                                        onClick={!(isModelOpen || isCommentOpen) ? displayMainEmojiPicker : displayModelEmojiPicker}
+                                        className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
+                                        <CiFaceSmile/>
                                     </div>
-                                    {showEmojiEl &&
-                                        <div>
+                                    {showEmojiEl && !(isModelOpen || isCommentOpen) &&
+                                        <div ref={emojipickerRef}>
                                             <EmojiPicker
-                                                theme={'dark'}
-                                                emojiStyle={'twitter'}
+                                                theme={Theme.DARK}
+                                                emojiStyle={EmojiStyle.TWITTER}
                                                 autoFocusSearch
                                                 lazyLoadEmojis={false}
-                                                suggestedEmojisMode={'recent'}
+                                                suggestedEmojisMode={SuggestionMode.RECENT}
                                                 searchDisabled
                                                 width={320}
                                                 height={400}
                                                 onEmojiClick={onEmojiClick}
+                                                className={`${tweet.image || tweet.video ? 'top-[24rem]' : ''} emoji-picker-react left-4`}
                                                 style={{
                                                     position: 'absolute',
                                                     backgroundColor: 'black',
                                                     boxShadow: '0 3px 12px #ffffff73',
                                                     borderRadius: '8px',
                                                     padding: '10px',
-                                                    zIndex: '200'
-                                                }}
+                                                    zIndex: '260',
+                                                    }}
                                                 previewConfig={{showPreview: false}}
                                                 categories={[
-                                                    {category: 'smileys_people'},
-                                                    {category: 'animals_nature'},
-                                                    {category: 'food_drink'},
+                                                    { name: 'Smileys & People', category: Categories.SMILEYS_PEOPLE },
+                                                    { name: 'Animals & Nature', category: Categories.ANIMALS_NATURE },
+                                                    { name: 'Food & Drink', category: Categories.FOOD_DRINK },
                                                 ]}
                                             />
                                         </div>

@@ -1,4 +1,6 @@
 import {ChangeEvent, createContext, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useContext, useState} from "react";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-expect-error
 import {EmojiData} from "emoji-picker-react";
 import {tweetDefaultValues, TweetInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
@@ -14,8 +16,8 @@ interface TweetContextType {
     setShowEmojiEl: Dispatch<SetStateAction<boolean>>
     handleTextAreaChange: (e: ChangeEvent<HTMLTextAreaElement>) => void
     onEmojiClick: (emojiObject: EmojiData) => void
-    displayMainEmojiPicker: MouseEventHandler<SVGElement>
-    displayModelEmojiPicker: MouseEventHandler<SVGElement>
+    displayMainEmojiPicker: MouseEventHandler<HTMLDivElement>
+    displayModelEmojiPicker: MouseEventHandler<HTMLDivElement>
     showEmojiElInModel: boolean
     setShowEmojiElInModel: Dispatch<SetStateAction<boolean>>
     handleFileChange: (e: ChangeEvent<HTMLInputElement>, fileType: string, setTweet: (value: Tweet) => void) => void
@@ -106,13 +108,10 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     };
 
     const onEmojiClick = (emojiObject: EmojiData) => {
-
         setTweet(prevTweet => ({
             ...prevTweet,
             title: prevTweet.title + emojiObject.emoji
         }))
-        setShowEmojiEl(false)
-        setShowEmojiElInModel(false)
     };
 
     // Show the main emoji picker when click on the smile btn
@@ -126,6 +125,8 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     }
 
     // Handle input file change
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>, fileType: string, setTweet: (value: Tweet) => void) => {
         const file = e.target.files?.[0];
         if (file) {
