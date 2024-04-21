@@ -2,67 +2,17 @@ import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import Select, {GroupBase, SingleValue, StylesConfig} from 'react-select'
 import {Link, useNavigate} from "react-router-dom";
-import {useEffect, useState} from "react";
+import {useContext, useEffect, useState} from "react";
 import ApiClient from "../services/ApiClient.tsx";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
 import SuccessfulRegister from "../layouts/SuccessfulRegister.tsx";
-
-interface Month {
-    value: string
-    label: string
-    days: number
-}
-
-interface Day {
-    value: string;
-    label: string;
-}
-
-interface Year extends Day{}
-
-
-interface User {
-    username: string
-    email: string
-    password: string
-    password_confirmation: string
-    gender: string
-    date_birth: string
-    avatar: string | File | null | undefined
-}
-
-interface FormError {
-    username: string[]
-    email: string[]
-    password: string[]
-    password_confirmation: string[]
-    gender: string[]
-    birth_date: string[]
-    avatar: []
-}
-
-interface Gender {
-    value: string
-    label: string
-}
-
+import {AppContext} from "../appContext/AppContext.tsx";
+import ReactSelect from "../helper/ReactSelect.tsx";
+import {Gender, RegisterUser} from "../../Interfaces.tsx";
 
 function Register() {
 
-    const months: Month[] = [
-        {value: "january", label: "January", days: 31},
-        {value: "february", label: "February", days: 28},
-        {value: "march", label: "March", days: 31},
-        {value: "april", label: "April", days: 30},
-        {value: "may", label: "May", days: 31},
-        {value: "june", label: "June", days: 30},
-        {value: "july", label: "July", days: 31},
-        {value: "august", label: "August", days: 31},
-        {value: "september", label: "September", days: 30},
-        {value: "october", label: "October", days: 31},
-        {value: "november", label: "November", days: 30},
-        {value: "december", label: "December", days: 31},
-    ]
+    const {setFormErrors, formErrors, styles} = useContext(AppContext)
 
     const genders: Gender[] = [
         {value: "male", label: "Male"},
@@ -73,20 +23,9 @@ function Register() {
     const [isLoading, setIsLoading] = useState(true)
     const [createBtnLoading, setCreateBtnLoading] = useState(false)
     const [successfulRegister, setSuccessfulRegister] = useState(false)
-    const [selectedDay, setSelectedDay] = useState<Day | null>(null)
-    const [selectedMonth, setSelectedMonth] = useState<Month | null>(null)
-    const [selectedYear, setSelectedYear] = useState<Year | null>(null)
     const [selectedGender, setSelectedGender] = useState<Gender | null>(null)
-    const [formErrors, setFormErrors] = useState<FormError>({
-        username: [],
-        email: [],
-        password: [],
-        password_confirmation: [],
-        gender: [],
-        birth_date: [],
-        avatar: [],
-    })
-    const [userCredentials, setUserCredentials] = useState<User>({
+
+    const [userCredentials, setUserCredentials] = useState<RegisterUser>({
         username: '',
         email: '',
         password: '',
@@ -159,91 +98,7 @@ function Register() {
 
     }
 
-    // React Select
-    type OptionType = Month | Gender;
-
-    const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
-        control: (styles, { isFocused, isDisabled }) => ({
-            ...styles,
-            height: '3.5rem',
-            backgroundColor: 'transparent',
-            cursor: 'pointer',
-            transition: 'ease-in-out',
-            boxShadow: 'none',
-            border: '0 solid transparent',
-            outline: (formErrors.birth_date?.length === 0 && isFocused) ? '2px solid #006a9d'
-                : (formErrors.birth_date?.length > 0 && !isFocused) ? '1px solid red'
-                    : (formErrors.birth_date?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b'
-            ,
-
-            '&:hover': {
-                borderColor: isDisabled ? 'transparent' : 'none',
-            },
-        }),
-
-        placeholder: (defaultStyles, {isFocused}) => ({
-            ...defaultStyles,
-            height: '100% !important',
-            fontSize: '14px',
-            color: (formErrors.birth_date?.length === 0 && isFocused) ? '#0284c7'
-                : (formErrors.birth_date?.length > 0 && isFocused) ? 'red' : '#52525b',
-        }),
-
-        indicatorSeparator: (defaultStyles) => ({
-            ...defaultStyles,
-            backgroundColor: 'transparent'
-        }),
-
-        dropdownIndicator: (defaultStyles, {isFocused}) => ({
-            ...defaultStyles,
-            color: (formErrors.birth_date?.length === 0 && isFocused) ? '#0284c7'
-                : (formErrors.birth_date?.length > 0 && isFocused) ? 'red' : '#52525b',
-            '&:hover': {
-                color: isFocused ? '#0284c7' : '#52525b',
-            },
-        }),
-
-        input: (defaultStyles) => ({
-            ...defaultStyles,
-            color: 'white',
-        }),
-
-        singleValue: (defaultStyles) => ({
-            ...defaultStyles,
-            color: 'white',
-        }),
-
-        menu: (defaultStyles) => ({
-            ...defaultStyles,
-            backgroundColor: 'black',
-                border: '1px solid #4a4a4a'
-        }),
-
-        option: (defaultStyles, state) => ({
-            ...defaultStyles,
-            backgroundColor: state.isSelected ? '#0284c7' : 'black',
-            '&:hover': {backgroundColor: state.isFocused ? '#0284c7' : '#52525b'},
-        }),
-
-        menuList: (base) => ({
-            ...base,
-            "::-webkit-scrollbar": {
-                width: "4px",
-                height: "0px",
-            },
-            "::-webkit-scrollbar-track": {
-                background: "#000000"
-            },
-            "::-webkit-scrollbar-thumb": {
-                background: "#0284c7",
-            },
-            "::-webkit-scrollbar-thumb:hover": {
-                background: "#006a9d"
-            }
-        })
-
-    }
-
+    type OptionType = Gender;
     const genderControlStyle: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
         control: (styles, { isFocused, isDisabled }) => ({
             ...styles,
@@ -253,10 +108,9 @@ function Register() {
             transition: 'ease-in-out',
             boxShadow: 'none',
             border: '0 solid transparent',
-            outline: (formErrors.gender?.length === 0 && isFocused) ? '2px solid #006a9d'
-                    : (formErrors.gender?.length > 0 && !isFocused) ? '1px solid red'
-                    : (formErrors.gender?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b'
-            ,
+            outline: (formErrors?.gender?.length === 0 && isFocused) ? '2px solid #006a9d'
+                : (formErrors?.gender?.length > 0 && !isFocused) ? '1px solid red'
+                : (formErrors?.gender?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b',
 
             '&:hover': {
                 borderColor: isDisabled ? 'transparent' : 'none',
@@ -267,14 +121,14 @@ function Register() {
             ...defaultStyles,
             height: '100% !important',
             fontSize: '14px',
-            color: (formErrors.gender?.length === 0 && isFocused) ? '#0284c7'
-                : (formErrors.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
+            color: (formErrors?.gender?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors?.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
         }),
 
         dropdownIndicator: (defaultStyles, {isFocused}) => ({
             ...defaultStyles,
-            color: (formErrors.gender?.length === 0 && isFocused) ? '#0284c7'
-                : (formErrors.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
+            color: (formErrors?.gender?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors?.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
             '&:hover': {
                 color: isFocused ? '#0284c7' : '#52525b',
             },
@@ -287,32 +141,6 @@ function Register() {
         ...genderControlStyle
     }
 
-    // Handle selected options
-    const handleSelectedMonthChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption) {
-            setSelectedMonth(selectedOption as Month);
-        } else {
-            setSelectedMonth(null);
-        }
-    }
-
-    const handleDaySelectedChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption) {
-            setSelectedDay(selectedOption as Day);
-        } else {
-            setSelectedDay(null);
-        }
-    }
-
-    const handleYearSelectedChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption) {
-            setSelectedYear(selectedOption as Year);
-        } else {
-            setSelectedYear(null);
-        }
-    }
-
-
     const handleGenderSelectedChange = (selectedOption: SingleValue<Gender>): void => {
         if(selectedOption) {
             setSelectedGender(selectedOption as Gender);
@@ -320,41 +148,6 @@ function Register() {
             setSelectedGender(null)
         }
     }
-
-
-    // Handle number of days based on the selected month
-    const days: Day[] = [];
-
-    if (selectedMonth?.days) {
-        for (let i: number = 1; i <= selectedMonth.days; i++) {
-            days.push({
-                value: `${i}`,
-                label: `${i}`,
-            })
-        }
-    }
-
-    // Handle years (last 120 year)
-    const startYear: number = new Date().getFullYear() - 120;
-    const currentYear: number = new Date().getFullYear();
-
-    const years: Year[] = []
-
-    for (let i: number = currentYear; i >= startYear; i--) {
-        years.push({
-            value: `${i}`,
-            label: `${i}`,
-        })
-    }
-
-    // Set the three selected values to 'birth_date' in the userCredentials state
-    useEffect(() => {
-        setUserCredentials(prevUserCredentials => ({
-            ...prevUserCredentials,
-            gender: `${selectedGender?.value}`,
-            date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
-        }))
-    }, [selectedDay, selectedMonth, selectedYear, selectedGender])
 
     // Handle form loading
     setTimeout(() => {
@@ -402,19 +195,19 @@ function Register() {
                                             name={`username`}
                                             value={userCredentials?.username}
                                             onChange={handleInputsChange}
-                                            className={`${formErrors.username?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            className={`${formErrors?.username?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ' border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} h-14 w-full border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                             type="text"
                                             placeholder="Username"
                                             disabled={isLoading}
                                             autoComplete="one-time-code"
                                         />
                                         {formErrors?.username &&
-                                            <p className={'text-red-500 font-semibold'}>{formErrors.username}</p>}
+                                            <p className={'text-red-500 font-semibold'}>{formErrors?.username}</p>}
 
                                     </div>
                                     <div>
                                         <input
-                                            className={`${formErrors.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} w-full registerInputs h-14 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                            className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                             name={`email`}
                                             value={userCredentials?.email}
                                             onChange={handleInputsChange}
@@ -423,13 +216,13 @@ function Register() {
                                             autoComplete="one-time-code"
                                         />
                                         {formErrors?.email &&
-                                            <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
+                                            <p className={'text-red-500 font-semibold'}>{formErrors?.email}</p>}
                                     </div>
 
                                     <div>
                                         <input
                                             maxLength={30}
-                                            className={`${formErrors.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            className={`${formErrors?.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 '} h-14 w-full border focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                             name={`password`}
                                             value={userCredentials?.password}
                                             type="password"
@@ -445,7 +238,7 @@ function Register() {
                                     <div>
                                         <input
                                             maxLength={30}
-                                            className={`${formErrors.password_confirmation?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ''} h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                                            className={`${formErrors?.password_confirmation?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} h-14 w-full border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                                             name={`password_confirmation`}
                                             value={userCredentials?.password_confirmation}
                                             type="password"
@@ -476,40 +269,14 @@ function Register() {
 
                                 <h4 className="mt-8 font-semibold">Date of birth</h4>
 
-                                <div className={`grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr] gap-y-4 md:gap-y-0 gap-x-3 mt-3`}>
-                                    <Select
-                                        options={months}
-                                        isDisabled={isLoading}
-                                        placeholder={'Month'}
-                                        onChange={handleSelectedMonthChange}
-                                        styles={styles}
-                                    />
-                                    <Select
-                                        options={days}
-                                        isDisabled={isLoading}
-                                        placeholder={'Day'}
-                                        noOptionsMessage={() => 'Select Month'}
-                                        onChange={handleDaySelectedChange}
-                                        styles={styles}
-                                    />
-
-                                    <Select
-                                        options={years}
-                                        isDisabled={isLoading}
-                                        placeholder={'Year'}
-                                        onChange={handleYearSelectedChange}
-                                        styles={styles}
-                                    />
-                                </div>
-                                {formErrors?.birth_date &&
-                                    <p className={'text-red-500 font-semibold'}>{formErrors?.birth_date}</p>}
+                                <ReactSelect isLoading={isLoading} setUserCredentials={setUserCredentials} selectedGender={selectedGender}/>
 
                                 <div className={`mt-8`}>
                                     <h1 className={`font-semibold`}>Profile picture</h1>
 
                                     <div className="flex gap-x-2 mt-3">
                                         <label
-                                               className={`flex flex-col items-center justify-center w-36 h-36 rounded-full text-neutral-100 ${userCredentials?.avatar ? 'border-0 bg-transparent' : 'border-2 bg-gray-700 hover:bg-gray-600'} border-gray-500 border-dashed cursor-pointer transition`}>
+                                            className={`flex flex-col items-center justify-center w-36 h-36 rounded-full text-neutral-100 ${userCredentials?.avatar ? 'border-0 bg-transparent' : 'border-2 bg-gray-700 hover:bg-gray-600'} border-gray-500 border-dashed cursor-pointer transition`}>
                                             <div className={`absolute ${!userCredentials?.avatar ? 'invisible' : 'visible'}`}>
                                                 <img className={`w-36 h-36 rounded-full border-2 border-dashed border-gray-500 hover:border-gray-400 transition object-cover`} src={userCredentials?.avatar ? URL.createObjectURL(userCredentials?.avatar as File) : ''} alt=""/>
                                             </div>

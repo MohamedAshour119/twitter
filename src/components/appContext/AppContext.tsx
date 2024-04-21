@@ -1,7 +1,17 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import ApiClient from "../services/ApiClient.tsx";
-import {ClickedTweet, ClickedTweetDefaultValues, Hashtag, Notification, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
+import {
+    ClickedTweet,
+    ClickedTweetDefaultValues,
+    Hashtag,
+    Notification,
+    UserDefaultValues,
+    UserInfo,
+    FormError,
+    Gender
+} from "../../Interfaces.tsx";
+import {GroupBase, StylesConfig} from "react-select";
 
 interface AppContextType {
     isRegisterOpen: boolean
@@ -30,7 +40,12 @@ interface AppContextType {
     setHashtags: Dispatch<SetStateAction<Hashtag[]>>
     showExplorePageHashtags: boolean
     setShowExplorePageHashtags: Dispatch<SetStateAction<boolean>>
+    formErrors: FormError
+    setFormErrors: Dispatch<SetStateAction<FormError>>
+    styles: StylesConfig<OptionType, false, GroupBase<OptionType>>
 }
+
+type OptionType = Gender;
 
 export const AppContext = createContext<AppContextType>({
     isRegisterOpen: false,
@@ -59,6 +74,17 @@ export const AppContext = createContext<AppContextType>({
     setHashtags: () => null,
     showExplorePageHashtags: true,
     setShowExplorePageHashtags: () => null,
+    formErrors: {
+        username: [],
+        email: [],
+        password: [],
+        password_confirmation: [],
+        gender: [],
+        birth_date: [],
+        avatar: [],
+    },
+    setFormErrors: () => null,
+    styles: {}
 });
 
 interface AppProviderProps {
@@ -72,7 +98,6 @@ interface Pathname {
     search: string
     state: null
 }
-
 
 const AppProvider = ({children}: AppProviderProps) => {
 
@@ -99,6 +124,16 @@ const AppProvider = ({children}: AppProviderProps) => {
         } else {
             setIsRegisterOpen(false);
         }
+
+        setFormErrors({
+            username: [],
+            email: [],
+            password: [],
+            password_confirmation: [],
+            gender: [],
+            birth_date: [],
+            avatar: [],
+        })
 
     }, [location.pathname]);
 
@@ -148,13 +183,13 @@ const AppProvider = ({children}: AppProviderProps) => {
     }
 
     const getHashtags = () => {
-    ApiClient().get(`/hashtags`)
-        .then(res => {
-            setHashtags(res.data.data)
-        })
-        .catch(err => {
-            console.log(err)
-        })
+        ApiClient().get(`/hashtags`)
+            .then(res => {
+                setHashtags(res.data.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
     }
 
     useEffect(() => {
@@ -168,6 +203,99 @@ const AppProvider = ({children}: AppProviderProps) => {
         getAllNotifications('/notifications')
         getHashtags()
     }, [token])
+
+    const [formErrors, setFormErrors] = useState<FormError>({
+        username: [],
+        email: [],
+        password: [],
+        password_confirmation: [],
+        gender: [],
+        birth_date: [],
+        avatar: [],
+    })
+
+
+    const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
+        control: (styles, { isFocused, isDisabled }) => ({
+            ...styles,
+            height: '3.5rem',
+            backgroundColor: 'transparent',
+            cursor: 'pointer',
+            transition: 'ease-in-out',
+            boxShadow: 'none',
+            border: '0 solid transparent',
+            outline: (formErrors?.birth_date?.length === 0 && isFocused) ? '2px solid #006a9d'
+                : (formErrors?.birth_date?.length > 0 && !isFocused) ? '1px solid red'
+                    : (formErrors?.birth_date?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b'
+            ,
+
+            '&:hover': {
+                borderColor: isDisabled ? 'transparent' : 'none',
+            },
+        }),
+
+        placeholder: (defaultStyles, {isFocused}) => ({
+            ...defaultStyles,
+            height: '100% !important',
+            fontSize: '14px',
+            color: (formErrors?.birth_date?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors?.birth_date?.length > 0 && isFocused) ? 'red' : '#52525b',
+        }),
+
+        indicatorSeparator: (defaultStyles) => ({
+            ...defaultStyles,
+            backgroundColor: 'transparent'
+        }),
+
+        dropdownIndicator: (defaultStyles, {isFocused}) => ({
+            ...defaultStyles,
+            color: (formErrors?.birth_date?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors?.birth_date?.length > 0 && isFocused) ? 'red' : '#52525b',
+            '&:hover': {
+                color: isFocused ? '#0284c7' : '#52525b',
+            },
+        }),
+
+        input: (defaultStyles) => ({
+            ...defaultStyles,
+            color: 'white',
+        }),
+
+        singleValue: (defaultStyles) => ({
+            ...defaultStyles,
+            color: 'white',
+        }),
+
+        menu: (defaultStyles) => ({
+            ...defaultStyles,
+            backgroundColor: 'black',
+            border: '1px solid #4a4a4a'
+        }),
+
+        option: (defaultStyles, state) => ({
+            ...defaultStyles,
+            backgroundColor: state.isSelected ? '#0284c7' : 'black',
+            '&:hover': {backgroundColor: state.isFocused ? '#0284c7' : '#52525b'},
+        }),
+
+        menuList: (base) => ({
+            ...base,
+            "::-webkit-scrollbar": {
+                width: "4px",
+                height: "0px",
+            },
+            "::-webkit-scrollbar-track": {
+                background: "#000000"
+            },
+            "::-webkit-scrollbar-thumb": {
+                background: "#0284c7",
+            },
+            "::-webkit-scrollbar-thumb:hover": {
+                background: "#006a9d"
+            }
+        })
+
+    }
 
     return (
         <AppContext.Provider
@@ -198,6 +326,9 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setHashtags,
                 showExplorePageHashtags,
                 setShowExplorePageHashtags,
+                formErrors,
+                setFormErrors,
+                styles,
             }}>
             {children}
         </AppContext.Provider>

@@ -74,6 +74,31 @@ export interface Hashtag {
     count: number
 }
 
+export interface FormError {
+    username: string[]
+    email: string[]
+    password: string[]
+    password_confirmation: string[]
+    gender: string[]
+    birth_date: string[]
+    avatar: []
+}
+
+export interface RegisterUser {
+    username: string
+    email: string
+    password: string
+    password_confirmation: string
+    gender: string
+    date_birth: string
+    avatar: string | File | null | undefined
+}
+
+export interface Gender {
+    value: string
+    label: string
+}
+
 export const tweetDefaultValues = {
     user: {
         id: 0,
