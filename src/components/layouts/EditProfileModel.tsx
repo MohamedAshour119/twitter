@@ -1,8 +1,10 @@
 import {HiMiniXMark} from "react-icons/hi2";
 import {TbCameraPlus} from "react-icons/tb";
-import {Dispatch, MouseEventHandler, SetStateAction, useContext, useEffect, useRef} from "react";
+import {ChangeEvent, Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import Select from "react-select";
+import ReactSelect from "../helper/ReactSelect.tsx";
+import {EditUserProfile} from "../../Interfaces.tsx";
+import ApiClient from "../services/ApiClient.tsx";
 
 interface Props {
     setIsShowEditInfoModel: Dispatch<SetStateAction<boolean>>
@@ -11,6 +13,15 @@ function EditProfileModel(props: Props) {
 
     const { user, baseUrl } = useContext(AppContext)
 
+    const [userInfo, setUserInfo] = useState<EditUserProfile>({
+        display_name: '',
+        bio: '',
+        password: '',
+        password_confirmation: '',
+        birth_date: '',
+        avatar: '',
+        cover: '',
+    })
 
     const editProfileInfoModel = useRef<HTMLDivElement | null>(null); // Specify the type of the ref
 
@@ -26,9 +37,61 @@ function EditProfileModel(props: Props) {
         };
     }, []);
 
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { name, value, files } = e.target as HTMLInputElement & { files: FileList };
+        if (name !== 'avatar' && name !== 'cover') {
+            setUserInfo(prevUserInfo => ({
+                ...prevUserInfo,
+                [name]: value
+            }));
+        } else if (name === 'avatar') {
+            if (files && files.length > 0) {
+                const file = files[0];
+                setUserInfo(prevUserInfo => ({
+                    ...prevUserInfo,
+                    avatar: file
+                }));
+            }
+        } else {
+            if (files && files.length > 0) {
+                const file = files[0];
+                setUserInfo(prevUserInfo => ({
+                    ...prevUserInfo,
+                    cover: file
+                }));
+            }
+        }
+    };
+
+    const saveRequest = () => {
+
+        const formData = new FormData();
+        formData.append('display_name', userInfo.display_name);
+        formData.append('bio', userInfo.bio);
+        formData.append('password', userInfo.password);
+        formData.append('password_confirmation', userInfo.password_confirmation);
+        formData.append('birth_date', userInfo.birth_date);
+
+        if(userInfo.avatar instanceof File){
+            formData.append('avatar', userInfo.avatar as Blob)
+        }
+        if(userInfo.cover instanceof File){
+            formData.append('cover', userInfo.cover as Blob)
+        }
+
+        ApiClient().patch('/update-user', formData)
+            .then((res) => {
+                console.log(res)
+            })
+            .catch(err => {
+                // setSuccessfulRegister(false)
+                // setFormErrors(err.response.data.errors)
+            })
+            // .finally(() => setCreateBtnLoading(false))
+    }
 
     return (
-        <div ref={editProfileInfoModel} className={`fixed z-[250] w-1/3 bg-black p-4 mt-20 text-neutral-200 rounded-2xl`}>
+        <div ref={editProfileInfoModel} className={`fixed z-[250] h-[37rem] overflow-y-scroll w-1/3 bg-black p-4 mt-20 text-neutral-200 rounded-2xl`}>
             <div className={`flex items-center justify-between`}>
                 <div className={`flex items-center gap-x-6`}>
                     <div
@@ -38,7 +101,7 @@ function EditProfileModel(props: Props) {
                     </div>
                     <span className={`text-xl font-semibold`}>Edit profile</span>
                 </div>
-                <button className={`mx-2 bg-white hover:bg-zinc-200 transition text-black px-5 py-2 rounded-full`}>Save</button>
+                <button onClick={saveRequest} className={`mx-2 bg-white hover:bg-zinc-200 transition text-black px-5 py-2 rounded-full`}>Save</button>
             </div>
         {/*  Cover section  */}
             <div className={`my-8 relative`}>
@@ -62,6 +125,9 @@ function EditProfileModel(props: Props) {
                             id={`upload_cover`}
                             type="file"
                             className={`hidden`}
+                            name={'cover'}
+                            value={userInfo.cover ? '' : undefined}
+                            onChange={handleInputChange}
                         />
                     </label>
                 </div>
@@ -71,59 +137,53 @@ function EditProfileModel(props: Props) {
                 <input
                     maxLength={50}
                     name={`display_name`}
-                    // value={userCredentials?.username}
-                    // onChange={handleInputsChange}
+                    value={userInfo.display_name}
+                    onChange={handleInputChange}
                     className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                     type="text"
                     placeholder="Display name"
-                    // disabled={isLoading}
                     autoComplete="one-time-code"
                 />
 
                 <textarea
                     maxLength={160}
                     name={`bio`}
-                    // value={userCredentials?.username}
-                    // onChange={handleInputsChange}
+                    value={userInfo.bio}
+                    onChange={handleInputChange}
                     className={`h-14 w-full min-h-32 max-h-40 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:mt-4 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                     placeholder="Bio"
-                    // disabled={isLoading}
                     autoComplete="one-time-code"
                 />
 
             {/*  Birth date  */}
                 <div className={`text-zinc-500`}>
-                    <div>
-                        Birth date
-                    </div>
+                    <div className={`mt-10`}>Birth date</div>
                     <div className={`text-neutral-200 text-xl`}>September 11, 2001</div>
 
-                    <div className={`grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr] gap-y-4 md:gap-y-0 gap-x-3 mt-3`}>
-                        <Select
-                            options={months}
-                            isDisabled={isLoading}
-                            placeholder={'Month'}
-                            onChange={handleSelectedMonthChange}
-                            styles={styles}
-                        />
-                        <Select
-                            options={days}
-                            isDisabled={isLoading}
-                            placeholder={'Day'}
-                            noOptionsMessage={() => 'Select Month'}
-                            onChange={handleDaySelectedChange}
-                            styles={styles}
-                        />
-
-                        <Select
-                            options={years}
-                            isDisabled={isLoading}
-                            placeholder={'Year'}
-                            onChange={handleYearSelectedChange}
-                            styles={styles}
-                        />
-                    </div>
+                    <ReactSelect userInfo={userInfo} setUserInfo={setUserInfo}/>
                 </div>
+                <div className={`mt-10`}>Security</div>
+                <input
+                    maxLength={30}
+                    name={`password`}
+                    value={userInfo.password}
+                    onChange={handleInputChange}
+                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                    type="text"
+                    placeholder="Password"
+                    autoComplete="one-time-code"
+                />
+
+                <input
+                    maxLength={30}
+                    name={`password_confirmation`}
+                    value={userInfo.password_confirmation}
+                    onChange={handleInputChange}
+                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                    type="text"
+                    placeholder="Password confirmation"
+                    autoComplete="one-time-code"
+                />
             </div>
         </div>
     )

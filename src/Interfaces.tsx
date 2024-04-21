@@ -94,6 +94,16 @@ export interface RegisterUser {
     avatar: string | File | null | undefined
 }
 
+export interface EditUserProfile {
+    display_name: string
+    bio: string
+    password: string
+    password_confirmation: string
+    birth_date: string
+    avatar: string | File | null | undefined
+    cover: string | File | null | undefined
+}
+
 export interface Gender {
     value: string
     label: string

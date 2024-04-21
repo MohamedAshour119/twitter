@@ -290,7 +290,13 @@ function Register() {
                                                     className="font-semibold">Click to upload</span> or drag and drop
                                                 </p>
                                             </div>
-                                            <input name={`avatar`} value={userCredentials?.avatar ? '' : undefined} onChange={handleInputsChange} type="file" className="hidden"/>
+                                            <input
+                                                name={`avatar`}
+                                                value={userCredentials?.avatar ? '' : undefined}
+                                                onChange={handleInputsChange}
+                                                type="file"
+                                                className="hidden"
+                                            />
                                         </label>
                                         <p className="text-xs ">SVG, PNG, JPG or GIF (Max size: 1 mb)</p>
                                     </div>

@@ -1,7 +1,7 @@
 import Select, {SingleValue} from "react-select";
 import {Dispatch, SetStateAction, useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import {Gender, RegisterUser} from "../../Interfaces.tsx";
+import {EditUserProfile, Gender, RegisterUser} from "../../Interfaces.tsx";
 
 interface Month {
     value: string
@@ -17,9 +17,11 @@ interface Day {
 interface Year extends Day{}
 
 interface Props {
-    isLoading: boolean
-    setUserCredentials: Dispatch<SetStateAction<RegisterUser>>
-    selectedGender: Gender | null
+    isLoading?: boolean
+    setUserCredentials?: Dispatch<SetStateAction<RegisterUser>>
+    selectedGender?: Gender | null
+    userInfo?: EditUserProfile
+    setUserInfo?: Dispatch<SetStateAction<EditUserProfile>>
 }
 function ReactSelect(props: Props) {
 
@@ -71,7 +73,7 @@ function ReactSelect(props: Props) {
 
     // Set the three selected values to 'birth_date' in the userCredentials state
     useEffect(() => {
-        props.setUserCredentials(prevUserCredentials => ({
+        props.setUserCredentials && props.setUserCredentials(prevUserCredentials => ({
             ...prevUserCredentials,
             gender: `${props.selectedGender?.value}`,
             date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
@@ -107,7 +109,7 @@ function ReactSelect(props: Props) {
 
     return (
         <>
-            <div className={`grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr] gap-y-4 md:gap-y-0 gap-x-3 mt-3`}>
+            <div className={`grid grid-cols-1 md:grid-cols-[2fr,1fr,1fr] gap-y-4 md:gap-y-0 gap-x-3 mt-3 text-neutral-200`}>
                 <Select
                     options={months}
                     isDisabled={props.isLoading}

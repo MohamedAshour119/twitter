@@ -13,7 +13,6 @@ import {useNavigate} from "react-router-dom";
 
 interface Props {
     setPageUrl?: Dispatch<SetStateAction<string>>
-    setDisplayNotResultsFound?: Dispatch<SetStateAction<boolean>>
     setDisplayNotFoundMsg?: Dispatch<SetStateAction<boolean>>
 }
 
@@ -24,6 +23,7 @@ function TrendingSidebar(props: Props) {
         hashtags,
         setShowExplorePageHashtags,
         location,
+        setDisplayNotResultsFound,
     } = useContext(AppContext)
 
     const {
@@ -130,7 +130,7 @@ function TrendingSidebar(props: Props) {
     const navigate = useNavigate()
 
     const searchForKeyword = (keyword: string) => {
-        props.setDisplayNotResultsFound && props.setDisplayNotResultsFound(false)
+        setDisplayNotResultsFound(false)
         setShowExplorePageHashtags(false)
         location?.pathname !== '/explore' ? navigate('/explore') : ''
         ApiClient().get(`/search/${keyword}`)
@@ -142,7 +142,7 @@ function TrendingSidebar(props: Props) {
                 ]))
                 setIsOpen(false)
                 if(res.data.data.tweets.length === 0) {
-                    props.setDisplayNotResultsFound && props.setDisplayNotResultsFound(true)
+                    setDisplayNotResultsFound(true)
                     props.setDisplayNotFoundMsg && props.setDisplayNotFoundMsg(false)
                 }
             })

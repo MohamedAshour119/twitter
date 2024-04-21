@@ -21,6 +21,9 @@ function Explore() {
         isModelOpen,
         isCommentOpen,
         showExplorePageHashtags,
+        displayNotResultsFound,
+        setDisplayNotResultsFound,
+        setShowExplorePageHashtags,
     } = useContext(AppContext)
 
     const {
@@ -32,7 +35,6 @@ function Explore() {
     const [searchValue, setSearchValue] = useState('')
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [pageURL, setPageURL] = useState('')
-    const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const debounceValue = useDebounce(searchValue)
     const handleOpen = () => {
@@ -66,6 +68,7 @@ function Explore() {
     }, [debounceValue]);
 
     useEffect(() => {
+        setShowExplorePageHashtags(true)
         ApiClient().post('/explore-page-hashtags')
             .then(res => {
                 setExplorePageHashtags([...res.data.data.hashtags])
@@ -73,7 +76,6 @@ function Explore() {
             .catch(err => {
                 console.log(err)
             })
-
     }, []);
 
 
@@ -128,6 +130,8 @@ function Explore() {
                 ]))
                 if(res.data.data.tweets.length === 0) {
                     setDisplayNotResultsFound(true)
+                } else {
+                    setShowExplorePageHashtags(true)
                 }
             })
             .catch((err) => {
@@ -138,6 +142,11 @@ function Explore() {
     useEffect(() => {
         setRandomTweets([])
     }, []);
+
+    useEffect(() => {
+        setDisplayNotResultsFound(false)
+    }, [location.pathname]);
+
 
     const displayResults: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
         <Tweet
@@ -262,7 +271,7 @@ function Explore() {
                     </div>
                 </div>
 
-                <TrendingSidebar setDisplayNotResultsFound={setDisplayNotResultsFound} />
+                <TrendingSidebar/>
             </div>
             <Model />
         </div>

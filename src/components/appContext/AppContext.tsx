@@ -43,6 +43,8 @@ interface AppContextType {
     formErrors: FormError
     setFormErrors: Dispatch<SetStateAction<FormError>>
     styles: StylesConfig<OptionType, false, GroupBase<OptionType>>
+    displayNotResultsFound: boolean
+    setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
 }
 
 type OptionType = Gender;
@@ -84,7 +86,9 @@ export const AppContext = createContext<AppContextType>({
         avatar: [],
     },
     setFormErrors: () => null,
-    styles: {}
+    styles: {},
+    displayNotResultsFound: false,
+    setDisplayNotResultsFound: () => null,
 });
 
 interface AppProviderProps {
@@ -117,6 +121,16 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [hashtags, setHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const baseUrl = 'http://api.twitter.test'
+    const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
+    const [formErrors, setFormErrors] = useState<FormError>({
+        username: [],
+        email: [],
+        password: [],
+        password_confirmation: [],
+        gender: [],
+        birth_date: [],
+        avatar: [],
+    })
 
     useEffect(() => {
         if( location.pathname === '/register' ){
@@ -204,17 +218,6 @@ const AppProvider = ({children}: AppProviderProps) => {
         getHashtags()
     }, [token])
 
-    const [formErrors, setFormErrors] = useState<FormError>({
-        username: [],
-        email: [],
-        password: [],
-        password_confirmation: [],
-        gender: [],
-        birth_date: [],
-        avatar: [],
-    })
-
-
     const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
         control: (styles, { isFocused, isDisabled }) => ({
             ...styles,
@@ -269,7 +272,7 @@ const AppProvider = ({children}: AppProviderProps) => {
         menu: (defaultStyles) => ({
             ...defaultStyles,
             backgroundColor: 'black',
-            border: '1px solid #4a4a4a'
+            border: '1px solid #4a4a4a',
         }),
 
         option: (defaultStyles, state) => ({
@@ -329,6 +332,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 formErrors,
                 setFormErrors,
                 styles,
+                displayNotResultsFound,
+                setDisplayNotResultsFound,
             }}>
             {children}
         </AppContext.Provider>
