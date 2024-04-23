@@ -12,6 +12,8 @@ import {TweetContext} from "../appContext/TweetContext.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaRegFaceAngry} from "react-icons/fa6";
+import {MdDelete} from "react-icons/md";
+import {TbPinnedFilled} from "react-icons/tb";
 
 interface Props extends  TweetInfo {
     allProfileUserTweets?: TweetInfo[]
@@ -323,12 +325,14 @@ function Tweet(props: Props) {
                                 <button
                                     onClick={deleteTweet}
                                     disabled={!tweetMenuOpen}
-                                    className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
-                                    <span className={`text-red-700 font-semibold`}>Delete</span>
+                                    className={`flex text-red-700 font-semibold items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                                    <MdDelete className={`size-5`}/>
+                                    Delete
                                 </button>
                                 <button
                                     disabled={!tweetMenuOpen}
-                                    className={`bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                                    <TbPinnedFilled className={`size-5`}/>
                                     Pin to your profile
                                 </button>
                             </>

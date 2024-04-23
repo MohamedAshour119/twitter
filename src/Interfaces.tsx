@@ -33,7 +33,9 @@ export interface UserInfo {
     email: string
     gender: string
     display_name: string
+    bio: string
     avatar: string
+    cover: string
     birth_date: string
     ban_status: number | null
     created_at: string
@@ -157,7 +159,10 @@ export const UserDefaultValues =
         username: '',
         email: '',
         gender: '',
+        display_name: '',
+        bio: '',
         avatar: '',
+        cover: '',
         birth_date: '',
         ban_status: null,
         created_at: '',

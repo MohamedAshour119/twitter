@@ -15,8 +15,8 @@ function EditProfileModal(props: Props) {
     const { user, baseUrl } = useContext(AppContext)
 
     const [userInfo, setUserInfo] = useState<EditUserProfile>({
-        display_name: '',
-        bio: '',
+        display_name: user?.display_name ? user.display_name : '',
+        bio: user?.bio ? user.bio : '',
         password: '',
         password_confirmation: '',
         birth_date: '',
@@ -25,7 +25,6 @@ function EditProfileModal(props: Props) {
     })
 
     const editProfileInfoModal = useRef<HTMLDivElement | null>(null);
-
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
             if (editProfileInfoModal.current && !editProfileInfoModal.current.contains(e.target as Node)) {
@@ -95,7 +94,7 @@ function EditProfileModal(props: Props) {
 
     return (
         <div ref={editProfileInfoModal}
-             className={`fixed z-[250] h-[37rem] overflow-y-scroll w-1/3 bg-black p-4 mt-20 text-neutral-200 rounded-2xl animate-slide-down z-[250]`}
+             className={`fixed z-[250] h-[37rem] overflow-y-scroll w-1/3 bg-black p-4 mt-20 text-neutral-200 rounded-2xl animate-slide-down`}
         >
             <div className={`flex items-center justify-between`}>
                 <div className={`flex items-center gap-x-6`}>
@@ -110,20 +109,15 @@ function EditProfileModal(props: Props) {
             </div>
         {/*  Cover section  */}
             <div className={`my-8 relative`}>
-                <div className={`bg-gray-600 rounded h-48 relative`}>
-                    <label htmlFor={`upload_cover`} className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
-                        <TbCameraPlus />
-                        <input
-                            id={`upload_cover`}
-                            type="file"
-                            className={`hidden`}
+                <div className={`bg-[#333639] rounded h-48 relative`}>
+                    {
+                        user?.cover &&
+                        <img
+                            src={`${baseUrl}/storage/${user.cover}`}
+                            alt="cover"
+                            className={`w-full object-cover h-48 brightness-75`}
                         />
-                    </label>
-                </div>
-            {/*  Avatar  */}
-                <div className={`absolute top-2/3 left-2`}>
-                    <img src={`${baseUrl}/storage/${user?.avatar}`} alt=""
-                         className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}/>
+                    }
                     <label htmlFor={`upload_cover`} className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
                         <TbCameraPlus />
                         <input
@@ -136,44 +130,61 @@ function EditProfileModal(props: Props) {
                         />
                     </label>
                 </div>
+            {/*  Avatar  */}
+                <div className={`absolute top-2/3 left-2 border-4 border-black rounded-full`}>
+                    <img src={`${baseUrl}/storage/${user?.avatar}`} alt=""
+                         className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}/>
+                    <label htmlFor={`upload_avatar`} className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
+                        <TbCameraPlus />
+                        <input
+                            id={`upload_avatar`}
+                            type="file"
+                            className={`hidden`}
+                            name={'avatar'}
+                            value={userInfo.avatar ? '' : undefined}
+                            onChange={handleInputChange}
+                        />
+                    </label>
+                </div>
             </div>
         {/*  More info  */}
-            <div className={`mt-24 flex flex-col gap-y-3`}>
+            <div className={`mt-24 flex flex-col gap-y-1`}>
+                <div className={`text-zinc-500 font-semibold`}>Display name:</div>
                 <input
                     maxLength={30}
                     name={`display_name`}
                     value={userInfo.display_name}
                     onChange={handleInputChange}
-                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 focus:outline-0 focus:ring-1`}
                     type="text"
                     placeholder="Display name"
                     autoComplete="one-time-code"
                 />
-
+                <div className={`text-zinc-500 font-semibold mt-5`}>Bio:</div>
                 <textarea
                     maxLength={250}
                     name={`bio`}
                     value={userInfo.bio}
                     onChange={handleInputChange}
-                    className={`h-14 w-full min-h-32 max-h-40 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 py-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                    className={`h-14 w-full min-h-32 max-h-40 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 py-3 placeholder:text-zinc-500 focus:outline-0 focus:ring-1 `}
                     placeholder="Bio"
                     autoComplete="one-time-code"
                 />
 
             {/*  Birth date  */}
                 <div className={`text-zinc-500`}>
-                    <div className={`mt-10`}>Birth date</div>
+                    <div className={`mt-5 font-semibold`}>Birth date</div>
                     <div className={`text-neutral-200 text-xl`}>September 11, 2001</div>
 
                     <ReactSelect userInfo={userInfo} setUserInfo={setUserInfo}/>
                 </div>
-                <div className={`mt-10`}>Security</div>
+                <div className={`mt-5 font-semibold text-zinc-500`}>Security</div>
                 <input
                     maxLength={30}
                     name={`password`}
                     value={userInfo.password}
                     onChange={handleInputChange}
-                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 focus:outline-0 focus:ring-1 `}
                     type="text"
                     placeholder="Password"
                     autoComplete="one-time-code"
@@ -184,7 +195,7 @@ function EditProfileModal(props: Props) {
                     name={`password_confirmation`}
                     value={userInfo.password_confirmation}
                     onChange={handleInputChange}
-                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                    className={`h-14 w-full border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:text-zinc-500 focus:outline-0 focus:ring-1 `}
                     type="text"
                     placeholder="Password confirmation"
                     autoComplete="one-time-code"

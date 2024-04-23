@@ -251,7 +251,17 @@ function Profile() {
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70 animate-slide-down`}>
                     <div className={`h-14 bg-black z-10`}></div>
                     {/* Cover image */}
-                    <div className={`h-[14rem] w-full bg-[#333639]`}></div>
+                    <div className={`h-[14rem] w-full bg-[#333639]`}>
+                        {
+                            user?.cover &&
+                            <img
+                                src={`${baseUrl}/storage/${user.cover}`}
+                                alt="cover"
+                                className={`w-full object-cover max-h-[14rem]`}
+                            />
+                        }
+
+                    </div>
                     {/* Personal Info */}
                     <div className={`relative`}>
                         <div className={`px-4 h-[16rem]`}>
@@ -294,11 +304,23 @@ function Profile() {
                                         <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                                     }
                                 </h1>
-                                {userInfo && <h1 className={`text-[#71767b]`}>
+                                {
+                                    userInfo && <h1 className={`text-[#71767b]`}>
                                     @{userInfo?.username}
-                                </h1>}
-                                {!userInfo &&
+                                </h1>
+                                }
+                                {
+                                    !userInfo &&
                                     <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-40 mt-1"></div>
+                                }
+
+                                {
+                                    userInfo && user?.bio &&
+                                    <div className={`font-semibold mt-3`}>{user.bio}</div>
+                                }
+                                {
+                                    !userInfo &&
+                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-96 mt-4"></div>
                                 }
 
                                 {userInfo && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
@@ -327,7 +349,7 @@ function Profile() {
                         </div>
 
                         {/* Buttons section */}
-                        <ul className={`w-full flex border-b border-zinc-700/70 text-[#71767b]`}>
+                        <ul className={`w-full flex border-b border-zinc-700/70 text-[#71767b] mt-10`}>
                             <li
                                 onClick={() => getSuitableTweets(`/users/${username}`)}
                                 ref={postsRef}
