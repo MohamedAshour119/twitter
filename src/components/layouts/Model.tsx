@@ -11,9 +11,9 @@ function Model() {
 
     const {
         baseUrl,
-        isModelOpen,
-        setIsModelOpen,
-        handleModelOpen,
+        isModalOpen,
+        setIsModalOpen,
+        handleModalOpen,
         isCommentOpen,
         setIsCommentOpen,
         clickedTweet,
@@ -39,8 +39,8 @@ function Model() {
     // Close model post when clicked outside it
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
-            if(!model.current?.contains(e.target as Node) && (isModelOpen || isCommentOpen) && !showEmojiElInModel){
-                setIsModelOpen(false)
+            if(!model.current?.contains(e.target as Node) && (isModalOpen || isCommentOpen) && !showEmojiElInModel){
+                setIsModalOpen(false)
                 setIsCommentOpen(false)
                 setShowEmojiElInModel(false)
 
@@ -58,7 +58,7 @@ function Model() {
             document.removeEventListener('mousedown', handleClickOutside)
         }
 
-    }, [isModelOpen, isCommentOpen] )
+    }, [isModalOpen, isCommentOpen] )
 
 
     const emojiModelpickerRef = useRef<HTMLDivElement>(null);
@@ -76,9 +76,9 @@ function Model() {
 
 
     return (
-        <div ref={model} className={`fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModelOpen || isCommentOpen) ? 'animate-slide-down z-[250]' : 'close-slide-down'} `}>
+        <div ref={model} className={`fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModalOpen || isCommentOpen) ? 'animate-slide-down z-[250]' : 'close-slide-down'} `}>
             <div
-                onClick={handleModelOpen}
+                onClick={handleModalOpen}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">
                 <HiMiniXMark className={`size-6`}/>
             </div>
@@ -113,7 +113,7 @@ function Model() {
             }
             <TweetTextAreaAndPreview/>
             <div >
-                {showEmojiElInModel && (isModelOpen || isCommentOpen) &&
+                {showEmojiElInModel && (isModalOpen || isCommentOpen) &&
                     <div ref={emojiModelpickerRef}>
                         <EmojiPicker
                             theme={Theme.DARK}

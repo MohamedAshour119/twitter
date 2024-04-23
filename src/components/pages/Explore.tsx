@@ -18,7 +18,7 @@ import ExploreHashtag from "../layouts/ExploreHashtag.tsx";
 function Explore() {
 
     const {
-        isModelOpen,
+        isModalOpen,
         isCommentOpen,
         showExplorePageHashtags,
         displayNotResultsFound,
@@ -181,11 +181,11 @@ function Explore() {
     })
 
     return (
-        <div className={`${isModelOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+        <div className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
-                <header className={`px-20 pb-3 pt-3 flex border ${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 pt-1 text-neutral-200 bg-black/50 backdrop-blur-sm`}>
+                <header className={`px-20 pb-3 pt-3 flex border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 pt-1 text-neutral-200 bg-black/50 backdrop-blur-sm`}>
                    <div
                        ref={exploreSearchRef}
                        className={`w-full`}>
@@ -241,7 +241,7 @@ function Explore() {
                 <div></div>
             </div>
 
-            <div className={`${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
+            <div className={`${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
 
                 {/* Sidebar */}
                 <div className={`justify-end hidden sm:flex relative`}>

@@ -19,9 +19,9 @@ interface AppContextType {
     user: UserInfo | null
     setUser: Dispatch<SetStateAction<UserInfo | null>>
     baseUrl: string
-    handleModelOpen: () => void
-    isModelOpen: boolean
-    setIsModelOpen: Dispatch<SetStateAction<boolean>>
+    handleModalOpen: () => void
+    isModalOpen: boolean
+    setIsModalOpen: Dispatch<SetStateAction<boolean>>
     suggestedUsersToFollow: UserInfo[]
     isCommentOpen: boolean
     setIsCommentOpen: Dispatch<SetStateAction<boolean>>
@@ -54,9 +54,9 @@ export const AppContext = createContext<AppContextType>({
     location: null,
     user: UserDefaultValues,
     setUser: () => {},
-    handleModelOpen: () => null,
-    isModelOpen: false,
-    setIsModelOpen: () => null,
+    handleModalOpen: () => null,
+    isModalOpen: false,
+    setIsModalOpen: () => null,
     isCommentOpen: false,
     setIsCommentOpen: () => null,
     baseUrl: '',
@@ -305,12 +305,12 @@ const AppProvider = ({children}: AppProviderProps) => {
             value={{
                 isRegisterOpen,
                 location,
+                baseUrl,
                 user,
                 setUser,
-                baseUrl,
-                handleModelOpen,
-                isModelOpen,
-                setIsModelOpen,
+                handleModalOpen: handleModelOpen,
+                isModalOpen: isModelOpen,
+                setIsModalOpen: setIsModelOpen,
                 suggestedUsersToFollow,
                 isCommentOpen,
                 setIsCommentOpen,

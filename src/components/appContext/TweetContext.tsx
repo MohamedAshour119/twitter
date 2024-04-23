@@ -77,7 +77,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const {id} = useParams()
 
     const {
-        setIsModelOpen,
+        setIsModalOpen,
         setIsCommentOpen,
         clickedTweet,
         isCommentOpen
@@ -206,7 +206,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         } else {
             ApiClient().post(`/create-tweet`, formData)
                 .then(res => {
-                    setIsModelOpen(false)
+                    setIsModalOpen(false)
 
                     // Concatenate the new tweet with existing tweets and sort them based on created_at
                     setRandomTweets(prevRandomTweets => (

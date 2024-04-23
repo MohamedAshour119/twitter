@@ -19,7 +19,7 @@ function Sidebar() {
         user,
         setUser,
         baseUrl,
-        setIsModelOpen,
+        setIsModalOpen,
         notificationsCount,
     } = useContext(AppContext)
 
@@ -69,7 +69,7 @@ function Sidebar() {
 
     // Clear the tweet when click on post btn in sidebar
     const openTweetModel = () => {
-        setIsModelOpen(prev => !prev)
+        setIsModalOpen(prev => !prev)
         setTweet(() => ({
             title: "",
             image: null,

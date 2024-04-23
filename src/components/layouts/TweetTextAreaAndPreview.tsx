@@ -11,7 +11,7 @@ function TweetTextAreaAndPreview() {
     const {
         user,
         baseUrl,
-        isModelOpen,
+        isModalOpen,
         isCommentOpen,
         location,
     } = useContext(AppContext)
@@ -88,8 +88,8 @@ function TweetTextAreaAndPreview() {
 
 
     return (
-        <div className={`${location?.pathname !== `/home` && !isModelOpen && !isCommentOpen ? 'border-t border-zinc-700/70' : ''}`}>
-            <div className={`flex flex-col py-3 sm:px-6 px-2 ${location?.pathname !== `/home` || isModelOpen || isCommentOpen ? 'mt-0' : 'sm:mt-16 mt-36 border-b'} border-zinc-700/70 z-10`}>
+        <div className={`${location?.pathname !== `/home` && !isModalOpen && !isCommentOpen ? 'border-t border-zinc-700/70' : ''}`}>
+            <div className={`flex flex-col py-3 sm:px-6 px-2 ${location?.pathname !== `/home` || isModalOpen || isCommentOpen ? 'mt-0' : 'sm:mt-16 mt-36 border-b'} border-zinc-700/70 z-10`}>
                 <div className={`flex gap-x-3`}>
                         <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
 
@@ -98,10 +98,10 @@ function TweetTextAreaAndPreview() {
                                     ref={textAreaRef}
                                     maxLength={255}
                                     onChange={handleTextAreaChange}
-                                    placeholder={ (isModelOpen || !isCommentOpen) && location?.pathname === '/home' || isModelOpen ? 'What is happening?!' : 'Post your reply'}
+                                    placeholder={ (isModalOpen || !isCommentOpen) && location?.pathname === '/home' || isModalOpen ? 'What is happening?!' : 'Post your reply'}
                                     name={`title`}
                                     value={tweet.title}
-                                    className={`${isModelOpen || isCommentOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : 'min-h-0'}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
+                                    className={`${isModalOpen || isCommentOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : 'min-h-0'}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                                 />
 
                         {/* Preview uploaded image */}
@@ -150,11 +150,11 @@ function TweetTextAreaAndPreview() {
 
                                 <div >
                                     <div
-                                        onClick={!(isModelOpen || isCommentOpen) ? displayMainEmojiPicker : displayModelEmojiPicker}
+                                        onClick={!(isModalOpen || isCommentOpen) ? displayMainEmojiPicker : displayModelEmojiPicker}
                                         className={`hover:bg-sky-600/20 p-2 rounded-full cursor-pointer transition`}>
                                         <CiFaceSmile/>
                                     </div>
-                                    {showEmojiEl && !(isModelOpen || isCommentOpen) &&
+                                    {showEmojiEl && !(isModalOpen || isCommentOpen) &&
                                         <div ref={emojipickerRef}>
                                             <EmojiPicker
                                                 theme={Theme.DARK}
@@ -190,7 +190,7 @@ function TweetTextAreaAndPreview() {
 
                             <div onClick={sendRequest}
                                  className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
-                                {!isModelOpen && (isCommentOpen || location?.pathname !== '/home') ? 'Reply' : 'Post'}
+                                {!isModalOpen && (isCommentOpen || location?.pathname !== '/home') ? 'Reply' : 'Post'}
                             </div>
                         </div>
                     </div>

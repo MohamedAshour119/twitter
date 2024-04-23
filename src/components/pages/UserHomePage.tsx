@@ -23,7 +23,7 @@ function UserHomePage() {
     const {
         user,
         baseUrl,
-        isModelOpen,
+        isModalOpen,
         isCommentOpen,
     } = useContext(AppContext);
 
@@ -128,7 +128,7 @@ function UserHomePage() {
     }
 
     const bodyEl = document.body;
-    if(isModelOpen || isCommentOpen) {
+    if(isModalOpen || isCommentOpen) {
         bodyEl.style.backgroundColor = '#1d252d'
     } else {
         bodyEl.style.backgroundColor = 'black'
@@ -138,12 +138,12 @@ function UserHomePage() {
     return (
         <div
             ref={parentRef}
-            className={`${(isModelOpen || isCommentOpen) ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} h-screen w-screen flex justify-center`}>
+            className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} h-screen w-screen flex justify-center`}>
 
             <div className={`z-[200] container fixed 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
                 <div></div>
                 <header
-                    className={`w-full grid grid-cols-1 border ${isModelOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-md'} border-zinc-700/70 2xl:max-w-[43rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] `}>
+                    className={`w-full grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-md'} border-zinc-700/70 2xl:max-w-[43rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] `}>
                     {/* Header but only on small screens */}
                     <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                         <Link to={`/users/${user?.username}`}>
@@ -180,7 +180,7 @@ function UserHomePage() {
             </div>
 
             <div
-                className={`${(isModelOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
+                className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
 
                 {/* Sidebar */}
                 <div className={`justify-end hidden sm:flex relative`}>

@@ -32,6 +32,7 @@ export interface UserInfo {
     username: string
     email: string
     gender: string
+    display_name: string
     avatar: string
     birth_date: string
     ban_status: number | null

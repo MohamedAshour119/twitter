@@ -10,13 +10,13 @@ import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
-import EditProfileModel from "../layouts/EditProfileModel.tsx";
+import EditProfileModal from "../layouts/EditProfileModal.tsx";
 
 
 function Profile() {
 
     const {username} = useParams();
-    const {user, isModelOpen,baseUrl, location, isCommentOpen} = useContext(AppContext)
+    const {user, isModalOpen,baseUrl, location, isCommentOpen} = useContext(AppContext)
 
     const [isFollowed, setIsFollowed] = useState<boolean>()
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
@@ -28,10 +28,10 @@ function Profile() {
     })
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo>()
-    const [isShowEditInfoModel, setIsShowEditInfoModel] = useState(false)
+    const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
 
     const toggleModel = () => {
-        setIsShowEditInfoModel(!isShowEditInfoModel)
+        setIsShowEditInfoModal(!isShowEditInfoModal)
     }
 
     // Reset allProfileUserTweets state when username changes
@@ -210,16 +210,16 @@ function Profile() {
     }, [pageURL])
 
     return (
-        <div className={`${isModelOpen || isCommentOpen || isShowEditInfoModel ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
 
             {/* Edit user info model */}
-            {isShowEditInfoModel &&
-                <EditProfileModel setIsShowEditInfoModel={setIsShowEditInfoModel}/>
+            {isShowEditInfoModal &&
+                <EditProfileModal isShowEditInfoModal={isShowEditInfoModal} setIsShowEditInfoModal={setIsShowEditInfoModal}/>
             }
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
-                <header className={`flex border ${isModelOpen || isCommentOpen || isShowEditInfoModel ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
+                <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
                     <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
                     </Link>
@@ -241,7 +241,7 @@ function Profile() {
                 <div></div>
             </div>
 
-            <div className={`${isModelOpen || isCommentOpen || isShowEditInfoModel ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
+            <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
 
                 {/* Sidebar */}
                 <div className={`justify-end hidden sm:flex relative`}>
@@ -289,7 +289,7 @@ function Profile() {
                             </div>
                             <div className={`-translate-y-12`}>
                                 <h1 className={`font-semibold text-xl`}>
-                                    {userInfo?.username}
+                                    {userInfo?.display_name ? userInfo.display_name : userInfo?.username}
                                     {!userInfo &&
                                         <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                                     }

@@ -7,9 +7,10 @@ import {EditUserProfile} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 
 interface Props {
-    setIsShowEditInfoModel: Dispatch<SetStateAction<boolean>>
+    setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
+    isShowEditInfoModal: boolean
 }
-function EditProfileModel(props: Props) {
+function EditProfileModal(props: Props) {
 
     const { user, baseUrl } = useContext(AppContext)
 
@@ -23,12 +24,12 @@ function EditProfileModel(props: Props) {
         cover: '',
     })
 
-    const editProfileInfoModel = useRef<HTMLDivElement | null>(null); // Specify the type of the ref
+    const editProfileInfoModal = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (editProfileInfoModel.current && !editProfileInfoModel.current.contains(e.target as Node)) {
-                props.setIsShowEditInfoModel(false);
+            if (editProfileInfoModal.current && !editProfileInfoModal.current.contains(e.target as Node)) {
+                addAnimation()
             }
         };
         document.addEventListener('mousedown', handleClickOutside);
@@ -70,32 +71,36 @@ function EditProfileModel(props: Props) {
         formData.append('bio', userInfo.bio);
         formData.append('password', userInfo.password);
         formData.append('password_confirmation', userInfo.password_confirmation);
-        formData.append('birth_date', userInfo.birth_date);
+        userInfo.birth_date === 'undefined-undefined-undefined' ? formData.append('birth_date', '') : formData.append('birth_date', userInfo.birth_date)
+        formData.append('avatar', userInfo.avatar as Blob)
+        formData.append('cover', userInfo.cover as Blob)
+        formData.append('_method', 'patch')
 
-        if(userInfo.avatar instanceof File){
-            formData.append('avatar', userInfo.avatar as Blob)
-        }
-        if(userInfo.cover instanceof File){
-            formData.append('cover', userInfo.cover as Blob)
-        }
-
-        ApiClient().patch('/update-user', formData)
+        ApiClient().post(`/update-user`, formData)
             .then((res) => {
                 console.log(res)
+                addAnimation()
             })
-            .catch(err => {
-                // setSuccessfulRegister(false)
-                // setFormErrors(err.response.data.errors)
-            })
-            // .finally(() => setCreateBtnLoading(false))
+            .catch()
+    }
+
+    const addAnimation = () => {
+        editProfileInfoModal.current?.classList.contains('animate-slide-down')
+        ? editProfileInfoModal.current?.classList.add('close-slide-down')
+        : editProfileInfoModal.current?.classList.add('animate-slide-down')
+        setTimeout(() => {
+            props.setIsShowEditInfoModal(false)
+        }, 200)
     }
 
     return (
-        <div ref={editProfileInfoModel} className={`fixed z-[250] h-[37rem] overflow-y-scroll w-1/3 bg-black p-4 mt-20 text-neutral-200 rounded-2xl`}>
+        <div ref={editProfileInfoModal}
+             className={`fixed z-[250] h-[37rem] overflow-y-scroll w-1/3 bg-black p-4 mt-20 text-neutral-200 rounded-2xl animate-slide-down z-[250]`}
+        >
             <div className={`flex items-center justify-between`}>
                 <div className={`flex items-center gap-x-6`}>
                     <div
-                        onClick={() => props.setIsShowEditInfoModel(false)}
+                        onClick={addAnimation}
                         className="cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
                         <HiMiniXMark/>
                     </div>
@@ -135,7 +140,7 @@ function EditProfileModel(props: Props) {
         {/*  More info  */}
             <div className={`mt-24 flex flex-col gap-y-3`}>
                 <input
-                    maxLength={50}
+                    maxLength={30}
                     name={`display_name`}
                     value={userInfo.display_name}
                     onChange={handleInputChange}
@@ -146,11 +151,11 @@ function EditProfileModel(props: Props) {
                 />
 
                 <textarea
-                    maxLength={160}
+                    maxLength={250}
                     name={`bio`}
                     value={userInfo.bio}
                     onChange={handleInputChange}
-                    className={`h-14 w-full min-h-32 max-h-40 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 placeholder:mt-4 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                    className={`h-14 w-full min-h-32 max-h-40 border border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600 rounded bg-transparent px-3 py-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                     placeholder="Bio"
                     autoComplete="one-time-code"
                 />
@@ -189,4 +194,4 @@ function EditProfileModel(props: Props) {
     )
 }
 
-export default EditProfileModel
+export default EditProfileModal

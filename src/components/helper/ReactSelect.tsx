@@ -25,7 +25,7 @@ interface Props {
 }
 function ReactSelect(props: Props) {
 
-    const {formErrors, styles} = useContext(AppContext)
+    const {formErrors, styles, location} = useContext(AppContext)
 
     const months: Month[] = [
         {value: "january", label: "January", days: 31},
@@ -73,11 +73,19 @@ function ReactSelect(props: Props) {
 
     // Set the three selected values to 'birth_date' in the userCredentials state
     useEffect(() => {
-        props.setUserCredentials && props.setUserCredentials(prevUserCredentials => ({
-            ...prevUserCredentials,
-            gender: `${props.selectedGender?.value}`,
-            date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
-        }))
+        if(location?.pathname === '/register') {
+            props.setUserCredentials && props.setUserCredentials(prevUserCredentials => ({
+                ...prevUserCredentials,
+                gender: `${props.selectedGender?.value}`,
+                date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
+            }))
+        } else {
+            props.setUserInfo && props.setUserInfo(prevUserInfo => ({
+                ...prevUserInfo,
+                birth_date: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
+            }))
+        }
+
     }, [selectedDay, selectedMonth, selectedYear, props.selectedGender])
 
     // Handle selected options
