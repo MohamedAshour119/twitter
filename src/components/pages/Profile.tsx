@@ -251,23 +251,31 @@ function Profile() {
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70 animate-slide-down`}>
                     <div className={`h-14 bg-black z-10`}></div>
                     {/* Cover image */}
-                    <div className={`h-[14rem] w-full bg-[#333639]`}>
+                    <div className={`h-[14rem] w-full relative`}>
                         {
-                            user?.cover &&
+                            userInfo &&
                             <img
-                                src={`${baseUrl}/storage/${user.cover}`}
+                                src={`${baseUrl}/storage/${user?.cover}`}
                                 alt="cover"
                                 className={`w-full object-cover max-h-[14rem]`}
                             />
                         }
-
+                        {!userInfo &&
+                            <div
+                                className="absolute animate-pulse flex items-center justify-center w-full h-full  bg-[#333639]">
+                                <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
+                                     xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
+                                    <path
+                                        d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z"/>
+                                </svg>
+                            </div>}
                     </div>
                     {/* Personal Info */}
                     <div className={`relative`}>
                         <div className={`px-4 h-[16rem]`}>
                             <div className={`flex justify-between`}>
                                 <div className={`relative -translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black ${!userInfo ? 'animate-pulse' : ''}`}>
-                                    <img src={`${baseUrl}/storage/${userInfo?.avatar}`} alt=""
+                                    <img src={`${baseUrl}/storage/${user?.avatar}`} alt=""
                                          className={`object-cover w-full h-full rounded-full ${!userInfo ? 'invisible' : ''}`}/>
                                     {!userInfo &&
                                         <div

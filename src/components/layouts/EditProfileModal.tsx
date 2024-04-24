@@ -12,7 +12,7 @@ interface Props {
 }
 function EditProfileModal(props: Props) {
 
-    const { user, baseUrl } = useContext(AppContext)
+    const { user, setUser, baseUrl } = useContext(AppContext)
 
     const [userInfo, setUserInfo] = useState<EditUserProfile>({
         display_name: user?.display_name ? user.display_name : '',
@@ -77,7 +77,10 @@ function EditProfileModal(props: Props) {
 
         ApiClient().post(`/update-user`, formData)
             .then((res) => {
-                console.log(res)
+                setUser(prevState => ({
+                    ...prevState,
+                    ...res.data.data
+                }))
                 addAnimation()
             })
             .catch()
@@ -92,9 +95,17 @@ function EditProfileModal(props: Props) {
         }, 200)
     }
 
+    // Remove uploaded image
+    const removeUploadedFile = () => {
+        setUserInfo(prevState => ({
+            ...prevState,
+            cover: ''
+        }))
+    }
+
     return (
         <div ref={editProfileInfoModal}
-             className={`fixed z-[250] h-[37rem] overflow-y-scroll w-1/3 bg-black p-4 mt-20 text-neutral-200 rounded-2xl animate-slide-down`}
+             className={`fixed z-[250] h-[37rem] overflow-y-scroll w-full md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] bg-black p-4 mt-20 text-neutral-200 rounded-2xl animate-slide-down`}
         >
             <div className={`flex items-center justify-between`}>
                 <div className={`flex items-center gap-x-6`}>
@@ -111,12 +122,26 @@ function EditProfileModal(props: Props) {
             <div className={`my-8 relative`}>
                 <div className={`bg-[#333639] rounded h-48 relative`}>
                     {
-                        user?.cover &&
+                        user?.cover && !userInfo.cover &&
                         <img
                             src={`${baseUrl}/storage/${user.cover}`}
                             alt="cover"
                             className={`w-full object-cover h-48 brightness-75`}
                         />
+                    }
+
+                    {/* Preview uploaded image */}
+                    {userInfo?.cover &&
+                        <div
+                            className={`${!userInfo.cover ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 bg-[#333639] rounded h-48'}`}>
+                            <div onClick={removeUploadedFile}
+                                 className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
+                                <HiMiniXMark className={`size-6`}/>
+                            </div>
+                            <img className={`w-full object-cover h-48 brightness-75`}
+                                 src={userInfo.cover ? URL.createObjectURL(userInfo.cover as File) : ''}
+                                 alt="cover"/>
+                        </div>
                     }
                     <label htmlFor={`upload_cover`} className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
                         <TbCameraPlus />
@@ -131,21 +156,34 @@ function EditProfileModal(props: Props) {
                     </label>
                 </div>
             {/*  Avatar  */}
-                <div className={`absolute top-2/3 left-2 border-4 border-black rounded-full`}>
-                    <img src={`${baseUrl}/storage/${user?.avatar}`} alt=""
-                         className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}/>
-                    <label htmlFor={`upload_avatar`} className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
-                        <TbCameraPlus />
-                        <input
-                            id={`upload_avatar`}
-                            type="file"
-                            className={`hidden`}
-                            name={'avatar'}
-                            value={userInfo.avatar ? '' : undefined}
-                            onChange={handleInputChange}
-                        />
-                    </label>
-                </div>
+                {
+                    user?.avatar &&
+                    <div className={`absolute top-2/3 left-2 border-4 border-black rounded-full`}>
+                        {user.avatar && !userInfo.avatar &&
+                            <img src={`${baseUrl}/storage/${user?.avatar}`}
+                              alt="avatar"
+                              className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}/>
+                        }
+
+                        {userInfo.avatar &&
+                            <img className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}
+                              src={userInfo.avatar ? URL.createObjectURL(userInfo.avatar as File) : ''}
+                              alt="cover"/>
+                        }
+                        <label htmlFor={`upload_avatar`}
+                               className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
+                            <TbCameraPlus/>
+                            <input
+                                id={`upload_avatar`}
+                                type="file"
+                                className={`hidden`}
+                                name={'avatar'}
+                                value={userInfo.avatar ? '' : undefined}
+                                onChange={handleInputChange}
+                            />
+                        </label>
+                    </div>
+                }
             </div>
         {/*  More info  */}
             <div className={`mt-24 flex flex-col gap-y-1`}>
@@ -174,7 +212,7 @@ function EditProfileModal(props: Props) {
             {/*  Birth date  */}
                 <div className={`text-zinc-500`}>
                     <div className={`mt-5 font-semibold`}>Birth date</div>
-                    <div className={`text-neutral-200 text-xl`}>September 11, 2001</div>
+                    <div className={`text-neutral-200 text-xl`}>{user?.birth_date}</div>
 
                     <ReactSelect userInfo={userInfo} setUserInfo={setUserInfo}/>
                 </div>

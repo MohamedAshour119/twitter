@@ -12,7 +12,6 @@ import {ToastContainer} from "react-toastify";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import {TbLogout} from "react-icons/tb";
-import { animateScroll as scroll } from 'react-scroll';
 function Sidebar() {
 
     const {
@@ -24,13 +23,6 @@ function Sidebar() {
     } = useContext(AppContext)
 
     const {setRandomTweets, setTweet} = useContext(TweetContext)
-
-    const options = {
-        duration: 0,
-    };
-    const scrollToTop = () => {
-        scroll.scrollToTop(options);
-    }
 
     const [logoutWindowOpen, setLogoutWindowOpen] = useState(false)
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -131,7 +123,6 @@ function Sidebar() {
                     <li>
                         <div onClick={() => {
                             openTweetModel()
-                            scrollToTop()
                         }} className={`w-fit xl:w-auto 2xl:max-w-[85%] flex items-end justify-center cursor-pointer px-4 py-4 xl:py-3 xl:px-0 rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
                             <span className={`hidden xl:block`}>Post</span>
                             <FaFeatherPointed className={`block xl:hidden`}/>
@@ -158,7 +149,7 @@ function Sidebar() {
                         <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
 
                         <div className={`hidden xl:block`}>
-                            <div className={`font-semibold`}>{user?.username}</div>
+                            <div className={`font-semibold`}>{user?.display_name}</div>
                             <div className={`text-neutral-500`}>@{user?.username}</div>
                         </div>
                     </div>

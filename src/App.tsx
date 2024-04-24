@@ -40,7 +40,7 @@ function App() {
     useEffect( ()=> {
         ApiClient().get('/info')
             .then(res => {
-                setUser(res.data)
+                setUser(res.data.data)
                 setLoading(false);
             })
             .catch(() => {
