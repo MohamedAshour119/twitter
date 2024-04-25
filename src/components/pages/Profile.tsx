@@ -253,12 +253,16 @@ function Profile() {
                     {/* Cover image */}
                     <div className={`h-[14rem] w-full relative`}>
                         {
-                            userInfo &&
-                            <img
-                                src={`${baseUrl}/storage/${user?.cover}`}
-                                alt="cover"
-                                className={`w-full object-cover max-h-[14rem]`}
-                            />
+                            userInfo && userInfo?.cover &&
+                                <img
+                                    src={`${baseUrl}/storage/${userInfo?.cover}`}
+                                    alt="cover"
+                                    className={`w-full object-cover max-h-[14rem]`}
+                                />
+                        }
+                        {
+                            userInfo && !userInfo?.cover &&
+                            <div className={`w-full h-[14rem] bg-[#333639]`}></div>
                         }
                         {!userInfo &&
                             <div
@@ -275,7 +279,7 @@ function Profile() {
                         <div className={`px-4 h-[16rem]`}>
                             <div className={`flex justify-between`}>
                                 <div className={`relative -translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black ${!userInfo ? 'animate-pulse' : ''}`}>
-                                    <img src={`${baseUrl}/storage/${user?.avatar}`} alt=""
+                                    <img src={`${baseUrl}/storage/${userInfo?.avatar}`} alt=""
                                          className={`object-cover w-full h-full rounded-full ${!userInfo ? 'invisible' : ''}`}/>
                                     {!userInfo &&
                                         <div
@@ -323,8 +327,8 @@ function Profile() {
                                 }
 
                                 {
-                                    userInfo && user?.bio &&
-                                    <div className={`font-semibold mt-3`}>{user.bio}</div>
+                                    userInfo &&
+                                    <div className={`font-semibold mt-3`}>{userInfo.bio}</div>
                                 }
                                 {
                                     !userInfo &&

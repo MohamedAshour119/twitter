@@ -162,7 +162,10 @@ function Tweet(props: Props) {
 
     // Delete tweet
     const deleteTweet = () => {
-        ApiClient().delete(`/delete-tweet/${props.id}`)
+
+        const hashtags = tweetText?.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
+
+        ApiClient().post(`/delete-tweet/${props.id}`, hashtags)
             .then(() => {
                 const filteredUserTweets = props.allProfileUserTweets?.filter(singleTweet => singleTweet.id !== props.id)
                 props.setAllProfileUserTweets && filteredUserTweets && props.setAllProfileUserTweets(filteredUserTweets)
@@ -192,23 +195,18 @@ function Tweet(props: Props) {
 
         const renderHashtags = hashtags?.map((hashtag, index) => {
             return (
-                <Link to={'/'} key={index} className={`text-sky-600`}>{hashtag}</Link>
+                <Link to={'/'} key={index} className={`text-sky-600`}>{hashtag} <br/> </Link>
             )
         })
 
-        let fullText = tweetText;
+        let fullText: string | undefined | null = tweetText;
 
         if (hashtags && hashtags.length > 0) {
-            const firstHashtag = hashtags[0];
-
-            const startHashtagIndex: number | undefined = tweetText?.indexOf(firstHashtag);
-            const endHashtagIndex: number | undefined = startHashtagIndex !== undefined ? startHashtagIndex + firstHashtag.length : undefined;
-
-            const tweetTextToStartHashtag: string = tweetText?.substring(0, startHashtagIndex ?? 0) ?? '';
-            const tweetTextToEndHashtag: string | undefined = endHashtagIndex && typeof tweetText?.substring(endHashtagIndex) === 'string' ? tweetText?.substring(endHashtagIndex) : undefined;
-
-            fullText = tweetTextToStartHashtag + tweetTextToEndHashtag;
+            hashtags.forEach(hashtag => {
+                fullText = fullText?.replace(hashtag, '');
+            });
         }
+
 
         return (
             <div>
@@ -221,9 +219,6 @@ function Tweet(props: Props) {
             </div>
         )
     }
-
-
-
 
     const tweetCommonContent =
         <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
@@ -238,7 +233,7 @@ function Tweet(props: Props) {
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
                         <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.username}</h1>
+                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.display_name}</h1>
                             <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
                         </Link>
                         {(location?.pathname === `/home` || !props.comment_to) &&

@@ -42,6 +42,7 @@ function TrendingSidebar(props: Props) {
                 setSearchResults(res.data.data.users)
                 const nextPageUrl = res.data.data.pagination.next_page_url
                 nextPageUrl ? setPageURL(nextPageUrl) : null
+                setIsOpen(true)
             })
             .catch(err => {
                 console.log(err)
@@ -192,7 +193,7 @@ function TrendingSidebar(props: Props) {
                     isOpen &&
                     <div
                         className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                        {(searchResults.length > 0 && debounceValue) &&
+                        {(searchResults && debounceValue) &&
                             <div
                                 onClick={() => {
                                     props.setPageUrl && props.setPageUrl('')

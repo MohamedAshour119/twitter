@@ -149,7 +149,7 @@ function Sidebar() {
                         <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
 
                         <div className={`hidden xl:block`}>
-                            <div className={`font-semibold`}>{user?.display_name}</div>
+                            <div className={`font-semibold`}>{user?.display_name ? user.display_name : user?.username}</div>
                             <div className={`text-neutral-500`}>@{user?.username}</div>
                         </div>
                     </div>

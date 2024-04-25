@@ -21,6 +21,7 @@ export interface TweetInfo extends Tweet{
         id: number
         username: string
         avatar: string
+        display_name: string
         is_followed: boolean
     }
 
@@ -117,6 +118,7 @@ export const tweetDefaultValues = {
         id: 0,
         username: '',
         avatar: '',
+        display_name: '',
         is_followed: false,
     },
     title: '',
