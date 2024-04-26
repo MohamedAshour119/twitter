@@ -85,7 +85,10 @@ export interface FormError {
     password_confirmation: string[]
     gender: string[]
     birth_date: string[]
-    avatar: []
+    avatar: string[]
+    cover: string[]
+    display_name: string[]
+    bio: string[]
 }
 
 export interface RegisterUser {
@@ -188,4 +191,18 @@ export const ClickedTweetDefaultValues =
             id: null,
             comments_count: 0,
         },
+    }
+
+export const FormErrorsDefaultValues =
+    {
+        username: [],
+        email: [],
+        password: [],
+        password_confirmation: [],
+        gender: [],
+        birth_date: [],
+        avatar: [],
+        cover: [],
+        display_name: [],
+        bio: [],
     }

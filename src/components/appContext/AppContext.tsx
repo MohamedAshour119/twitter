@@ -9,7 +9,7 @@ import {
     UserDefaultValues,
     UserInfo,
     FormError,
-    Gender
+    Gender, FormErrorsDefaultValues
 } from "../../Interfaces.tsx";
 import {GroupBase, StylesConfig} from "react-select";
 
@@ -76,15 +76,7 @@ export const AppContext = createContext<AppContextType>({
     setHashtags: () => null,
     showExplorePageHashtags: true,
     setShowExplorePageHashtags: () => null,
-    formErrors: {
-        username: [],
-        email: [],
-        password: [],
-        password_confirmation: [],
-        gender: [],
-        birth_date: [],
-        avatar: [],
-    },
+    formErrors: FormErrorsDefaultValues,
     setFormErrors: () => null,
     styles: {},
     displayNotResultsFound: false,
@@ -122,15 +114,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const baseUrl = 'http://api.twitter.test'
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
-    const [formErrors, setFormErrors] = useState<FormError>({
-        username: [],
-        email: [],
-        password: [],
-        password_confirmation: [],
-        gender: [],
-        birth_date: [],
-        avatar: [],
-    })
+    const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
 
     useEffect(() => {
         if( location.pathname === '/register' ){
@@ -139,15 +123,7 @@ const AppProvider = ({children}: AppProviderProps) => {
             setIsRegisterOpen(false);
         }
 
-        setFormErrors({
-            username: [],
-            email: [],
-            password: [],
-            password_confirmation: [],
-            gender: [],
-            birth_date: [],
-            avatar: [],
-        })
+        setFormErrors(FormErrorsDefaultValues)
 
     }, [location.pathname]);
 
