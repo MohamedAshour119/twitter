@@ -3,13 +3,14 @@ import {TbCameraPlus} from "react-icons/tb";
 import {ChangeEvent, Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";
-import {EditUserProfile, FormErrorsDefaultValues} from "../../Interfaces.tsx";
+import {EditUserProfile, FormErrorsDefaultValues, UserInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, ToastContainer, Zoom} from "react-toastify";
 
 interface Props {
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
     isShowEditInfoModal: boolean
+    setUserInfo: Dispatch<SetStateAction<UserInfo | undefined>>
 }
 function EditProfileModal(props: Props) {
 
@@ -82,6 +83,7 @@ function EditProfileModal(props: Props) {
                     ...res.data.data
                 }))
                 addAnimation()
+                props.setUserInfo(res.data.data)
             })
             .catch(err => {
                 setFormErrors(err.response.data.errors)
@@ -140,7 +142,6 @@ function EditProfileModal(props: Props) {
                     <button type={'submit'} onClick={saveRequest} className={`mx-2 bg-white hover:bg-zinc-200 transition text-black px-5 py-2 rounded-full`}>Save</button>
                 </div>
 
-                <form onSubmit={saveRequest}>
                     {/*  Cover section  */}
                     <div className={`my-8 relative`}>
                         {formErrors?.cover &&
@@ -235,7 +236,7 @@ function EditProfileModal(props: Props) {
                             name={`bio`}
                             value={userInfo.bio}
                             onChange={handleInputChange}
-                            className={`${formErrors?.bio?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ' border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} h-14 w-full border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
+                            className={`${formErrors?.bio?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ' border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} resize-none min-h-48 w-full border rounded bg-transparent py-3 px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                             placeholder="Bio"
                             autoComplete="one-time-code"
                         />
@@ -275,7 +276,6 @@ function EditProfileModal(props: Props) {
                         {formErrors?.password_confirmation &&
                             <p className={'text-red-500 font-semibold'}>{formErrors?.password_confirmation}</p>}
                     </div>
-                </form>
 
             </div>
         </>

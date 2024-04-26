@@ -71,6 +71,12 @@ function Profile() {
         getUserInfoTweets(`users/${username}`)
     }, [username] )
 
+    useEffect(() => {
+        setAllProfileUserTweets([])
+        getAllUserTweets(`users/${username}`)
+    }, [userInfo?.avatar, userInfo?.display_name]);
+
+
     // Get the tweets which is suitable to the button which is clicked
     const getSuitableTweets = (pageURL: string) => {
         setAllProfileUserTweets([])
@@ -214,7 +220,11 @@ function Profile() {
 
             {/* Edit user info model */}
             {isShowEditInfoModal &&
-                <EditProfileModal isShowEditInfoModal={isShowEditInfoModal} setIsShowEditInfoModal={setIsShowEditInfoModal}/>
+                <EditProfileModal
+                    isShowEditInfoModal={isShowEditInfoModal}
+                    setIsShowEditInfoModal={setIsShowEditInfoModal}
+                    setUserInfo={setUserInfo}
+                />
             }
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
