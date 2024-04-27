@@ -6,9 +6,10 @@ import {
     UserDefaultValues,
     UserInfo,
     FormError,
-    Gender, FormErrorsDefaultValues
+    Gender, FormErrorsDefaultValues, Notification
 } from "../../Interfaces.tsx";
 import {GroupBase, StylesConfig} from "react-select";
+import ApiClient from "../services/ApiClient.tsx";
 
 interface AppContextType {
     isRegisterOpen: boolean
@@ -30,6 +31,11 @@ interface AppContextType {
     setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
     notificationsCount: number
     setNotificationsCount: Dispatch<SetStateAction<number>>
+    allNotifications: Notification[]
+    setAllNotifications: Dispatch<SetStateAction<Notification[]>>
+    originalNotifications: Notification[]
+    notificationsPageURL: string
+    getAllNotifications: (pageUrl: string) => void
 }
 
 type OptionType = Gender;
@@ -53,7 +59,12 @@ export const AppContext = createContext<AppContextType>({
     displayNotResultsFound: false,
     setDisplayNotResultsFound: () => null,
     notificationsCount: 0,
-    setNotificationsCount: () => null
+    setNotificationsCount: () => null,
+    allNotifications: [],
+    setAllNotifications: () => null,
+    originalNotifications: [],
+    notificationsPageURL: '',
+    getAllNotifications: () => null
 });
 
 interface AppProviderProps {
@@ -81,6 +92,9 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
     const [notificationsCount, setNotificationsCount] = useState(0)
+    const [allNotifications, setAllNotifications] = useState<Notification[]>([])
+    const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
+    const [notificationsPageURL, setNotificationsPageURL] = useState('')
 
     useEffect(() => {
         if( location.pathname === '/register' ){
@@ -99,6 +113,37 @@ const AppProvider = ({children}: AppProviderProps) => {
         setIsModelOpen(false)
         setIsCommentOpen(false)
     }
+
+    // Get all notifications
+    const getAllNotifications = (pageURL: string) => {
+        ApiClient().get(pageURL)
+            .then(res => {
+                setAllNotifications(prevNotifications => ([
+                    ...prevNotifications,
+                    ...res.data.data.notifications
+                ]))
+                setOriginalNotifications(prevNotifications => ([
+                    ...prevNotifications,
+                    ...res.data.data.notifications
+                ]))
+                setNotificationsPageURL(res.data.data.next_page_url)
+                setNotificationsCount(res.data.data.notifications_count)
+
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+
+    useEffect( () => {
+        getAllNotifications('/notifications')
+    }, [localStorage.getItem('token')])
+
+    useEffect( () => {
+        setOriginalNotifications([])
+        setAllNotifications([])
+    }, [user])
 
 
     const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
@@ -205,6 +250,11 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setDisplayNotResultsFound,
                 notificationsCount,
                 setNotificationsCount,
+                allNotifications,
+                setAllNotifications,
+                originalNotifications,
+                notificationsPageURL,
+                getAllNotifications,
             }}>
             {children}
         </AppContext.Provider>

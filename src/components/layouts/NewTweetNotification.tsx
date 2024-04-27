@@ -7,10 +7,12 @@ import {IoCheckmarkDoneOutline} from "react-icons/io5";
 import ApiClient from "../services/ApiClient.tsx";
 import {Notification} from "../../Interfaces.tsx";
 
-interface Props extends Notification{}
+interface Props extends Notification {
+    allNotifications: Notification[]
+}
 function NewTweetNotification(props: Props) {
 
-    const {baseUrl, setNotificationsCount, allNotifications} = useContext(AppContext)
+    const {baseUrl, setNotificationsCount} = useContext(AppContext)
 
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
@@ -41,7 +43,7 @@ function NewTweetNotification(props: Props) {
                     setIsRead(res.data.data.notification.is_read)
                     setNotificationsCount(res.data.data.notifications_count)
 
-                    allNotifications.map((notification: Notification) => {
+                    props.allNotifications.map((notification: Notification) => {
                         notification.tweet_id === notificationInfo.tweet_id ? notification.is_read = true : ''
                     })
                 })

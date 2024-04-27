@@ -6,7 +6,7 @@ import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {Link, useParams} from "react-router-dom";
-import {TweetInfo} from "../../Interfaces.tsx";
+import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
@@ -18,6 +18,7 @@ import {TbPinnedFilled} from "react-icons/tb";
 interface Props extends  TweetInfo {
     allProfileUserTweets?: TweetInfo[]
     setAllProfileUserTweets?: Dispatch<SetStateAction<TweetInfo[]>>
+    userInfo?: UserInfo
 }
 function Tweet(props: Props) {
 
@@ -250,7 +251,7 @@ function Tweet(props: Props) {
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
                         <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.display_name}</h1>
+                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.display_name ? props.user?.display_name : props.user?.username}</h1>
                             <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
                         </Link>
                         {(location?.pathname === `/home` || !props.comment_to) &&
@@ -271,10 +272,10 @@ function Tweet(props: Props) {
                 </div>
             </div>
 
-            <div className={`md:w-[90%] w-[86%] justify-self-end mt-4`}>
+            <div className={`md:w-[90%] w-[86%] justify-self-end`}>
                 <div className={`grid grid-cols-1`}>
                     <p className={`w-fit break-all`}>{ tweetText && tweetText?.length <= 1 ? tweetText : detectHashtag()}</p>
-                    <div className={`${props.title?.length ?? 0 ? '' : 'mt-4'}`}>
+                    <div>
                         {(props.image || props.main_tweet?.image) &&
                             <img
                                 className={`rounded-2xl max-h-[40rem] w-full ${props.image || props.main_tweet?.image ? 'mt-4' : ''}`}
@@ -310,7 +311,7 @@ function Tweet(props: Props) {
                         <Link to={`/users/${username}`} className={`w-fit flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                             <BsRepeat/>
                             <span
-                                className={`text-sm`}>{(username === user?.username) ? 'You retweeted' : `${username} retweeted`}</span>
+                                className={`text-sm`}>{(username === user?.username) ? 'You retweeted' : `"${props.userInfo?.display_name ? props.userInfo.display_name : username}" retweeted`}</span>
                         </Link>
                     </div>
                 }
@@ -341,13 +342,15 @@ function Tweet(props: Props) {
                                     <MdDelete className={`size-5`}/>
                                     Delete
                                 </button>
-                                <button
+                                {!props.comment_to &&
+                                    <button
                                     onClick={pinTweet}
                                     disabled={!tweetMenuOpen}
                                     className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
                                     <TbPinnedFilled className={`size-5`}/>
                                     Pin to your profile
-                                </button>
+                                    </button>
+                                }
                             </>
                         }
                         {props.user_id !== user?.id &&

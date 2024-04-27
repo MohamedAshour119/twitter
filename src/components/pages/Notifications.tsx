@@ -8,13 +8,17 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import NewTweetNotification from "../layouts/NewTweetNotification.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
-import {Notification} from "../../Interfaces.tsx";
 
 type NotificationsInfo = {
     users_id: number[],
 }
 function Notifications() {
     const {
+        allNotifications,
+        setAllNotifications,
+        originalNotifications,
+        getAllNotifications,
+        notificationsPageURL,
         isModalOpen,
         isCommentOpen,
         location,
@@ -29,44 +33,12 @@ function Notifications() {
     const [notificationsInfo, setNotificationsInfo] = useState<NotificationsInfo>({
         'users_id': [],
     })
-    const [allNotifications, setAllNotifications] = useState<Notification[]>([])
-    const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
-    const [notificationsPageURL, setNotificationsPageURL] = useState('')
 
     // Handle active buttons
     const allNotificationsRef = useRef<HTMLLIElement>(null);
     const mentionedNotificationsRef = useRef<HTMLLIElement>(null);
 
-    // Get all notifications
-    const getAllNotifications = (pageURL: string) => {
-        ApiClient().get(pageURL)
-            .then(res => {
-                setAllNotifications(prevNotifications => ([
-                    ...prevNotifications,
-                    ...res.data.data.notifications
-                ]))
-                setOriginalNotifications(prevNotifications => ([
-                    ...prevNotifications,
-                    ...res.data.data.notifications
-                ]))
-                setNotificationsPageURL(res.data.data.next_page_url)
-                setNotificationsCount(res.data.data.notifications_count)
 
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
-
-    useEffect( () => {
-        getAllNotifications('/notifications')
-    }, [localStorage.getItem('token')])
-
-    useEffect( () => {
-        setOriginalNotifications([])
-        setAllNotifications([])
-    }, [user])
 
     useEffect( () => {
         const handleClick = (e: MouseEvent) => {
@@ -102,6 +74,7 @@ function Notifications() {
             tweet_id={notification.tweet_id}
             is_read={notification.is_read}
             user={notification.user}
+            allNotifications={allNotifications}
         />
     ));
 
@@ -130,7 +103,6 @@ function Notifications() {
     }, [notificationsPageURL])
 
     // Mark all notifications as read
-
     useEffect( () => {
         const notificationsInfoDiff: NotificationsInfo = {'users_id': []}
         const filteredNotifications = allNotifications.filter(notification => !notification.is_read)
@@ -233,7 +205,7 @@ function Notifications() {
                         {notifications}
                         <div ref={lastNotificationRef}>
                             {allNotifications.length > 0 && (
-                                <NewTweetNotification {...allNotifications[allNotifications.length - 1]} />
+                                <NewTweetNotification allNotifications={allNotifications} {...allNotifications[allNotifications.length - 1]} />
                             )}
                         </div>
                     </div>

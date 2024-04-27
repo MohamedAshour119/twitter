@@ -6,6 +6,7 @@ export interface Tweet {
     show_tweet_created_at: string
     updated_at: string
     created_at: string
+    is_pinned: boolean
     id: number
     retweet_to: number | null
     comment_to: number | null
@@ -131,6 +132,7 @@ export const tweetDefaultValues = {
     show_tweet_created_at: '',
     updated_at: '',
     created_at: '',
+    is_pinned: false,
     id: 0,
     retweet_to: null,
     comment_to: null,
@@ -147,6 +149,7 @@ export const tweetDefaultValues = {
         show_tweet_created_at: '',
         updated_at: '',
         created_at: '',
+        is_pinned: false,
         id: 0,
         retweet_to: null,
         comment_to: null,

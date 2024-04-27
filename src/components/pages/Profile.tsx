@@ -55,15 +55,12 @@ function Profile() {
             })
     }
 
-    useEffect( () => {
-        setPageURL('');
-        getAllUserTweets(`users/${username}`)
-    }, [username] )
 
     useEffect(() => {
+        setPageURL('');
         setAllProfileUserTweets([])
         getAllUserTweets(`users/${username}`)
-    }, [userInfo?.avatar, userInfo?.display_name]);
+    }, [userInfo?.avatar, userInfo?.display_name, username]);
 
 
     // Get the tweets which is suitable to the button which is clicked
@@ -90,6 +87,7 @@ function Profile() {
             allProfileUserTweets={allProfileUserTweets}
             setAllProfileUserTweets={setAllProfileUserTweets}
             {...tweetInfo}
+            userInfo={userInfo}
         />
     ));
 
