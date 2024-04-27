@@ -20,10 +20,8 @@ function Explore() {
     const {
         isModalOpen,
         isCommentOpen,
-        showExplorePageHashtags,
         displayNotResultsFound,
         setDisplayNotResultsFound,
-        setShowExplorePageHashtags,
     } = useContext(AppContext)
 
     const {
@@ -36,6 +34,7 @@ function Explore() {
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [pageURL, setPageURL] = useState('')
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
+    const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const debounceValue = useDebounce(searchValue)
     const handleOpen = () => {
         setIsOpen(true)

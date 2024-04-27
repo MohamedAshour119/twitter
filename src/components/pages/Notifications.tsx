@@ -8,6 +8,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import NewTweetNotification from "../layouts/NewTweetNotification.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
+import {Notification} from "../../Interfaces.tsx";
 
 type NotificationsInfo = {
     users_id: number[],
@@ -17,13 +18,8 @@ function Notifications() {
         isModalOpen,
         isCommentOpen,
         location,
-        allNotifications,
-        notificationsPageURL,
-        getAllNotifications,
-        setAllNotifications,
-        setNotificationsCount,
         user,
-        originalNotifications,
+        setNotificationsCount
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
@@ -33,10 +29,44 @@ function Notifications() {
     const [notificationsInfo, setNotificationsInfo] = useState<NotificationsInfo>({
         'users_id': [],
     })
+    const [allNotifications, setAllNotifications] = useState<Notification[]>([])
+    const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
+    const [notificationsPageURL, setNotificationsPageURL] = useState('')
 
     // Handle active buttons
     const allNotificationsRef = useRef<HTMLLIElement>(null);
     const mentionedNotificationsRef = useRef<HTMLLIElement>(null);
+
+    // Get all notifications
+    const getAllNotifications = (pageURL: string) => {
+        ApiClient().get(pageURL)
+            .then(res => {
+                setAllNotifications(prevNotifications => ([
+                    ...prevNotifications,
+                    ...res.data.data.notifications
+                ]))
+                setOriginalNotifications(prevNotifications => ([
+                    ...prevNotifications,
+                    ...res.data.data.notifications
+                ]))
+                setNotificationsPageURL(res.data.data.next_page_url)
+                setNotificationsCount(res.data.data.notifications_count)
+
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+
+    useEffect( () => {
+        getAllNotifications('/notifications')
+    }, [localStorage.getItem('token')])
+
+    useEffect( () => {
+        setOriginalNotifications([])
+        setAllNotifications([])
+    }, [user])
 
     useEffect( () => {
         const handleClick = (e: MouseEvent) => {

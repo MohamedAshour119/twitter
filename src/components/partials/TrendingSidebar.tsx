@@ -6,7 +6,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import SearchResult from "../layouts/SearchResult.tsx";
-import {UserInfo} from "../../Interfaces.tsx";
+import {Hashtag, UserInfo} from "../../Interfaces.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
@@ -19,8 +19,7 @@ interface Props {
 function TrendingSidebar(props: Props) {
 
     const {
-        suggestedUsersToFollow,
-        hashtags,
+        user,
         setShowExplorePageHashtags,
         location,
         setDisplayNotResultsFound,
@@ -32,6 +31,8 @@ function TrendingSidebar(props: Props) {
 
     const [isOpen, setIsOpen] = useState(false)
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
+    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
+    const [hashtags, setHashtags] = useState<Hashtag[]>([])
     const [pageURL, setPageURL] = useState('')
     const [searchValue, setSearchValue] = useState('')
     const debounceValue = useDebounce(searchValue)
@@ -48,6 +49,36 @@ function TrendingSidebar(props: Props) {
                 console.log(err)
             })
     }
+
+    // Suggested users to follow
+    useEffect( () => {
+        if(user?.id) {
+            ApiClient().get('/home')
+                .then(res => {
+                    setSuggestedUsersToFollow(res.data.data.suggested_users)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+        }
+
+    }, [user])
+
+    const getHashtags = () => {
+        ApiClient().get(`/hashtags`)
+            .then(res => {
+                setHashtags(res.data.data)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
+
+    useEffect(() => {
+        if(hashtags?.length <= 1) {
+            getHashtags()
+        }
+    }, [hashtags?.length]);
     const getSearchResult = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
@@ -79,6 +110,7 @@ function TrendingSidebar(props: Props) {
         }
     }, [debounceValue]);
 
+    // Handle click outside
     const searchRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
