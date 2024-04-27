@@ -191,7 +191,6 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     useEffect( () => {
         getAllNotifications('/notifications')
-        getHashtags()
     }, [token])
 
     const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {

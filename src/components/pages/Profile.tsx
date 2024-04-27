@@ -43,6 +43,7 @@ function Profile() {
     const getAllUserTweets = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
+                setUserInfo(res.data.data.user)
                 const tweets = res.data.data.pagination.data
                 if(tweets){
                     setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
@@ -54,21 +55,9 @@ function Profile() {
             })
     }
 
-    // I separate this function alone cause pagination problem
-    const getUserInfoTweets = (pageURL: string) => {
-        ApiClient().get(pageURL)
-            .then(res => {
-                setUserInfo(res.data.data.user)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
-
     useEffect( () => {
         setPageURL('');
         getAllUserTweets(`users/${username}`)
-        getUserInfoTweets(`users/${username}`)
     }, [username] )
 
     useEffect(() => {

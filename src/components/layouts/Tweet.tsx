@@ -133,7 +133,6 @@ function Tweet(props: Props) {
             }
         }
         setClickedTweet(tweet)
-        localStorage.setItem('tweet', JSON.stringify(tweet))
     }
 
 
@@ -218,6 +217,24 @@ function Tweet(props: Props) {
                 </div>
             </div>
         )
+    }
+
+    // Pin tweet
+    const pinTweet = () => {
+        if(clickedTweet.user.id === user?.id) {
+            ApiClient().post(`/pin-tweet/${clickedTweet.tweet.id}`)
+                .then(res => {
+
+                    console.log(res)
+                })
+                .catch()
+                .finally(() => {
+                    tweetMenuRef.current?.classList.add('animate-fade-out')
+                    setTimeout(() => {
+                        setTweetMenuOpen(false)
+                    }, 200)
+                })
+        }
     }
 
     const tweetCommonContent =
@@ -325,6 +342,7 @@ function Tweet(props: Props) {
                                     Delete
                                 </button>
                                 <button
+                                    onClick={pinTweet}
                                     disabled={!tweetMenuOpen}
                                     className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
                                     <TbPinnedFilled className={`size-5`}/>
