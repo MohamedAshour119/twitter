@@ -222,8 +222,14 @@ function Tweet(props: Props) {
 
     // Pin tweet
     const pinTweet = () => {
+
+        const data = {
+            'username': username,
+            'tweet_id': clickedTweet.tweet.id
+        }
+
         if(clickedTweet.user.id === user?.id) {
-            ApiClient().post(`/pin-tweet/${clickedTweet.tweet.id}`)
+            ApiClient().post(`/pin-tweet`, data)
                 .then(res => {
 
                     console.log(res)
@@ -306,6 +312,16 @@ function Tweet(props: Props) {
         <>
             <div
                 className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} relative group`}>
+
+                {((props.main_tweet && props.main_tweet?.is_pinned) || (!props.main_tweet && props.is_pinned) && location?.pathname === `/users/${username}`) &&
+                    <div className={` group-hover:bg-zinc-800/20 transition`}>
+                        <div className={`text-sm w-fit flex items-center gap-x-1 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
+                            <TbPinnedFilled className={`text-xl`}/>
+                            Pinned
+                        </div>
+                    </div>
+                }
+
                 {((isRetweeted || props.main_tweet) && username !== props.user?.username && location?.pathname === `/users/${username}` ) &&
                     <div className={` group-hover:bg-zinc-800/20 transition`}>
                         <Link to={`/users/${username}`} className={`w-fit flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>

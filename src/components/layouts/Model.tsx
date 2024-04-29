@@ -31,27 +31,39 @@ function Model() {
     // Handle start animation when page loaded
     const model = useRef<HTMLDivElement>(null);
     useEffect( () => {
-        setTimeout(() => {
-            model.current?.classList.add('hidden');
-        }, 0);
+        // setTimeout(() => {
+        //     model.current?.classList.add('opacity-100');
+        // }, 200)
     }, [] )
+
+    const addAnimation = () => {
+        model.current?.classList.contains('animate-slide-down')
+            ? model.current?.classList.add('close-slide-down')
+            :  model.current?.classList.add('animate-slide-down')
+        setTimeout(() => {
+            setIsModalOpen(false)
+            setIsCommentOpen(false)
+            setShowEmojiElInModel(false)
+
+            setTweet(() => ({
+                id: null,
+                title: "",
+                image: null,
+                video: null,
+            }))
+        }, 200)
+    }
 
     // Close model post when clicked outside it
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
             if(!model.current?.contains(e.target as Node) && (isModalOpen || isCommentOpen) && !showEmojiElInModel){
-                setIsModalOpen(false)
-                setIsCommentOpen(false)
-                setShowEmojiElInModel(false)
-
-                setTweet(() => ({
-                    id: null,
-                    title: "",
-                    image: null,
-                    video: null,
-                }))
+                addAnimation()
             }
+
         }
+
+
 
         document.addEventListener('mousedown', handleClickOutside)
         return () => {
@@ -59,7 +71,6 @@ function Model() {
         }
 
     }, [isModalOpen, isCommentOpen] )
-
 
     const emojiModelpickerRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
@@ -76,7 +87,7 @@ function Model() {
 
 
     return (
-        <div ref={model} className={`fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex flex-col gap-y-3 ${(isModalOpen || isCommentOpen) ? 'animate-slide-down z-[250]' : 'close-slide-down'} `}>
+        <div ref={model} className={`fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex-col gap-y-3  ${isModalOpen || isCommentOpen ? 'animate-slide-down' : 'close-slide-down'} `}>
             <div
                 onClick={handleModalOpen}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">

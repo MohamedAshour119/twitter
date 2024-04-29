@@ -202,8 +202,9 @@ function Profile() {
 
     }, [pageURL])
 
+
     return (
-        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} h-svh w-screen flex justify-center`}>
 
             {/* Edit user info model */}
             {isShowEditInfoModal &&
