@@ -80,15 +80,19 @@ function Profile() {
     }
 
     // All User Tweets
-    const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo) => (
-        <Tweet
-            key={tweetInfo.id}
-            allProfileUserTweets={allProfileUserTweets}
-            setAllProfileUserTweets={setAllProfileUserTweets}
-            {...tweetInfo}
-            userInfo={userInfo}
-        />
-    ));
+    const tweets: React.ReactNode = allProfileUserTweets?.map(tweetInfo => {
+        if (!(tweetInfo.retweet_to && !tweetInfo.main_tweet)) {
+            return (
+                <Tweet
+                    key={tweetInfo.id}
+                    allProfileUserTweets={allProfileUserTweets}
+                    setAllProfileUserTweets={setAllProfileUserTweets}
+                    {...tweetInfo}
+                    userInfo={userInfo}
+                />
+            )
+        }
+    });
 
 
     // Handle active buttons

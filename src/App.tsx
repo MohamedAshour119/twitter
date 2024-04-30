@@ -16,6 +16,7 @@ import Explore from "./components/pages/Explore.tsx";
 import NavbarSmScreens from "./components/partials/NavbarSmScreens.tsx";
 import {LuArrowBigUp} from "react-icons/lu";
 import {animateScroll as scroll} from "react-scroll";
+import {ToastContainer} from "react-toastify";
 
 
 function App() {
@@ -83,6 +84,7 @@ function App() {
                 className={`bg-sky-500 z-50 fixed bottom-24 left-2 p-2 rounded-full cursor-pointer block sm:hidden`}>
                 <LuArrowBigUp className={`size-7 text-white/90`}/>
             </div>}
+            <ToastContainer/>
         </div>
 
     )
