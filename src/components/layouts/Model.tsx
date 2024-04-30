@@ -30,11 +30,6 @@ function Model() {
 
     // Handle start animation when page loaded
     const model = useRef<HTMLDivElement>(null);
-    useEffect( () => {
-        // setTimeout(() => {
-        //     model.current?.classList.add('opacity-100');
-        // }, 200)
-    }, [] )
 
     const addAnimation = () => {
         model.current?.classList.contains('animate-slide-down')

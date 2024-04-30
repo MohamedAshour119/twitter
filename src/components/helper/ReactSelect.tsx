@@ -22,10 +22,11 @@ interface Props {
     selectedGender?: Gender | null
     userInfo?: EditUserProfile
     setUserInfo?: Dispatch<SetStateAction<EditUserProfile>>
+    isRegisterModelOpen?: boolean
 }
 function ReactSelect(props: Props) {
 
-    const {formErrors, styles, location} = useContext(AppContext)
+    const {formErrors, styles} = useContext(AppContext)
 
     const months: Month[] = [
         {value: "january", label: "January", days: 31},
@@ -73,7 +74,7 @@ function ReactSelect(props: Props) {
 
     // Set the three selected values to 'birth_date' in the userCredentials state
     useEffect(() => {
-        if(location?.pathname === '/register') {
+        if(props.isRegisterModelOpen) {
             props.setUserCredentials && props.setUserCredentials(prevUserCredentials => ({
                 ...prevUserCredentials,
                 gender: `${props.selectedGender?.value}`,
@@ -91,28 +92,46 @@ function ReactSelect(props: Props) {
     // Handle selected options
     type OptionType = Gender | Month;
     const handleSelectedMonthChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption) {
+        if (selectedOption && props.setUserCredentials) {
             setSelectedMonth(selectedOption as Month);
+            props.setUserCredentials && props.setUserCredentials(prevUserCredentials => ({
+                ...prevUserCredentials,
+                date_birth: `${selectedYear?.value}-${selectedMonth?.label.toUpperCase()}-${selectedDay?.value}`
+            }))
+
         } else {
             setSelectedMonth(null);
         }
     }
 
     const handleDaySelectedChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption) {
+        if (selectedOption && props.setUserCredentials) {
             setSelectedDay(selectedOption as Day);
+            if (selectedMonth && selectedYear) {
+                props.setUserCredentials(prevUserCredentials => ({
+                    ...prevUserCredentials,
+                    date_birth: `${selectedMonth?.value}-${(selectedOption as Day).value}-${selectedYear?.value}`
+                }));
+            }
         } else {
             setSelectedDay(null);
         }
     }
 
     const handleYearSelectedChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption) {
+        if (selectedOption && props.setUserCredentials) {
             setSelectedYear(selectedOption as Year);
+            if (selectedMonth && selectedDay) {
+                props.setUserCredentials(prevUserCredentials => ({
+                    ...prevUserCredentials,
+                    date_birth: `${selectedMonth?.value}-${selectedDay?.value}-${selectedOption?.value}`
+                }));
+            }
         } else {
             setSelectedYear(null);
         }
     }
+
 
 
     return (

@@ -1,4 +1,4 @@
-import {Link} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {MdHomeFilled} from "react-icons/md";
 import {FaFeatherPointed, FaXTwitter} from "react-icons/fa6";
 import {HiMiniMagnifyingGlass} from "react-icons/hi2";
@@ -30,6 +30,8 @@ function Sidebar() {
         setLogoutWindowOpen(!logoutWindowOpen)
     }
 
+    const navigate = useNavigate()
+
     // Logout function
     const logout = () => {
         if(localStorage.getItem('token')){
@@ -38,6 +40,7 @@ function Sidebar() {
                     localStorage.removeItem('token')
                     setUser(null)
                     setRandomTweets([])
+                    navigate('/')
                 })
                 .catch(() => {})
         }

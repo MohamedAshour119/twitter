@@ -1,9 +1,7 @@
 import './App.css'
 import {Route, Routes, useNavigate} from "react-router-dom";
 import Home from './components/pages/Home'
-import Register from "./components/pages/Register.tsx";
 import PageNotFound from "./components/pages/PageNotFound.tsx";
-import Login from "./components/pages/Login.tsx";
 import {useContext, useEffect, useState} from "react";
 import ApiClient from "./components/services/ApiClient.tsx";
 import {AppContext} from "./components/appContext/AppContext.tsx";
@@ -76,18 +74,15 @@ function App() {
 
 
                 <Route path={`/`} element={<Home />}/>
-                <Route path={`/register`} element={<Register />}/>
-                <Route path={`/login`} element={<Login />}/>
-
                 <Route path={"*"} element={<PageNotFound />}/>
             </Routes>
             <NavbarSmScreens/>
             {/* Scroll to top button */}
-            <div
+            {location.pathname !== '/' && <div
                 onClick={scrollToTop}
                 className={`bg-sky-500 z-50 fixed bottom-24 left-2 p-2 rounded-full cursor-pointer block sm:hidden`}>
                 <LuArrowBigUp className={`size-7 text-white/90`}/>
-            </div>
+            </div>}
         </div>
 
     )

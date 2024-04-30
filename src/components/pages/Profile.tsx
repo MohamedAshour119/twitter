@@ -18,7 +18,7 @@ function Profile() {
     const {username} = useParams();
     const {user, isModalOpen,baseUrl, location, isCommentOpen} = useContext(AppContext)
 
-    const [isFollowed, setIsFollowed] = useState<boolean>()
+    const [isFollowed, setIsFollowed] = useState(false)
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
     const [pageURL, setPageURL] = useState('')
     const [isActive, setIsActive] = useState({
@@ -29,7 +29,6 @@ function Profile() {
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo>()
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
-
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
     }

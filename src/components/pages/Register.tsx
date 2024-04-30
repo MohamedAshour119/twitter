@@ -1,16 +1,19 @@
 import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import Select, {GroupBase, SingleValue, StylesConfig} from 'react-select'
-import {Link, useNavigate} from "react-router-dom";
-import {useContext, useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import ApiClient from "../services/ApiClient.tsx";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
-import SuccessfulRegister from "../layouts/SuccessfulRegister.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";
 import {Gender, RegisterUser} from "../../Interfaces.tsx";
 
-function Register() {
+interface Props {
+    isRegisterModelOpen: boolean
+    setIsRegisterModelOpen: Dispatch<SetStateAction<boolean>>
+    setIsLoginModelOpen?: Dispatch<SetStateAction<boolean>>
+}
+function Register(props: Props) {
 
     const {setFormErrors, formErrors, styles} = useContext(AppContext)
 
@@ -144,8 +147,16 @@ function Register() {
     const handleGenderSelectedChange = (selectedOption: SingleValue<Gender>): void => {
         if(selectedOption) {
             setSelectedGender(selectedOption as Gender);
+            setUserCredentials(prevUserCredentials => ({
+                ...prevUserCredentials,
+                gender: (selectedOption as Gender).value // Update userCredentials with the selected gender value
+            }));
         } else {
-            setSelectedGender(null)
+            setSelectedGender(null);
+            setUserCredentials(prevUserCredentials => ({
+                ...prevUserCredentials,
+                gender: '' // Reset gender value in userCredentials if no option is selected
+            }));
         }
     }
 
@@ -155,24 +166,43 @@ function Register() {
     }, 1000)
 
     // Handle collapse form
-    const navigate = useNavigate();
     const handleClick = () => {
-        navigate('/')
-        setIsLoading(true)
+        props.setIsRegisterModelOpen && props.setIsRegisterModelOpen(false)
     }
 
+    const registerRef = useRef<HTMLDivElement>(null)
+    useEffect( () => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if(!registerRef.current?.contains(e.target as Node)){
+                props.setIsRegisterModelOpen(false)
+            }
+        }
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    },[])
+
+    const successfulRegisteration = () => {
+        props.setIsRegisterModelOpen(false)
+        props.setIsLoginModelOpen && props.setIsLoginModelOpen(true)
+    }
+
+    if (successfulRegister) {
+        successfulRegisteration()
+    }
 
     return (
         <>
-            <div className={`md:w-full h-screen flex ${successfulRegister ? 'items-center' : 'items-baseline'}  justify-center py-6 px-4 overflow-y-scroll bg-gradient-to-br from-blue-600 to-[#a8dbf9] z-50`}>
-                <div className={`bg-black p-2 sm:p-4 text-white rounded-2xl md:w-[42rem] w-full`}>
+            <div className={`flex items-baseline ${props.isRegisterModelOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
+                <div ref={registerRef} className={`bg-black p-2 sm:p-4 text-white rounded-2xl md:w-[42rem] w-full`}>
                     <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'} ${successfulRegister ? 'hidden' : 'block'}`}>
                         <header className="flex justify-center relative">
                             <div
                                 className="absolute left-0 top-0 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
                                 onClick={handleClick}
                             >
-                                <div className={``}>
+                                <div>
                                     <HiMiniXMark/>
                                 </div>
                             </div>
@@ -269,12 +299,12 @@ function Register() {
 
                                 <h4 className="mt-8 font-semibold">Date of birth</h4>
 
-                                <ReactSelect isLoading={isLoading} setUserCredentials={setUserCredentials} selectedGender={selectedGender}/>
+                                <ReactSelect isRegisterModelOpen={props.isRegisterModelOpen} isLoading={isLoading} setUserCredentials={setUserCredentials} selectedGender={selectedGender}/>
 
                                 <div className={`mt-8`}>
                                     <h1 className={`font-semibold`}>Profile picture</h1>
 
-                                    <div className="flex gap-x-2 mt-3">
+                                    <div className="flex xs:flex-row flex-col items-center xs:items-start gap-y-2 gap-x-2 mt-3">
                                         <label
                                             className={`flex flex-col items-center justify-center w-36 h-36 rounded-full text-neutral-100 ${userCredentials?.avatar ? 'border-0 bg-transparent' : 'border-2 bg-gray-700 hover:bg-gray-600'} border-gray-500 border-dashed cursor-pointer transition`}>
                                             <div className={`absolute ${!userCredentials?.avatar ? 'invisible' : 'visible'}`}>
@@ -301,7 +331,7 @@ function Register() {
                                         <p className="text-xs ">SVG, PNG, JPG or GIF (Max size: 1 mb)</p>
                                     </div>
                                     {formErrors?.avatar &&
-                                        <p className={`text-red-500 font-semibold`}>{formErrors?.avatar}</p>}
+                                        <p className={`text-red-500 font-semibold mt-3`}>{formErrors?.avatar}</p>}
                                 </div>
 
                                 <button type={"submit"}
@@ -312,15 +342,17 @@ function Register() {
                                     </span>
                                 </button>
 
-                                <div className={`sm:translate-x-1/2 sm:w-1/2 w-full block mt-4 text-center`}>
-                                    Already have account? <Link to={'/login'} className={`text-sky-600 font-semibold hover:text-sky-400 transition`}>Sign in</Link>
+                                <div className={`sm:translate-x-1/2 sm:w-1/2 w-full mt-4 flex justify-center gap-x-2`}>
+                                    Already have account?
+                                    <button
+                                        onClick={successfulRegisteration}
+                                        className={`text-sky-600 font-semibold hover:text-sky-400 transition`}>
+                                        Sign in
+                                    </button>
                                 </div>
                             </main>
                         </div>
                     </form>
-
-                    {/* Show successful registration component */}
-                    {successfulRegister && <SuccessfulRegister/>}
 
                     {isLoading &&
                         <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2`}>
