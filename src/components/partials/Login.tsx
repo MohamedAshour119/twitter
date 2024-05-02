@@ -5,6 +5,7 @@ import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from 
 import {useNavigate} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
+import {useLocation} from "react-router";
 
 interface User {
     email: string
@@ -19,6 +20,10 @@ interface Props {
 
 function Login(props: Props) {
 
+    const navigate = useNavigate();
+    const location = useLocation()
+    const from = location.state?.from?.pathname || '/home'
+
     const {setUser, setFormErrors, formErrors} = useContext(AppContext)
 
     const [isLoading, setIsLoading] = useState(true)
@@ -28,8 +33,6 @@ function Login(props: Props) {
         password: '',
     })
     const [wrongCredentialsMsg, setWrongCredentialsMsg] = useState("")
-
-    const navigate = useNavigate();
     const handleClick = () => {
         props.setIsLoginModelOpen && props.setIsLoginModelOpen(false)
     }
@@ -47,7 +50,7 @@ function Login(props: Props) {
             .then(res=> {
                 setUser(res.data.data.data)
                 localStorage.setItem('token', res.data.data.token)
-                navigate('/home')
+                navigate(from, { replace: true })
             })
             .catch((err) => {
                 setFormErrors(err.response.data.errors)

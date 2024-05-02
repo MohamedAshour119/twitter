@@ -3,14 +3,14 @@ import {TbCameraPlus} from "react-icons/tb";
 import {ChangeEvent, Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";
-import {EditUserProfile, FormErrorsDefaultValues, UserInfo} from "../../Interfaces.tsx";
+import {EditUserProfile, FormErrorsDefaultValues} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
 
 interface Props {
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
     isShowEditInfoModal: boolean
-    setUserInfo: Dispatch<SetStateAction<UserInfo | undefined>>
+    setUserInfo: Dispatch<SetStateAction<EditUserProfile | undefined>>
 }
 function EditProfileModal(props: Props) {
 

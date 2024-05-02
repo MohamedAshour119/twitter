@@ -64,7 +64,7 @@ export const AppContext = createContext<AppContextType>({
     setAllNotifications: () => null,
     originalNotifications: [],
     notificationsPageURL: '',
-    getAllNotifications: () => null
+    getAllNotifications: () => null,
 });
 
 interface AppProviderProps {
@@ -135,15 +135,18 @@ const AppProvider = ({children}: AppProviderProps) => {
             })
     }
 
-
     useEffect( () => {
-        getAllNotifications('/notifications')
-    }, [localStorage.getItem('token')])
-
-    useEffect( () => {
-        setOriginalNotifications([])
-        setAllNotifications([])
+        if (!localStorage.getItem('token')) {
+            setOriginalNotifications([])
+            setAllNotifications([])
+        }
     }, [user])
+
+    useEffect( () => {
+        if (!notificationsPageURL && (location.pathname === '/notifications' || location.pathname === '/home')) {
+            getAllNotifications('/notifications')
+        }
+    }, [localStorage.getItem('token')])
 
 
     const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {

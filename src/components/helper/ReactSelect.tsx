@@ -75,14 +75,14 @@ function ReactSelect(props: Props) {
     // Set the three selected values to 'birth_date' in the userCredentials state
     useEffect(() => {
         if(props.isRegisterModelOpen) {
-            props.setUserCredentials && props.setUserCredentials(prevUserCredentials => ({
-                ...prevUserCredentials,
+            props.setUserCredentials && props.setUserCredentials(prevState => ({
+                ...prevState,
                 gender: `${props.selectedGender?.value}`,
                 date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
             }))
         } else {
-            props.setUserInfo && props.setUserInfo(prevUserInfo => ({
-                ...prevUserInfo,
+            props.setUserInfo && props.setUserInfo(prevState => ({
+                ...prevState,
                 birth_date: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
             }))
         }
@@ -92,10 +92,15 @@ function ReactSelect(props: Props) {
     // Handle selected options
     type OptionType = Gender | Month;
     const handleSelectedMonthChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption && props.setUserCredentials) {
+        if (selectedOption || props.setUserCredentials || props.setUserInfo) {
             setSelectedMonth(selectedOption as Month);
-            props.setUserCredentials && props.setUserCredentials(prevUserCredentials => ({
-                ...prevUserCredentials,
+            props.setUserCredentials && props.setUserCredentials(prevState => ({
+                ...prevState,
+                date_birth: `${selectedYear?.value}-${selectedMonth?.label.toUpperCase()}-${selectedDay?.value}`
+            }))
+
+            props.setUserInfo && props.setUserInfo(prevState => ({
+                ...prevState,
                 date_birth: `${selectedYear?.value}-${selectedMonth?.label.toUpperCase()}-${selectedDay?.value}`
             }))
 
@@ -105,13 +110,18 @@ function ReactSelect(props: Props) {
     }
 
     const handleDaySelectedChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption && props.setUserCredentials) {
+        if (selectedOption || props.setUserCredentials || props.setUserInfo) {
             setSelectedDay(selectedOption as Day);
             if (selectedMonth && selectedYear) {
-                props.setUserCredentials(prevUserCredentials => ({
-                    ...prevUserCredentials,
+                props.setUserCredentials && props.setUserCredentials(prevState => ({
+                    ...prevState,
                     date_birth: `${selectedMonth?.value}-${(selectedOption as Day).value}-${selectedYear?.value}`
                 }));
+
+                props.setUserInfo && props.setUserInfo(prevState => ({
+                    ...prevState,
+                    date_birth: `${selectedYear?.value}-${selectedMonth?.label.toUpperCase()}-${selectedDay?.value}`
+                }))
             }
         } else {
             setSelectedDay(null);
@@ -119,13 +129,18 @@ function ReactSelect(props: Props) {
     }
 
     const handleYearSelectedChange = (selectedOption: SingleValue<OptionType>): void => {
-        if (selectedOption && props.setUserCredentials) {
+        if (selectedOption || props.setUserCredentials || props.setUserInfo) {
             setSelectedYear(selectedOption as Year);
             if (selectedMonth && selectedDay) {
-                props.setUserCredentials(prevUserCredentials => ({
-                    ...prevUserCredentials,
+                props.setUserCredentials && props.setUserCredentials(prevState => ({
+                    ...prevState,
                     date_birth: `${selectedMonth?.value}-${selectedDay?.value}-${selectedOption?.value}`
                 }));
+
+                props.setUserInfo && props.setUserInfo(prevState => ({
+                    ...prevState,
+                    date_birth: `${selectedYear?.value}-${selectedMonth?.label.toUpperCase()}-${selectedDay?.value}`
+                }))
             }
         } else {
             setSelectedYear(null);

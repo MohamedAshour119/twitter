@@ -147,6 +147,10 @@ function Notifications() {
         setAllNotifications(() => ([...originalNotifications]))
     }
 
+    useEffect(() => {
+        isActive.all ? allNotificationsReset() : filteredVerifiedNotifications()
+    }, [isActive]);
+
     return (
         <div className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
 

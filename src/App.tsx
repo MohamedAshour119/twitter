@@ -49,8 +49,8 @@ function App() {
     }, [])
 
     useEffect(() => {
-        // Redirect to home if user exists and when trying to access '/' or '/register' or '/login'
-        if (token && (location.pathname === '/' || location.pathname === '/register' || location.pathname === '/login')) {
+        // Redirect to home if user exists and when trying to access '/'
+        if (token && (location.pathname === '/')) {
             navigate('/home');
         }
 

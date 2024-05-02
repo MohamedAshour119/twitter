@@ -3,8 +3,8 @@ import {Link} from "react-router-dom";
 import {FcGoogle} from "react-icons/fc";
 import Footer from "../partials/Footer.tsx";
 import {useContext, useEffect, useState} from "react";
-import Register from "./Register.tsx";
-import Login from "./Login.tsx";
+import Register from "../partials/Register.tsx";
+import Login from "../partials/Login.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {FormErrorsDefaultValues} from "../../Interfaces.tsx";
 
@@ -69,7 +69,7 @@ function Home() {
                             </button>
 
                             <p className="text-xs text-[#71767b] mt-1">By signing up, you agree to the
-                                <Link to="/terms" className="ml-1 text-sky-600">
+                                <Link to="/explore" className="ml-1 text-sky-600">
                                     Terms of Service
                                 </Link> and
                                 <Link to="/privacy-policy" className="ml-1 text-sky-600">
