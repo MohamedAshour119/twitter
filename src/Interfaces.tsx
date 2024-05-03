@@ -48,20 +48,6 @@ export interface UserInfo {
     tweets_count: number | null
 }
 
-export interface ClickedTweet {
-    user: {
-        id: number
-        username: string
-        avatar: string
-    }
-    tweet: {
-        title: string | null
-        created_at: string
-        id: number | null
-        comments_count: number
-    }
-}
-
 export interface Notification {
     id: number | null
     type: string
@@ -179,21 +165,6 @@ export const UserDefaultValues =
         followers_number: null,
         is_followed: false,
         tweets_count: null,
-    }
-export const ClickedTweetDefaultValues =
-    {
-        user: {
-            id: 0,
-            username: '',
-            avatar: ''
-        },
-
-        tweet: {
-            title: '',
-            created_at: '',
-            id: null,
-            comments_count: 0,
-        },
     }
 
 export const FormErrorsDefaultValues =

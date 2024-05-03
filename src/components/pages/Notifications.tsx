@@ -36,7 +36,7 @@ function Notifications() {
 
     // Handle active buttons
     const allNotificationsRef = useRef<HTMLLIElement>(null);
-    const mentionedNotificationsRef = useRef<HTMLLIElement>(null);
+    const followNotificationsRef = useRef<HTMLLIElement>(null);
 
 
 
@@ -49,7 +49,7 @@ function Notifications() {
                     verified: false,
                 }))
             }
-            if(mentionedNotificationsRef.current?.contains(e.target as Node)){
+            if(followNotificationsRef.current?.contains(e.target as Node)){
                 setIsActive(prevIsActive => ({
                     ...prevIsActive,
                     all: false,
@@ -82,7 +82,7 @@ function Notifications() {
     const lastNotificationRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
+            if (entries[0].isIntersecting && notificationsPageURL) {
                 getAllNotifications(notificationsPageURL)
             }
         }, {
@@ -175,7 +175,7 @@ function Notifications() {
                                 className={`${isActive.all ? 'border-b-2 border-sky-500 w-fit' : ''}  pb-4 px-3`}>All</div>
                         </li>
                         <li
-                            ref={mentionedNotificationsRef}
+                            ref={followNotificationsRef}
                             onClick={filteredVerifiedNotifications}
                             className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.verified ? 'text-neutral-200 font-semibold ' : ''}`}
                         >

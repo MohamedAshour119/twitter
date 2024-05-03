@@ -20,7 +20,6 @@ function TrendingSidebar(props: Props) {
 
     const {
         user,
-        setShowExplorePageHashtags,
         location,
         setDisplayNotResultsFound,
     } = useContext(AppContext)
@@ -164,7 +163,6 @@ function TrendingSidebar(props: Props) {
 
     const searchForKeyword = (keyword: string) => {
         setDisplayNotResultsFound(false)
-        setShowExplorePageHashtags(false)
         location?.pathname !== '/explore' ? navigate('/explore') : ''
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {

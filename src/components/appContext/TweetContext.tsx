@@ -5,7 +5,6 @@ import {EmojiData} from "emoji-picker-react";
 import {tweetDefaultValues, TweetInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
-import {useParams} from "react-router-dom";
 
 interface TweetContextType {
     tweet: Tweet
@@ -26,13 +25,10 @@ interface TweetContextType {
     sendRequest: () => void
     comments: TweetInfo[]
     setComments: Dispatch<SetStateAction<TweetInfo[]>>
-    commentsCount: CommentsCount
+    commentsCount: number
+    setCommentsCount: Dispatch<SetStateAction<number>>
 }
 
-interface CommentsCount {
-    comments_counts: number | null
-    id: number | null
-}
 interface Tweet {
     id: number | null
     title: string
@@ -66,21 +62,19 @@ export const TweetContext = createContext<TweetContextType>({
     sendRequest: () => null,
     comments: [tweetDefaultValues],
     setComments: () => null,
-    commentsCount: {
-        comments_counts: null,
-        id: null,
-    },
+    commentsCount: 0,
+    setCommentsCount: () => null,
+
+
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
-
-    const {id} = useParams()
 
     const {
         setIsModalOpen,
         setIsCommentOpen,
         clickedTweet,
-        isCommentOpen
+        isCommentOpen,
     } = useContext(AppContext)
 
     const [tweet, setTweet] = useState<Tweet>({
@@ -94,10 +88,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [showEmojiElInModel, setShowEmojiElInModel] = useState(false)
     const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
-    const [commentsCount, setCommentsCount] = useState<CommentsCount>({
-        comments_counts: null,
-        id: null,
-    })
+    const [commentsCount, setCommentsCount] = useState(0)
 
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -171,7 +162,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         }
 
         formData.append('title', tweet.title);
-        formData.append('id', String(clickedTweet.tweet.id) )
+        formData.append('id', String(clickedTweet.id) )
 
 
         if(tweet.image){
@@ -181,29 +172,24 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             formData.append('video', tweet.video as Blob)
         }
 
-        if(location.pathname == `/tweets/${clickedTweet.tweet.id}` || isCommentOpen){
+        if(location.pathname == `/tweets/${clickedTweet.id}` || isCommentOpen){
             ApiClient().post(`/addComment`, formData)
                 .then(res => {
                     makeInputEmpty()
-                    if(id && clickedTweet.tweet.id === +id) {
-                        setComments(prevComments => ([
-                            res.data.data.tweet,
-                            ...prevComments,
-                        ]))
-                    }
+                    setComments(prevComments => ([
+                        res.data.data.tweet,
+                        ...prevComments,
+                    ]))
 
-                    const commentDetails = {
-                        comments_counts: res.data.data.main_tweet.comments_count,
-                        id: res.data.data.main_tweet.id
-                    }
-                    setCommentsCount(commentDetails)
-                    setIsCommentOpen(false)
+                    setCommentsCount(prevState => prevState + 1)
 
                 })
                 .catch(err => {
                     console.log(err)
                 })
-        } else {
+                .finally(() => setIsCommentOpen(false))
+        }
+        else {
             ApiClient().post(`/create-tweet`, formData)
                 .then(res => {
                     setIsModalOpen(false)
@@ -247,6 +233,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 comments,
                 setComments,
                 commentsCount,
+                setCommentsCount,
             }}
         >
             {children}

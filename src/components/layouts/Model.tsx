@@ -101,12 +101,12 @@ function Model() {
                                     <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{clickedTweet.user.username}</h1>
                                 </Link>
                                 <span
-                                    className={`font-light text-[#71767b] cursor-pointer`}>{clickedTweet.tweet.created_at}
+                                    className={`font-light text-[#71767b] cursor-pointer`}>{clickedTweet.created_at}
                             </span>
                             </div>
 
                             <div>
-                                {clickedTweet.tweet.title}
+                                {clickedTweet.title}
                             </div>
 
                         </div>

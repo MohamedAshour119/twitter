@@ -13,26 +13,29 @@ import Tweet from "../layouts/Tweet.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 
 function ShowTweet() {
-
     const {
         isModalOpen,
         baseUrl,
         user,
         isCommentOpen,
         goBack,
+        setClickedTweet,
     } = useContext(AppContext)
     const {
         comments,
-        setComments
+        setComments,
+        commentsCount,
     } = useContext(TweetContext)
     const {id} = useParams();
 
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
     const [pageURL, setPageURL] = useState('')
 
-    useEffect( () => {
+
+    const displayTweetFn = () => {
         ApiClient().get(`/tweets/${id}`)
             .then(res => {
+                setClickedTweet(res.data.data.tweet)
                 setDisplayTweet(res.data.data.tweet)
                 setComments(res.data.data.pagination.data)
                 setPageURL(res.data.data.pagination.next_page_url)
@@ -40,8 +43,11 @@ function ShowTweet() {
             .catch(err => {
                 console.log(err)
             })
+    }
 
-    }, [id])
+    useEffect( () => {
+        displayTweetFn()
+    }, [id, commentsCount])
 
     const getComments = (pageURL: string) => {
         ApiClient().get(pageURL)
@@ -54,12 +60,11 @@ function ShowTweet() {
             })
     }
 
+    useEffect(() => {
+        // setComments([])
+        // getComments(first_page_url)
+    }, [commentsCount]);
 
-    const displayComments = comments?.slice(0, comments.length - 1).map(comment => {
-        return (
-            <Tweet {...comment}/>
-        )
-    })
 
     // Detect when scroll to last element
     const lastCommentRef = useRef<HTMLDivElement>(null)
@@ -85,9 +90,16 @@ function ShowTweet() {
         };
     }, [pageURL])
 
+    // Delete comment
+    const displayComments = comments?.slice(0, comments.length - 1).map(comment => {
+        return (
+            <Tweet {...comment}/>
+        )
+    })
+
     return (
         <div
-            className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
+            className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} w-screen h-screen flex justify-center overflow-x-hidden`}>
 
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>

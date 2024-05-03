@@ -1,12 +1,11 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
 import {useLocation} from "react-router";
 import {
-    ClickedTweet,
-    ClickedTweetDefaultValues,
+    TweetInfo,
     UserDefaultValues,
     UserInfo,
     FormError,
-    Gender, FormErrorsDefaultValues, Notification
+    Gender, FormErrorsDefaultValues, Notification, tweetDefaultValues
 } from "../../Interfaces.tsx";
 import {GroupBase, StylesConfig} from "react-select";
 import ApiClient from "../services/ApiClient.tsx";
@@ -22,8 +21,8 @@ interface AppContextType {
     setIsModalOpen: Dispatch<SetStateAction<boolean>>
     isCommentOpen: boolean
     setIsCommentOpen: Dispatch<SetStateAction<boolean>>
-    clickedTweet: ClickedTweet
-    setClickedTweet: Dispatch<SetStateAction<ClickedTweet>>
+    clickedTweet: TweetInfo
+    setClickedTweet: Dispatch<SetStateAction<TweetInfo>>
     formErrors: FormError
     setFormErrors: Dispatch<SetStateAction<FormError>>
     styles: StylesConfig<OptionType, false, GroupBase<OptionType>>
@@ -51,7 +50,7 @@ export const AppContext = createContext<AppContextType>({
     isCommentOpen: false,
     setIsCommentOpen: () => null,
     baseUrl: '',
-    clickedTweet: ClickedTweetDefaultValues,
+    clickedTweet: tweetDefaultValues,
     setClickedTweet: () => null,
     formErrors: FormErrorsDefaultValues,
     setFormErrors: () => null,
@@ -91,7 +90,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [isModelOpen, setIsModelOpen] = useState(false)
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [user, setUser] = useState<UserInfo | null>(UserDefaultValues)
-    const [clickedTweet, setClickedTweet] = useState<ClickedTweet>(ClickedTweetDefaultValues)
+    const [clickedTweet, setClickedTweet] = useState<TweetInfo>(tweetDefaultValues)
     const baseUrl = 'http://api.twitter.test'
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
@@ -138,9 +137,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     }, [user])
 
     useEffect( () => {
-        if (location.pathname === '/notifications' || location.pathname === '/home') {
-            getAllNotifications('/notifications')
-        }
+        getAllNotifications('/notifications')
     }, [notificationsPageURL, token])
 
 

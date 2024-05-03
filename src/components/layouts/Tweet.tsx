@@ -19,6 +19,7 @@ interface Props extends  TweetInfo {
     allProfileUserTweets?: TweetInfo[]
     setAllProfileUserTweets?: Dispatch<SetStateAction<TweetInfo[]>>
     userInfo?: UserInfo
+    deleteComment?: () => void
 }
 function Tweet(props: Props) {
 
@@ -27,6 +28,7 @@ function Tweet(props: Props) {
         location,
         baseUrl,
         isCommentOpen,
+        isModalOpen,
         setIsCommentOpen,
         clickedTweet,
         setClickedTweet,
@@ -34,7 +36,7 @@ function Tweet(props: Props) {
 
     const {randomTweets ,setRandomTweets} = useContext(TweetContext)
 
-    const {commentsCount} = useContext(TweetContext)
+    const { comments, setComments, setCommentsCount} = useContext(TweetContext)
 
     const {username} = useParams();
 
@@ -125,12 +127,43 @@ function Tweet(props: Props) {
                 id: props.user_id,
                 username: props.user.username,
                 avatar: props.user.avatar,
+                display_name: props.user.display_name,
+                is_followed: props.user.is_followed,
             },
-            tweet: {
-                id: props.id,
-                title: !props.main_tweet ? props.title : props.main_tweet.title,
-                created_at: props.created_at,
-                comments_count: props.comments_count,
+
+            user_id: props.user_id,
+            title: props.title,
+            image: props.image,
+            video: props.video,
+            show_tweet_created_at: props.show_tweet_created_at,
+            updated_at: props.updated_at,
+            created_at: props.created_at,
+            is_pinned: props.is_pinned,
+            id: props.id,
+            retweet_to: props.retweet_to,
+            comment_to: props.comment_to,
+            reactions_count: props.reactions_count,
+            retweets_count: props.retweets_count,
+            is_reacted: props.is_reacted,
+            is_retweeted: props.is_retweeted,
+            comments_count: props.comments_count,
+            main_tweet: {
+                title: props.main_tweet?.title,
+                user_id: props.main_tweet?.user_id,
+                image: props.main_tweet?.image,
+                video: props.main_tweet?.video,
+                show_tweet_created_at: props.main_tweet?.show_tweet_created_at,
+                updated_at: props.main_tweet?.updated_at,
+                created_at: props.main_tweet?.created_at,
+                is_pinned: props.main_tweet?.is_pinned,
+                id: props.main_tweet?.id,
+                retweet_to: props.main_tweet?.retweet_to,
+                comment_to: props.main_tweet?.comment_to,
+                reactions_count: props.main_tweet?.reactions_count,
+                retweets_count: props.main_tweet?.retweets_count,
+                comments_count: props.main_tweet?.comments_count,
+                is_reacted: props.main_tweet?.is_reacted,
+                is_retweeted: props.main_tweet?.is_retweeted,
             }
         }
         setClickedTweet(tweet)
@@ -161,34 +194,62 @@ function Tweet(props: Props) {
     }, [] )
 
     // Delete tweet
+    const tweetText = props.main_tweet ? props.main_tweet.title : props.title;
     const deleteTweet = () => {
 
         const hashtags = tweetText?.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
+        if(!props.comment_to) {
+            ApiClient().post(`/delete-tweet/${props.id}`, hashtags)
+                .then(() => {
 
-        ApiClient().post(`/delete-tweet/${props.id}`, hashtags)
-            .then(() => {
-                const filteredUserTweets = props.allProfileUserTweets?.filter(singleTweet => singleTweet.id !== props.id)
-                props.setAllProfileUserTweets && filteredUserTweets && props.setAllProfileUserTweets(filteredUserTweets)
-                toast.success("Tweet deleted successfully", {
-                    className: 'custom-toast',
-                    position: "top-center",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    transition: Zoom,
-                });
-            })
-            .catch(err => {
-                console.log(err)
-            })
-            .finally(() => setTweetMenuOpen(false))
+                    const filteredUserTweets = props.allProfileUserTweets?.filter(singleTweet => singleTweet.id !== props.id)
+                    props.setAllProfileUserTweets && filteredUserTweets && props.setAllProfileUserTweets(filteredUserTweets)
+                    toast.success(`Tweet deleted successfully`, {
+                        className: 'custom-toast',
+                        position: "top-center",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        transition: Zoom,
+                    })
+
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+                .finally(() => setTweetMenuOpen(false))
+        } else {
+            ApiClient().post(`/delete-tweet/${clickedTweet.id}`, hashtags)
+                .then(() => {
+                    setCommentsCount(prevState => prevState - 1)
+                    const filteredTweetComments = comments?.filter(comment => comment.id !== clickedTweet.id)
+                    setComments(filteredTweetComments)
+                    toast.success(`Comment deleted successfully`, {
+                        className: 'custom-toast',
+                        position: "top-center",
+                        autoClose: 2000,
+                        hideProgressBar: false,
+                        closeOnClick: true,
+                        pauseOnHover: true,
+                        draggable: true,
+                        progress: undefined,
+                        theme: "dark",
+                        transition: Zoom,
+                    })
+
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+                .finally(() => setTweetMenuOpen(false))
+        }
+
+
     }
-
-    const tweetText = props.main_tweet ? props.main_tweet.title : props.title;
 
     const detectHashtag = () => {
         const hashtags = tweetText?.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
@@ -225,15 +286,12 @@ function Tweet(props: Props) {
 
         const data = {
             'username': username,
-            'tweet_id': clickedTweet.tweet.id
+            'tweet_id': clickedTweet.id
         }
 
         if(clickedTweet.user.id === user?.id) {
             ApiClient().post(`/pin-tweet`, data)
-                .then(res => {
-
-                    console.log(res)
-                })
+                .then()
                 .catch()
                 .finally(() => {
                     tweetMenuRef.current?.classList.add('animate-fade-out')
@@ -256,7 +314,7 @@ function Tweet(props: Props) {
                 </Link>
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
-                        <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.tweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
+                        <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
                             <h1 className={`font-semibold cursor-pointer`}>{props.user?.display_name ? props.user?.display_name : props.user?.username}</h1>
                             <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
                         </Link>
@@ -407,7 +465,7 @@ function Tweet(props: Props) {
                                 <FaRegComment/>
                             </div>
                             <span
-                                className={`group-hover/icon:text-sky-500 transition`}>{props.id === commentsCount.id ? commentsCount.comments_counts : props.comments_count}</span>
+                                className={`group-hover/icon:text-sky-500 transition`}>{props.comments_count}</span>
                         </div>
 
                         <div onClick={handleRetweet} className={`flex items-center cursor-pointer group/icon`}>
@@ -436,7 +494,9 @@ function Tweet(props: Props) {
 
                 {/*  Comments  */}
                 { location?.pathname === `/tweets/${props.id}` &&
-                    <TweetTextAreaAndPreview/>
+                    <div className={`${location?.pathname === `/tweets/${props.id}` && (isCommentOpen || isModalOpen) ? 'hidden' : ''}`}>
+                        <TweetTextAreaAndPreview/>
+                    </div>
                 }
 
             </div>
