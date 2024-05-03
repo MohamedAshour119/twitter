@@ -5,7 +5,7 @@ import {IoSettingsOutline} from "react-icons/io5";
 import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
 import {RiArrowLeftLine} from "react-icons/ri";
 import {TweetInfo} from "../../Interfaces.tsx";
@@ -18,7 +18,8 @@ function ShowTweet() {
         isModalOpen,
         baseUrl,
         user,
-        isCommentOpen
+        isCommentOpen,
+        goBack,
     } = useContext(AppContext)
     const {
         comments,
@@ -101,9 +102,9 @@ function ShowTweet() {
                     </div>
                     {/* Header for the rest of screens */}
                     <div className={`flex items-center gap-x-7 px-4 w-full text-neutral-200 z-[100] cursor-pointer`}>
-                        <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+                        <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                             <RiArrowLeftLine className={`size-5`}/>
-                        </Link>
+                        </div>
                         <div className={`py-4 text-xl font-semibold`}>Post</div>
                     </div>
                 </header>

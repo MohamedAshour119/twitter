@@ -10,9 +10,9 @@ import {
 } from "../../Interfaces.tsx";
 import {GroupBase, StylesConfig} from "react-select";
 import ApiClient from "../services/ApiClient.tsx";
+import {useNavigate} from "react-router-dom";
 
 interface AppContextType {
-    isRegisterOpen: boolean
     location: Pathname | null
     user: UserInfo | null
     setUser: Dispatch<SetStateAction<UserInfo | null>>
@@ -34,14 +34,14 @@ interface AppContextType {
     allNotifications: Notification[]
     setAllNotifications: Dispatch<SetStateAction<Notification[]>>
     originalNotifications: Notification[]
-    notificationsPageURL: string
+    notificationsPageURL: string | null
     getAllNotifications: (pageUrl: string) => void
+    goBack: () => void
 }
 
 type OptionType = Gender;
 
 export const AppContext = createContext<AppContextType>({
-    isRegisterOpen: false,
     location: null,
     user: UserDefaultValues,
     setUser: () => {},
@@ -63,8 +63,9 @@ export const AppContext = createContext<AppContextType>({
     allNotifications: [],
     setAllNotifications: () => null,
     originalNotifications: [],
-    notificationsPageURL: '',
+    notificationsPageURL: null,
     getAllNotifications: () => null,
+    goBack: () => null,
 });
 
 interface AppProviderProps {
@@ -82,9 +83,12 @@ interface Pathname {
 const AppProvider = ({children}: AppProviderProps) => {
 
     const location: Pathname = useLocation();
+    const navigate = useNavigate()
+    const goBack = () => {
+        navigate(-1)
+    }
 
     const [isModelOpen, setIsModelOpen] = useState(false)
-    const [isRegisterOpen, setIsRegisterOpen] = useState(false)
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [user, setUser] = useState<UserInfo | null>(UserDefaultValues)
     const [clickedTweet, setClickedTweet] = useState<ClickedTweet>(ClickedTweetDefaultValues)
@@ -94,19 +98,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [notificationsCount, setNotificationsCount] = useState(0)
     const [allNotifications, setAllNotifications] = useState<Notification[]>([])
     const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
-    const [notificationsPageURL, setNotificationsPageURL] = useState('')
-
-    useEffect(() => {
-        if( location.pathname === '/register' ){
-            setIsRegisterOpen(true)
-        } else {
-            setIsRegisterOpen(false);
-        }
-
-        setFormErrors(FormErrorsDefaultValues)
-
-    }, [location.pathname]);
-
+    const [notificationsPageURL, setNotificationsPageURL] = useState(null)
 
     // Handle model open state
     const handleModelOpen = () => {
@@ -116,14 +108,15 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     // Get all notifications
     const getAllNotifications = (pageURL: string) => {
+
         ApiClient().get(pageURL)
             .then(res => {
-                setAllNotifications(prevNotifications => ([
-                    ...prevNotifications,
+                setAllNotifications(prevState => ([
+                    ...prevState,
                     ...res.data.data.notifications
                 ]))
-                setOriginalNotifications(prevNotifications => ([
-                    ...prevNotifications,
+                setOriginalNotifications(prevState => ([
+                    ...prevState,
                     ...res.data.data.notifications
                 ]))
                 setNotificationsPageURL(res.data.data.next_page_url)
@@ -135,6 +128,8 @@ const AppProvider = ({children}: AppProviderProps) => {
             })
     }
 
+    const token = localStorage.getItem('token')
+
     useEffect( () => {
         if (!localStorage.getItem('token')) {
             setOriginalNotifications([])
@@ -143,10 +138,10 @@ const AppProvider = ({children}: AppProviderProps) => {
     }, [user])
 
     useEffect( () => {
-        if (!notificationsPageURL && (location.pathname === '/notifications' || location.pathname === '/home')) {
+        if (location.pathname === '/notifications' || location.pathname === '/home') {
             getAllNotifications('/notifications')
         }
-    }, [localStorage.getItem('token')])
+    }, [notificationsPageURL, token])
 
 
     const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
@@ -160,8 +155,7 @@ const AppProvider = ({children}: AppProviderProps) => {
             border: '0 solid transparent',
             outline: (formErrors?.birth_date?.length === 0 && isFocused) ? '2px solid #006a9d'
                 : (formErrors?.birth_date?.length > 0 && !isFocused) ? '1px solid red'
-                    : (formErrors?.birth_date?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b'
-            ,
+                    : (formErrors?.birth_date?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b',
 
             '&:hover': {
                 borderColor: isDisabled ? 'transparent' : 'none',
@@ -234,7 +228,6 @@ const AppProvider = ({children}: AppProviderProps) => {
     return (
         <AppContext.Provider
             value={{
-                isRegisterOpen,
                 location,
                 baseUrl,
                 user,
@@ -258,6 +251,7 @@ const AppProvider = ({children}: AppProviderProps) => {
                 originalNotifications,
                 notificationsPageURL,
                 getAllNotifications,
+                goBack,
             }}>
             {children}
         </AppContext.Provider>
