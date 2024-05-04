@@ -148,6 +148,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         }))
     }
 
+
     const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
 
     // Send Request with data
@@ -182,6 +183,15 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                     ]))
 
                     setCommentsCount(prevState => prevState + 1)
+
+                    randomTweets.map((tweet, index) => {
+                        const i = (tweet.id === res.data.data.main_tweet.id) ? index : null
+                        const filteredTweets = randomTweets.filter(tweet => tweet.id !== res.data.data.main_tweet.id)
+                        if (i) {
+                            filteredTweets.splice(i, 0, res.data.data.main_tweet)
+                            setRandomTweets(filteredTweets)
+                        }
+                    })
 
                 })
                 .catch(err => {

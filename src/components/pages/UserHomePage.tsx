@@ -39,7 +39,7 @@ function UserHomePage() {
         following: false,
     })
 
-    const parentRef = useRef<HTMLDivElement>(null)
+    // const parentRef = useRef<HTMLDivElement>(null)
     // Fetch random tweets
     const getHomeTweets = (pageURL: string) => {
         ApiClient().get(pageURL)
@@ -50,7 +50,7 @@ function UserHomePage() {
                     ...res.data.data.tweets,
                 ]))
                 res.data.data.tweets.length === 0 ? setDisplayNotFoundMsg(true) : ''
-                parentRef.current && parentRef.current?.classList.remove('h-svh')
+                // parentRef.current && parentRef.current?.classList.remove('h-svh')
             })
             .catch(err => {
                 console.log(err)
@@ -127,18 +127,25 @@ function UserHomePage() {
         })
     }
 
-    const bodyEl = document.body;
     if(isModalOpen || isCommentOpen) {
-        bodyEl.style.backgroundColor = '#1d252d'
+        document.body.style.backgroundColor = '#1d252d'
     } else {
-        bodyEl.style.backgroundColor = 'black'
+        document.body.style.backgroundColor = 'black'
     }
 
+    useEffect(() => {
+        const bodyEl = document.body;
+        if (isModalOpen || isCommentOpen) {
+            bodyEl.style.overflow = 'hidden';
+        } else {
+            bodyEl.style.overflow = 'auto';
+        }
+    }, [isModalOpen, isCommentOpen]);
 
     return (
         <div
-            ref={parentRef}
-            className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} h-svh w-screen flex justify-center`}>
+            // ref={parentRef}
+            className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} h-svh w-screen flex justify-center`}>
 
             <div className={`z-[200] container fixed 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
                 <div></div>
