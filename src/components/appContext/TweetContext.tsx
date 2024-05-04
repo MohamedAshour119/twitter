@@ -2,7 +2,7 @@ import {ChangeEvent, createContext, Dispatch, MouseEventHandler, ReactNode, SetS
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import {EmojiData} from "emoji-picker-react";
-import {tweetDefaultValues, TweetInfo} from "../../Interfaces.tsx";
+import {tweetDefaultValues, TweetInfo, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
 
@@ -27,6 +27,10 @@ interface TweetContextType {
     setComments: Dispatch<SetStateAction<TweetInfo[]>>
     commentsCount: number
     setCommentsCount: Dispatch<SetStateAction<number>>
+    allProfileUserTweets: TweetInfo[]
+    setAllProfileUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
+    userInfo: UserInfo | undefined
+    setUserInfo: Dispatch<SetStateAction<UserInfo | undefined>>
 }
 
 interface Tweet {
@@ -64,11 +68,15 @@ export const TweetContext = createContext<TweetContextType>({
     setComments: () => null,
     commentsCount: 0,
     setCommentsCount: () => null,
-
+    allProfileUserTweets: [tweetDefaultValues],
+    setAllProfileUserTweets: () => null,
+    userInfo: UserDefaultValues,
+    setUserInfo: () => null,
 
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
+
 
     const {
         setIsModalOpen,
@@ -87,9 +95,10 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [showEmojiEl, setShowEmojiEl] = useState(false)
     const [showEmojiElInModel, setShowEmojiElInModel] = useState(false)
     const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
+    const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
     const [commentsCount, setCommentsCount] = useState(0)
-
+    const [userInfo, setUserInfo] = useState<UserInfo>()
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
         setTweet(prevTweet => ({
@@ -205,9 +214,33 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                     setIsModalOpen(false)
 
                     // Concatenate the new tweet with existing tweets and sort them based on created_at
-                    setRandomTweets(prevRandomTweets => (
-                        [res.data.data, ...prevRandomTweets]
+                    setRandomTweets(prevState => (
+                        [res.data.data, ...prevState]
                     ));
+
+                    if (location.pathname === `/users/${userInfo?.username}`) {
+
+                        setUserInfo((prevState: UserInfo | undefined) => ({
+                            ...prevState,
+                            tweets_count: res.data.data.user.tweets_count,
+                        }) as UserInfo);
+
+
+                        const pinned_tweet = allProfileUserTweets.filter(tweet => tweet.is_pinned)
+                        const remain_tweets = allProfileUserTweets.filter(tweet => !tweet.is_pinned)
+                        if (pinned_tweet) {
+                            setAllProfileUserTweets([
+                                ...pinned_tweet,
+                                res.data.data,
+                                ...remain_tweets
+                            ])
+                        } else {
+                            setAllProfileUserTweets(prevState => (
+                                [res.data.data, ...prevState]
+                            ));
+                        }
+                    }
+
                     makeInputEmpty()
 
                     if (inputElement) {
@@ -244,6 +277,10 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 setComments,
                 commentsCount,
                 setCommentsCount,
+                allProfileUserTweets,
+                setAllProfileUserTweets,
+                userInfo,
+                setUserInfo,
             }}
         >
             {children}

@@ -3,14 +3,14 @@ import {TbCameraPlus} from "react-icons/tb";
 import {ChangeEvent, Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";
-import {EditUserProfile, FormErrorsDefaultValues} from "../../Interfaces.tsx";
+import {EditUserProfile, FormErrorsDefaultValues, UserInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {toast, Zoom} from "react-toastify";
 
 interface Props {
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
     isShowEditInfoModal: boolean
-    setUserInfo: Dispatch<SetStateAction<EditUserProfile | undefined>>
+    setUserInfo: Dispatch<SetStateAction<UserInfo | undefined>>
 }
 function EditProfileModal(props: Props) {
 
@@ -138,7 +138,10 @@ function EditProfileModal(props: Props) {
                         </div>
                         <span className={`text-xl font-semibold`}>Edit profile</span>
                     </div>
-                    <button type={'submit'} onClick={saveRequest} className={`mx-2 bg-white hover:bg-zinc-200 transition text-black px-5 py-2 rounded-full`}>Save</button>
+                    <button
+                        type={'submit'}
+                        onClick={saveRequest}
+                        className={`mx-2 bg-white hover:bg-zinc-200 transition text-black px-5 py-2 rounded-full`}>Save</button>
                 </div>
 
                     {/*  Cover section  */}

@@ -9,14 +9,27 @@ import {CgCalendarDates} from "react-icons/cg";
 import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import ApiClient from "../services/ApiClient.tsx";
-import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
 import EditProfileModal from "../layouts/EditProfileModal.tsx";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
 
 function Profile() {
 
     const {username} = useParams();
-    const {user, isModalOpen,baseUrl, location, isCommentOpen} = useContext(AppContext)
+    const {
+        user,
+        isModalOpen,
+        baseUrl,
+        location,
+        isCommentOpen,
+        goBack,
+    } = useContext(AppContext)
+    const {
+        allProfileUserTweets,
+        setAllProfileUserTweets,
+        userInfo,
+        setUserInfo
+    } = useContext(TweetContext)
 
     const [isFollowed, setIsFollowed] = useState(false)
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
@@ -26,8 +39,6 @@ function Profile() {
         replies: false,
         likes: false,
     })
-    const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
-    const [userInfo, setUserInfo] = useState<UserInfo>()
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
@@ -89,6 +100,7 @@ function Profile() {
                     setAllProfileUserTweets={setAllProfileUserTweets}
                     {...tweetInfo}
                     userInfo={userInfo}
+                    setUserInfo={setUserInfo}
                 />
             )
         }
@@ -205,9 +217,24 @@ function Profile() {
 
     }, [pageURL])
 
+    if(isModalOpen || isCommentOpen || isShowEditInfoModal) {
+        document.body.style.backgroundColor = '#1d252d'
+    } else {
+        document.body.style.backgroundColor = 'black'
+    }
+
+    useEffect(() => {
+        const bodyEl = document.body;
+        if (isModalOpen || isCommentOpen || isShowEditInfoModal) {
+            bodyEl.style.overflow = 'hidden';
+        } else {
+            bodyEl.style.overflow = 'auto';
+        }
+    }, [isModalOpen, isCommentOpen, isShowEditInfoModal]);
+
 
     return (
-        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} h-svh w-screen flex justify-center`}>
+        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? '' : 'bg-black'} h-svh w-screen flex justify-center`}>
 
             {/* Edit user info model */}
             {isShowEditInfoModal &&
@@ -221,9 +248,9 @@ function Profile() {
             <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
                 <div></div>
                 <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
-                    <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+                    <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
-                    </Link>
+                    </div>
                     <div className={`w-full`}>
                         <h1 className={`font-semibold text-xl`}>
                             {userInfo?.username}

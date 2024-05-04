@@ -19,6 +19,7 @@ interface Props extends  TweetInfo {
     allProfileUserTweets?: TweetInfo[]
     setAllProfileUserTweets?: Dispatch<SetStateAction<TweetInfo[]>>
     userInfo?: UserInfo
+    setUserInfo?: Dispatch<SetStateAction<UserInfo | undefined>>
     deleteComment?: () => void
 }
 function Tweet(props: Props) {
@@ -201,6 +202,12 @@ function Tweet(props: Props) {
         if(!props.comment_to) {
             ApiClient().post(`/delete-tweet/${props.id}`, hashtags)
                 .then(() => {
+                    if (props.setUserInfo ) {
+                        props.setUserInfo(prevState => ({
+                            ...prevState,
+                            tweets_count: props.userInfo?.tweets_count ? props.userInfo?.tweets_count - 1 : null
+                        }))
+                    }
 
                     const filteredUserTweets = props.allProfileUserTweets?.filter(singleTweet => singleTweet.id !== props.id)
                     props.setAllProfileUserTweets && filteredUserTweets && props.setAllProfileUserTweets(filteredUserTweets)
