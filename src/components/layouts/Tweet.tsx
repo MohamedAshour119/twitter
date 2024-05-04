@@ -203,6 +203,8 @@ function Tweet(props: Props) {
             ApiClient().post(`/delete-tweet/${props.id}`, hashtags)
                 .then(() => {
                     if (props.setUserInfo ) {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error
                         props.setUserInfo(prevState => ({
                             ...prevState,
                             tweets_count: props.userInfo?.tweets_count ? props.userInfo?.tweets_count - 1 : null
@@ -378,7 +380,7 @@ function Tweet(props: Props) {
             <div
                 className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} relative group`}>
 
-                {((props.main_tweet && props.main_tweet?.is_pinned) || (!props.main_tweet && props.is_pinned) && location?.pathname === `/users/${username}`) &&
+                {((props.main_tweet && props.main_tweet?.is_pinned) || (!props.main_tweet && props.is_pinned) && location?.pathname === `/users/${username}`) && (props.user.username === username) &&
                     <div className={` group-hover:bg-zinc-800/20 transition`}>
                         <div className={`text-sm w-fit flex items-center gap-x-1 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                             <TbPinnedFilled className={`text-xl`}/>
