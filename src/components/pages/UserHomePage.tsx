@@ -12,6 +12,7 @@ import TweetTextAreaAndPreview from "../layouts/TweetTextAreaAndPreview.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {CgSmileSad} from "react-icons/cg";
 import {Link} from "react-router-dom";
+import useAxiosInstance from "../hooks/UseAxiosInstance.tsx";
 
 interface Tweet {
     title: string
@@ -41,8 +42,10 @@ function UserHomePage() {
 
     // const parentRef = useRef<HTMLDivElement>(null)
     // Fetch random tweets
+
+    const axiosInstance = useAxiosInstance()
     const getHomeTweets = (pageURL: string) => {
-        ApiClient().get(pageURL)
+        axiosInstance.get(pageURL)
             .then(res => {
                 setPageURL(res.data.data.pagination.next_page_url)
                 setRandomTweets(prevRandomTweets => ([

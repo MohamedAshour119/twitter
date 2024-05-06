@@ -62,9 +62,10 @@ function Profile() {
     }, [location?.pathname, username]);
 
     // Get all user tweets
+    // const axiosInstance = useAxiosInstance()
     const getAllUserTweets = async (pageURL: string, controller: AbortController) => {
         try {
-            const response = await ApiClient().get(pageURL, { signal: controller.signal });
+            const response = await ApiClient().get(pageURL, {signal: controller.signal})
             setUserInfo(response.data.data.user);
             const tweets = response.data.data.pagination.data;
             if (tweets) {

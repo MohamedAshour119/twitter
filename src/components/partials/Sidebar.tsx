@@ -12,6 +12,7 @@ import {TweetContext} from "../appContext/TweetContext.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import {TbLogout} from "react-icons/tb";
 import useRefreshToken from "../hooks/UseRefreshToken.tsx";
+import Cookies from "universal-cookie";
 
 function Sidebar() {
 
@@ -33,11 +34,14 @@ function Sidebar() {
 
     const navigate = useNavigate()
 
+    const cookie = new Cookies()
+
     // Logout function
     const logout = () => {
         if(localStorage.getItem('token')){
             ApiClient().get('/logout')
                 .then( () => {
+                    cookie.remove('bearer_token')
                     localStorage.removeItem('token')
                     setUser(null)
                     setRandomTweets([])
