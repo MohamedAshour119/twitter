@@ -24,7 +24,12 @@ function Login(props: Props) {
     const location = useLocation()
     const from = location.state?.from?.pathname || '/home'
 
-    const {setUser, setFormErrors, formErrors} = useContext(AppContext)
+    const {
+        setUser,
+        setFormErrors,
+        formErrors,
+        setToken,
+    } = useContext(AppContext)
 
     const [isLoading, setIsLoading] = useState(true)
     const [loginBtnLoading, setLoginBtnLoading] = useState(false)
@@ -48,6 +53,7 @@ function Login(props: Props) {
 
         ApiClient().post('/login', formData)
             .then(res=> {
+                setToken(res.data.data.token)
                 setUser(res.data.data.data)
                 localStorage.setItem('token', res.data.data.token)
                 navigate(from, { replace: true })

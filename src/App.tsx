@@ -35,6 +35,7 @@ function App() {
         scroll.scrollToTop(options)
     }
 
+
     // Check if user still logged in or not
     useEffect( ()=> {
         ApiClient().get('/info')

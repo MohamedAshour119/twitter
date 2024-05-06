@@ -11,6 +11,7 @@ import ApiClient from "../services/ApiClient.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import {TbLogout} from "react-icons/tb";
+import useRefreshToken from "../hooks/UseRefreshToken.tsx";
 
 function Sidebar() {
 
@@ -73,6 +74,8 @@ function Sidebar() {
         }))
     }
 
+    const refreshToken = useRefreshToken()
+
     return (
         <div className={`text-neutral-100 lg:px-0 px-4 pb-5 pt-1 h-dvh grid grid-cols-1 justify-center container fixed min-w-fit 2xl:max-w-[22%] z-[300]`}>
             <ul className={`flex flex-col gap-y-5 justify-self-end 2xl:w-[80%] xl:w-[22%] mx-4 select-none`}>
@@ -126,6 +129,12 @@ function Sidebar() {
                         openTweetModel()
                     }} className={`w-fit xl:w-auto 2xl:max-w-[85%] flex items-end justify-center cursor-pointer px-4 py-4 xl:py-3 xl:px-0 rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
                         <span className={`hidden xl:block`}>Post</span>
+                        <FaFeatherPointed className={`block xl:hidden`}/>
+                    </div>
+                </li>
+                <li>
+                    <div onClick={refreshToken} className={`w-fit xl:w-auto 2xl:max-w-[85%] flex items-end justify-center cursor-pointer px-4 py-4 xl:py-3 xl:px-0 rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
+                        <span className={`hidden xl:block`}>Refresh token</span>
                         <FaFeatherPointed className={`block xl:hidden`}/>
                     </div>
                 </li>
