@@ -56,7 +56,6 @@ function Login(props: Props) {
         ApiClient().post('/login', formData)
             .then(res=> {
                 cookie.set('bearer_token', res.data.data.token)
-                setToken(res.data.data.token)
                 setUser(res.data.data.data)
                 localStorage.setItem('token', res.data.data.token)
                 navigate(from, { replace: true })
