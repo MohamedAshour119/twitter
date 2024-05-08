@@ -40,52 +40,37 @@ function Profile() {
         likes: false,
     })
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
-    const [controller, setController] = useState<AbortController | null>(null)
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
     }
-    // `AbortController` can be used to cancel asynchronous operations if needed
-    useEffect(() => {
-        const abortController = new AbortController()
-        setController(abortController)
-        return () => {
-            abortController.abort()
-            setController(null)
-        }
-    }, []);
 
     // Reset allProfileUserTweets state when username changes
     useEffect(() => {
-        if (controller) {
-            setAllProfileUserTweets([]);
-        }
+        setAllProfileUserTweets([]);
     }, [location?.pathname, username]);
-
+    
     // Get all user tweets
-    const getAllUserTweets = async (pageURL: string, controller: AbortController) => {
-        try {
-            const response = await ApiClient().get(pageURL, { signal: controller.signal });
-            setUserInfo(response.data.data.user);
-            const tweets = response.data.data.pagination.data;
-            if (tweets) {
-                setAllProfileUserTweets((prevTweets) => [...prevTweets, ...tweets]);
-            }
-            setPageURL(response.data.data.pagination.next_page_url);
-        } catch (err) {
-            console.log(err);
-        }
-    };
+    const getAllUserTweets = (pageURL: string) => {
+        ApiClient().get(pageURL)
+            .then(res => {
+                setUserInfo(res.data.data.user)
+                const tweets = res.data.data.pagination.data
+                if(tweets){
+                    setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
+                }
+                setPageURL(res.data.data.pagination.next_page_url)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }
 
 
     useEffect(() => {
-
-        if (controller) {
-            setPageURL('');
-            setAllProfileUserTweets([])
-            getAllUserTweets(`users/${username}`, controller)
-        }
-
-    }, [userInfo?.avatar, userInfo?.display_name, username, controller]);
+        setPageURL('');
+        setAllProfileUserTweets([])
+        getAllUserTweets(`users/${username}`)
+    }, [userInfo?.avatar, userInfo?.display_name, username]);
 
 
     // Get the tweets which is suitable to the button which is clicked
@@ -210,10 +195,9 @@ function Profile() {
     // Detect when scroll to last element
     const lastTweetRef = useRef<HTMLDivElement>(null)
     useEffect( () => {
-
         const observer = new IntersectionObserver(entries => {
-            if(entries[0].isIntersecting && controller) {
-                getAllUserTweets(pageURL, controller)
+            if(entries[0].isIntersecting) {
+                getAllUserTweets(pageURL)
             }
         }, {
             threshold: 0.5  // Trigger when 50% of the last tweet is visible
