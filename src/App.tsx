@@ -17,7 +17,6 @@ import NavbarSmScreens from "./components/partials/NavbarSmScreens.tsx";
 import {LuArrowBigUp} from "react-icons/lu";
 import {animateScroll as scroll} from "react-scroll";
 import {ToastContainer} from "react-toastify";
-import StayLoggedIn from "./components/auth/StayLoggedIn.tsx";
 
 
 function App() {
@@ -66,15 +65,13 @@ function App() {
     return (
         <div className={``}>
             <Routes>
-                <Route element={<StayLoggedIn/>}>
-                    <Route element={<AuthRoute />}>
-                        <Route path={`/home`} element={<UserHomePage />}/>
-                        <Route path={`/users/:username`} element={<Profile />}/>
-                        <Route path={`/tweets/:id`} element={<ShowTweet />}/>
-                        <Route path={`/notifications`} element={<Notifications />}/>
-                        <Route path={`/:hashtag`} element={<HashtagTweets />} />
-                        <Route path={`/explore`} element={<Explore />} />
-                    </Route>
+                <Route element={<AuthRoute />}>
+                    <Route path={`/home`} element={<UserHomePage />}/>
+                    <Route path={`/users/:username`} element={<Profile />}/>
+                    <Route path={`/tweets/:id`} element={<ShowTweet />}/>
+                    <Route path={`/notifications`} element={<Notifications />}/>
+                    <Route path={`/:hashtag`} element={<HashtagTweets />} />
+                    <Route path={`/explore`} element={<Explore />} />
                 </Route>
 
 

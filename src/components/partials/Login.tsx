@@ -6,7 +6,6 @@ import {useNavigate} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {useLocation} from "react-router";
-import Cookies from "universal-cookie";
 
 interface User {
     email: string
@@ -29,7 +28,6 @@ function Login(props: Props) {
         setUser,
         setFormErrors,
         formErrors,
-        setToken,
     } = useContext(AppContext)
 
     const [isLoading, setIsLoading] = useState(true)
@@ -43,8 +41,6 @@ function Login(props: Props) {
         props.setIsLoginModelOpen && props.setIsLoginModelOpen(false)
     }
 
-    // Send request with login data
-    const cookie = new Cookies()
     const sendData = () => {
         const formData = new FormData();
 
@@ -55,7 +51,6 @@ function Login(props: Props) {
 
         ApiClient().post('/login', formData)
             .then(res=> {
-                cookie.set('bearer_token', res.data.data.token)
                 setUser(res.data.data.data)
                 localStorage.setItem('token', res.data.data.token)
                 navigate(from, { replace: true })
