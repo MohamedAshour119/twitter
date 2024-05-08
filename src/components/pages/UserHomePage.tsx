@@ -43,7 +43,6 @@ function UserHomePage() {
     // const parentRef = useRef<HTMLDivElement>(null)
     // Fetch random tweets
 
-    const axiosInstance = useAxiosInstance()
     const getHomeTweets = (pageURL: string) => {
         axiosInstance.get(pageURL)
             .then(res => {
