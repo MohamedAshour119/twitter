@@ -50,7 +50,6 @@ function Profile() {
     }, [location?.pathname, username]);
     
     // Get all user tweets
-<<<<<<< HEAD
     const getAllUserTweets = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {
@@ -65,23 +64,6 @@ function Profile() {
                 console.log(err)
             })
     }
-=======
-    // const axiosInstance = useAxiosInstance()
-    const getAllUserTweets = async (pageURL: string, controller: AbortController) => {
-        try {
-            const response = await ApiClient().get(pageURL, {signal: controller.signal})
-            setUserInfo(response.data.data.user);
-            const tweets = response.data.data.pagination.data;
-            if (tweets) {
-                setAllProfileUserTweets((prevTweets) => [...prevTweets, ...tweets]);
-            }
-            setPageURL(response.data.data.pagination.next_page_url);
-        } catch (err) {
-            console.log(err);
-        }
-    };
->>>>>>> f4e73b7c8fe39c8171f413cfd7a0633b9a819e3b
-
 
     useEffect(() => {
         setPageURL('');
