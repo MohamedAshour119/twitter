@@ -36,6 +36,8 @@ interface AppContextType {
     notificationsPageURL: string | null
     getAllNotifications: (pageUrl: string) => void
     goBack: () => void
+    token: string
+    setToken: Dispatch<SetStateAction<string>>
 }
 
 type OptionType = Gender;
@@ -65,6 +67,8 @@ export const AppContext = createContext<AppContextType>({
     notificationsPageURL: null,
     getAllNotifications: () => null,
     goBack: () => null,
+    token: '',
+    setToken: () => null,
 });
 
 interface AppProviderProps {
@@ -98,6 +102,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [allNotifications, setAllNotifications] = useState<Notification[]>([])
     const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
     const [notificationsPageURL, setNotificationsPageURL] = useState(null)
+    const [token, setToken] = useState('')
 
     // Handle model open state
     const handleModelOpen = () => {
@@ -127,7 +132,7 @@ const AppProvider = ({children}: AppProviderProps) => {
             })
     }
 
-    const token = localStorage.getItem('token')
+    // const token = localStorage.getItem('token')
 
     useEffect( () => {
         if (!localStorage.getItem('token')) {
@@ -249,6 +254,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 notificationsPageURL,
                 getAllNotifications,
                 goBack,
+                token,
+                setToken,
             }}>
             {children}
         </AppContext.Provider>
