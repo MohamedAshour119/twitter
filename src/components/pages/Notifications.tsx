@@ -21,7 +21,6 @@ function Notifications() {
         notificationsPageURL,
         isModalOpen,
         isCommentOpen,
-        location,
         user,
         setNotificationsCount
     } = useContext(AppContext)

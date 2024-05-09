@@ -6,7 +6,6 @@ import {useContext, useEffect, useState} from "react";
 import ApiClient from "./components/services/ApiClient.tsx";
 import {AppContext} from "./components/appContext/AppContext.tsx";
 import AuthRoute from "./components/auth/AuthRoute.tsx";
-import {useLocation} from "react-router";
 import UserHomePage from "./components/pages/UserHomePage.tsx";
 import Profile from "./components/pages/Profile.tsx";
 import ShowTweet from "./components/pages/ShowTweet.tsx";
@@ -23,7 +22,6 @@ function App() {
 
     const {setUser} = useContext(AppContext)
     const navigate = useNavigate();
-    const location = useLocation();
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
 
@@ -63,7 +61,7 @@ function App() {
     }
 
     return (
-        <div className={``}>
+        <>
             <Routes>
                 <Route element={<AuthRoute />}>
                     <Route path={`/home`} element={<UserHomePage />}/>
@@ -86,7 +84,7 @@ function App() {
                 <LuArrowBigUp className={`size-7 text-white/90`}/>
             </div>}
             <ToastContainer/>
-        </div>
+        </>
 
     )
 }

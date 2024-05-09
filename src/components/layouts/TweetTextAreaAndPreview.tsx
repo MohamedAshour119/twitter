@@ -13,7 +13,6 @@ function TweetTextAreaAndPreview() {
         baseUrl,
         isModalOpen,
         isCommentOpen,
-        location,
     } = useContext(AppContext)
 
     const {

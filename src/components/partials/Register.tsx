@@ -15,7 +15,7 @@ interface Props {
 }
 function Register(props: Props) {
 
-    const {setFormErrors, formErrors, styles} = useContext(AppContext)
+    const {setFormErrors, formErrors, reactSelectStyles} = useContext(AppContext)
 
     const genders: Gender[] = [
         {value: "male", label: "Male"},
@@ -140,7 +140,7 @@ function Register(props: Props) {
     };
 
     const genderStyles = {
-        ...styles,
+        ...reactSelectStyles,
         ...genderControlStyle
     }
 

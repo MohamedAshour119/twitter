@@ -19,8 +19,6 @@ interface Props {
 function TrendingSidebar(props: Props) {
 
     const {
-        user,
-        location,
         setDisplayNotResultsFound,
     } = useContext(AppContext)
 
@@ -51,17 +49,14 @@ function TrendingSidebar(props: Props) {
 
     // Suggested users to follow
     useEffect( () => {
-        if(user?.id) {
-            ApiClient().get('/home')
-                .then(res => {
-                    setSuggestedUsersToFollow(res.data.data.suggested_users)
-                })
-                .catch(err => {
-                    console.log(err)
-                })
-        }
-
-    }, [user])
+        ApiClient().get('/home')
+            .then(res => {
+                setSuggestedUsersToFollow(res.data.data.suggested_users)
+            })
+            .catch(err => {
+                console.log(err)
+            })
+    }, [])
 
     const getHashtags = () => {
         ApiClient().get(`/hashtags`)

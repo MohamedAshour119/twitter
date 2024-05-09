@@ -98,7 +98,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
     const [commentsCount, setCommentsCount] = useState(0)
-    const [userInfo, setUserInfo] = useState<UserInfo>()
+    const [userInfo, setUserInfo] = useState<UserInfo | undefined>(UserDefaultValues)
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
         setTweet(prevTweet => ({

@@ -3,7 +3,7 @@ import {BsRepeat} from "react-icons/bs";
 import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
-import {toast, Zoom} from "react-toastify";
+import {toast} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {Link, useParams} from "react-router-dom";
 import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
@@ -14,6 +14,7 @@ import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaRegFaceAngry} from "react-icons/fa6";
 import {MdDelete} from "react-icons/md";
 import {TbPinnedFilled} from "react-icons/tb";
+import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
 interface Props extends  TweetInfo {
     allProfileUserTweets?: TweetInfo[]
@@ -26,7 +27,6 @@ function Tweet(props: Props) {
 
     const {
         user,
-        location,
         baseUrl,
         isCommentOpen,
         isModalOpen,
@@ -94,18 +94,7 @@ function Tweet(props: Props) {
                     console.log(err)
                 })
         } else {
-            toast.error("You can't retweet your tweets!", {
-                className: 'custom-toast',
-                position: "top-center",
-                autoClose: 4000,
-                hideProgressBar: false,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                transition: Zoom,
-            });
+            toast.error("You can't retweet your tweets!", toastStyle);
         }
 
     }
@@ -202,7 +191,9 @@ function Tweet(props: Props) {
         if(!props.comment_to) {
             ApiClient().post(`/delete-tweet/${props.id}`, hashtags)
                 .then(() => {
-                    if (props.setUserInfo ) {
+                    if (props.setUserInfo) {
+                        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                        // @ts-expect-error
                         props.setUserInfo(prevState => ({
                             ...prevState,
                             tweets_count: props.userInfo?.tweets_count ? props.userInfo?.tweets_count - 1 : null
@@ -211,18 +202,7 @@ function Tweet(props: Props) {
 
                     const filteredUserTweets = props.allProfileUserTweets?.filter(singleTweet => singleTweet.id !== props.id)
                     props.setAllProfileUserTweets && filteredUserTweets && props.setAllProfileUserTweets(filteredUserTweets)
-                    toast.success(`Tweet deleted successfully`, {
-                        className: 'custom-toast',
-                        position: "top-center",
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                        transition: Zoom,
-                    })
+                    toast.success(`Tweet deleted successfully`, toastStyle)
 
                 })
                 .catch(err => {
@@ -235,18 +215,7 @@ function Tweet(props: Props) {
                     setCommentsCount(prevState => prevState - 1)
                     const filteredTweetComments = comments?.filter(comment => comment.id !== clickedTweet.id)
                     setComments(filteredTweetComments)
-                    toast.success(`Comment deleted successfully`, {
-                        className: 'custom-toast',
-                        position: "top-center",
-                        autoClose: 2000,
-                        hideProgressBar: false,
-                        closeOnClick: true,
-                        pauseOnHover: true,
-                        draggable: true,
-                        progress: undefined,
-                        theme: "dark",
-                        transition: Zoom,
-                    })
+                    toast.success(`Comment deleted successfully`, toastStyle)
 
                 })
                 .catch(err => {

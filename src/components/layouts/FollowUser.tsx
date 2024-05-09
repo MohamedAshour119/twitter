@@ -3,6 +3,8 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {Link} from "react-router-dom";
 import {UserInfo} from "../../Interfaces.tsx";
+import {toast} from "react-toastify";
+import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
 interface Prop {
     suggestedUsersToFollow: UserInfo
@@ -14,28 +16,33 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
     const [isFollowed, setIsFollowed] = useState(false)
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(suggestedUsersToFollow.is_followed)
 
+    const checkDisplayName = suggestedUsersToFollow.display_name ? suggestedUsersToFollow.display_name : suggestedUsersToFollow.username
     const handleFollow = () => {
         setIsFollowedBtnDisabled(true)
 
         if(!isFollowed){
             ApiClient().post(`/${suggestedUsersToFollow.id}/follow`)
                 .then(() => {
+                    toast.success(`You are following ${checkDisplayName}`, toastStyle)
                     setIsFollowed(true)
                     setIsFollowedBtnDisabled(false);
                 })
                 .catch(error => {
-                    console.error('Follow request failed:', error);
+                    toast.error(`Error occurs!, try again`, toastStyle)
+                    console.log(error)
                     setIsFollowedBtnDisabled(false);
                 });
         } else {
 
             ApiClient().post(`/${suggestedUsersToFollow.id}/unfollow`)
                 .then(() => {
+                    toast.error(`You are not following ${checkDisplayName} anymore!`, toastStyle)
                     setIsFollowed(false)
                     setIsFollowedBtnDisabled(false);
                 })
                 .catch(error => {
-                    console.error('Follow request failed:', error);
+                    toast.error(`Error occurs!, try again`, toastStyle)
+                    console.log(error)
                     setIsFollowedBtnDisabled(false);
                 });
         }
@@ -52,7 +59,7 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
                 />
 
                 <div className={`flex flex-col`}>
-                    <span>{suggestedUsersToFollow?.username}</span>
+                    <span>{checkDisplayName}</span>
                     <span className={`text-[#71767b]`}>@{suggestedUsersToFollow?.username}</span>
                 </div>
             </Link>

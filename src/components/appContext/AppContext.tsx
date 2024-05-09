@@ -1,5 +1,4 @@
 import {createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState} from 'react'
-import {useLocation} from "react-router";
 import {
     TweetInfo,
     UserDefaultValues,
@@ -12,7 +11,6 @@ import ApiClient from "../services/ApiClient.tsx";
 import {useNavigate} from "react-router-dom";
 
 interface AppContextType {
-    location: Pathname | null
     user: UserInfo | null
     setUser: Dispatch<SetStateAction<UserInfo | null>>
     baseUrl: string
@@ -25,7 +23,7 @@ interface AppContextType {
     setClickedTweet: Dispatch<SetStateAction<TweetInfo>>
     formErrors: FormError
     setFormErrors: Dispatch<SetStateAction<FormError>>
-    styles: StylesConfig<OptionType, false, GroupBase<OptionType>>
+    reactSelectStyles: StylesConfig<OptionType, false, GroupBase<OptionType>>
     displayNotResultsFound: boolean
     setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
     notificationsCount: number
@@ -36,14 +34,11 @@ interface AppContextType {
     notificationsPageURL: string | null
     getAllNotifications: (pageUrl: string) => void
     goBack: () => void
-    token: string
-    setToken: Dispatch<SetStateAction<string>>
 }
 
 type OptionType = Gender;
 
 export const AppContext = createContext<AppContextType>({
-    location: null,
     user: UserDefaultValues,
     setUser: () => {},
     handleModalOpen: () => null,
@@ -56,7 +51,7 @@ export const AppContext = createContext<AppContextType>({
     setClickedTweet: () => null,
     formErrors: FormErrorsDefaultValues,
     setFormErrors: () => null,
-    styles: {},
+    reactSelectStyles: {},
     displayNotResultsFound: false,
     setDisplayNotResultsFound: () => null,
     notificationsCount: 0,
@@ -67,25 +62,14 @@ export const AppContext = createContext<AppContextType>({
     notificationsPageURL: null,
     getAllNotifications: () => null,
     goBack: () => null,
-    token: '',
-    setToken: () => null,
 });
 
 interface AppProviderProps {
     children: ReactNode;
 }
 
-interface Pathname {
-    hash: string
-    key: string
-    pathname: string
-    search: string
-    state: null
-}
-
 const AppProvider = ({children}: AppProviderProps) => {
 
-    const location: Pathname = useLocation();
     const navigate = useNavigate()
     const goBack = () => {
         navigate(-1)
@@ -102,7 +86,6 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [allNotifications, setAllNotifications] = useState<Notification[]>([])
     const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
     const [notificationsPageURL, setNotificationsPageURL] = useState(null)
-    const [token, setToken] = useState('')
 
     // Handle model open state
     const handleModelOpen = () => {
@@ -132,7 +115,7 @@ const AppProvider = ({children}: AppProviderProps) => {
             })
     }
 
-    // const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token')
 
     useEffect( () => {
         if (!localStorage.getItem('token')) {
@@ -143,10 +126,10 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     useEffect( () => {
         getAllNotifications('/notifications')
-    }, [notificationsPageURL, token])
+    }, [token])
 
 
-    const styles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
+    const reactSelectStyles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
         control: (styles, { isFocused, isDisabled }) => ({
             ...styles,
             height: '3.5rem',
@@ -230,7 +213,6 @@ const AppProvider = ({children}: AppProviderProps) => {
     return (
         <AppContext.Provider
             value={{
-                location,
                 baseUrl,
                 user,
                 setUser,
@@ -243,7 +225,7 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setClickedTweet,
                 formErrors,
                 setFormErrors,
-                styles,
+                reactSelectStyles,
                 displayNotResultsFound,
                 setDisplayNotResultsFound,
                 notificationsCount,
@@ -254,8 +236,6 @@ const AppProvider = ({children}: AppProviderProps) => {
                 notificationsPageURL,
                 getAllNotifications,
                 goBack,
-                token,
-                setToken,
             }}>
             {children}
         </AppContext.Provider>

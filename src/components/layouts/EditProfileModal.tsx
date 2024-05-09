@@ -5,7 +5,8 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";
 import {EditUserProfile, FormErrorsDefaultValues, UserInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
-import {toast, Zoom} from "react-toastify";
+import {toast} from "react-toastify";
+import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
 interface Props {
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
@@ -29,7 +30,7 @@ function EditProfileModal(props: Props) {
     const editProfileInfoModal = useRef<HTMLDivElement | null>(null);
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (editProfileInfoModal.current && !editProfileInfoModal.current.contains(e.target as Node)) {
+            if (!editProfileInfoModal.current?.contains(e.target as Node)) {
                 addAnimation()
             }
         };
@@ -87,17 +88,7 @@ function EditProfileModal(props: Props) {
             })
             .catch(err => {
                 setFormErrors(err.response.data.errors)
-                toast.error('Invalid info entered', {
-                    position: "top-center",
-                    autoClose: 2000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    progress: undefined,
-                    theme: "dark",
-                    transition: Zoom,
-                })
+                toast.error('Invalid info entered', toastStyle)
             })
     }
 

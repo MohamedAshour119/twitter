@@ -11,6 +11,8 @@ import Tweet from "../layouts/Tweet.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import EditProfileModal from "../layouts/EditProfileModal.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
+import {toast} from "react-toastify";
+import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
 
 function Profile() {
@@ -20,7 +22,6 @@ function Profile() {
         user,
         isModalOpen,
         baseUrl,
-        location,
         isCommentOpen,
         goBack,
     } = useContext(AppContext)
@@ -40,6 +41,8 @@ function Profile() {
         likes: false,
     })
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
     }
@@ -54,6 +57,7 @@ function Profile() {
         ApiClient().get(pageURL)
             .then(res => {
                 setUserInfo(res.data.data.user)
+                setIsLoading(false)
                 const tweets = res.data.data.pagination.data
                 if(tweets){
                     setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
@@ -157,27 +161,32 @@ function Profile() {
     }, [username])
 
     // Handle following user
+    const checkDisplayName = userInfo?.display_name ? userInfo.display_name : userInfo?.username
     const handleFollow = () => {
         setIsFollowedBtnDisabled(true)
 
         if(!isFollowed){
             ApiClient().post(`/${userInfo?.id}/follow`)
                 .then(() => {
+                    toast.success(`You are following "${checkDisplayName}"`, toastStyle)
                     setIsFollowed(true)
                     setIsFollowedBtnDisabled(false);
                 })
                 .catch(error => {
+                    toast.error(`Error occurs!, try again`, toastStyle)
                     console.error('Follow request failed:', error);
                     setIsFollowedBtnDisabled(false);
-                });
+                })
         } else {
 
             ApiClient().post(`/${userInfo?.id}/unfollow`)
                 .then(() => {
+                    toast.error(`You are not following "${checkDisplayName}" anymore`, toastStyle)
                     setIsFollowed(false)
                     setIsFollowedBtnDisabled(false);
                 })
                 .catch(error => {
+                    toast.error(`Error occurs!, try again`, toastStyle)
                     console.error('Follow request failed:', error);
                     setIsFollowedBtnDisabled(false);
                 });
@@ -253,14 +262,14 @@ function Profile() {
                     <div className={`w-full`}>
                         <h1 className={`font-semibold text-xl`}>
                             {userInfo?.username}
-                            {!userInfo &&
+                            {isLoading &&
                                 <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                             }
                         </h1>
-                        {userInfo && <div
-                            className={`text-[#71767b] text-sm`}>{userInfo.tweets_count && userInfo.tweets_count <= 1 ? `${userInfo.tweets_count} post` : `${userInfo.tweets_count} posts`}</div>
+                        {!isLoading && <div
+                            className={`text-[#71767b] text-sm`}>{userInfo?.tweets_count && userInfo.tweets_count <= 1 ? `${userInfo.tweets_count} post` : `${userInfo?.tweets_count} posts`}</div>
                         }
-                        {!userInfo &&
+                        {isLoading &&
                             <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
                         }
                     </div>
@@ -275,12 +284,12 @@ function Profile() {
                     <Sidebar/>
                 </div>
                 {/* Middle section */}
-                <div className={`text-neutral-200 border-r border-l border-zinc-700/70 animate-slide-down`}>
+                <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
                     <div className={`h-14 bg-black z-10`}></div>
                     {/* Cover image */}
                     <div className={`h-[14rem] w-full relative`}>
                         {
-                            userInfo && userInfo?.cover &&
+                            (!isLoading && userInfo?.cover) &&
                                 <img
                                     src={`${baseUrl}/storage/${userInfo?.cover}`}
                                     alt="cover"
@@ -288,10 +297,10 @@ function Profile() {
                                 />
                         }
                         {
-                            userInfo && !userInfo?.cover &&
-                            <div className={`w-full h-[14rem] bg-[#333639]`}></div>
+                            (!isLoading && !userInfo?.cover) &&
+                            <div className={`w-full h-full bg-[#333639]`}></div>
                         }
-                        {!userInfo &&
+                        {isLoading &&
                             <div
                                 className="absolute animate-pulse flex items-center justify-center w-full h-full  bg-[#333639]">
                                 <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
@@ -307,10 +316,10 @@ function Profile() {
                             <div className={`flex justify-between`}>
                                 <div className={`relative -translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black ${!userInfo ? 'animate-pulse' : ''}`}>
                                     <img src={`${baseUrl}/storage/${userInfo?.avatar}`} alt=""
-                                         className={`object-cover w-full h-full rounded-full ${!userInfo ? 'invisible' : ''}`}/>
-                                    {!userInfo &&
+                                         className={`object-cover w-full h-full rounded-full ${isLoading ? 'invisible' : ''}`}/>
+                                    {isLoading &&
                                         <div
-                                            className="absolute top-0 flex items-center justify-center w-full h-full rounded-full bg-[#2a2d32b3]">
+                                            className="absolute animate-pulse top-0 flex items-center justify-center w-full h-full rounded-full bg-[#2a2d32b3]">
                                             <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
                                                  xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                                 <path
@@ -319,69 +328,58 @@ function Profile() {
                                         </div>}
                                 </div>
 
-                                {(username === user?.username && userInfo) &&
+                                {(username === user?.username && !isLoading) &&
                                     <button
                                         onClick={toggleModel}
                                         className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile
                                     </button>
                                 }
-                                {(username === user?.username || !userInfo) ||
+                                {(username !== user?.username && !isLoading) &&
                                     <button
                                         disabled={isFollowedBtnDisabled}
                                         onClick={handleFollow}
                                         className={`${isFollowed ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} z-50 text-black mt-4 px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{isFollowed ? 'Following' : 'Follow'}
                                     </button>
                                 }
-                                {!userInfo &&
+                                {isLoading &&
                                     <div className="h-[50px] mt-4 bg-[#2a2d32b3] animate-pulse rounded-full w-40"></div>
                                 }
                             </div>
                             <div className={`-translate-y-12`}>
                                 <h1 className={`font-semibold text-xl`}>
                                     {userInfo?.display_name ? userInfo.display_name : userInfo?.username}
-                                    {!userInfo &&
+                                    {isLoading &&
                                         <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                                     }
                                 </h1>
-                                {
-                                    userInfo && <h1 className={`text-[#71767b]`}>
-                                    @{userInfo?.username}
-                                </h1>
-                                }
-                                {
-                                    !userInfo &&
-                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-40 mt-1"></div>
-                                }
+                                {!isLoading && <h1 className={`text-[#71767b]`}>@{userInfo?.username}</h1>}
+                                {isLoading && <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-40 mt-1"></div>}
 
-                                {
-                                    userInfo &&
-                                    <div className={`font-semibold mt-3`}>{userInfo.bio}</div>
-                                }
-                                {
-                                    !userInfo &&
-                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-96 mt-4"></div>
-                                }
+                                {(!isLoading && userInfo?.bio) && <div className={`font-semibold mt-3`}>{userInfo.bio}</div>}
+                                {isLoading && <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-96 mt-4"></div>}
 
-                                {userInfo && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
+                                {!isLoading && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
                                     <CgCalendarDates/>
                                     <span>Joined</span>
-                                    <div>{userInfo.created_at}</div>
+                                    <div>{userInfo?.created_at}</div>
                                 </div>}
-                                {!userInfo &&
+                                {isLoading &&
                                     <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-52 mt-6"></div>
                                 }
 
-                                {userInfo && <div className={`text-[#71767b] flex gap-x-6 mt-3`}>
-                                    <div className={`flex gap-x-1`}>
-                                        <span className={`text-neutral-200`}>{userInfo?.following_number}</span>
-                                        Following
+                                {!isLoading &&
+                                    <div className={`text-[#71767b] flex gap-x-6 mt-3`}>
+                                        <div className={`flex gap-x-1`}>
+                                            <span className={`text-neutral-200`}>{userInfo?.following_number}</span>
+                                            Following
+                                        </div>
+                                        <div className={`flex gap-x-1`}>
+                                            <span className={`text-neutral-200`}>{userInfo?.followers_number}</span>
+                                            Followers
+                                        </div>
                                     </div>
-                                    <div className={`flex gap-x-1`}>
-                                        <span className={`text-neutral-200`}>{userInfo?.followers_number}</span>
-                                        Followers
-                                    </div>
-                                </div>}
-                                {!userInfo &&
+                                }
+                                {isLoading &&
                                     <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-52 mt-6"></div>
                                 }
                             </div>

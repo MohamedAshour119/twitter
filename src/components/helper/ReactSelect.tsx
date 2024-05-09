@@ -26,7 +26,7 @@ interface Props {
 }
 function ReactSelect(props: Props) {
 
-    const {formErrors, styles} = useContext(AppContext)
+    const {formErrors, reactSelectStyles} = useContext(AppContext)
 
     const months: Month[] = [
         {value: "january", label: "January", days: 31},
@@ -157,7 +157,7 @@ function ReactSelect(props: Props) {
                     isDisabled={props.isLoading}
                     placeholder={'Month'}
                     onChange={handleSelectedMonthChange}
-                    styles={styles}
+                    styles={reactSelectStyles}
                 />
                 <Select
                     options={days}
@@ -165,7 +165,7 @@ function ReactSelect(props: Props) {
                     placeholder={'Day'}
                     noOptionsMessage={() => 'Select Month'}
                     onChange={handleDaySelectedChange}
-                    styles={styles}
+                    styles={reactSelectStyles}
                 />
 
                 <Select
@@ -173,7 +173,7 @@ function ReactSelect(props: Props) {
                     isDisabled={props.isLoading}
                     placeholder={'Year'}
                     onChange={handleYearSelectedChange}
-                    styles={styles}
+                    styles={reactSelectStyles}
                 />
             </div>
             {
