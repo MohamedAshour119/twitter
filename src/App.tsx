@@ -47,6 +47,30 @@ function App() {
             })
     }, [])
 
+    // Refresh Token
+    const refreshToken = () => {
+        const expiresDate = localStorage.getItem('expires_at');
+        if (expiresDate !== null) {
+            const callAfter = (new Date(expiresDate).getTime() - new Date().getTime()) - 300000;
+            console.log('called')
+            // Call this setTimeOut before token expiration date by 5 minutes
+            setTimeout(() => {
+                ApiClient().post('/refresh-token')
+                    .then(res => {
+                        localStorage.removeItem('token')
+                        localStorage.removeItem('expires_at')
+                        localStorage.setItem('token', res.data.data.token)
+                        localStorage.setItem('expires_at', res.data.data.expires_at)
+                    })
+            }, callAfter)
+        }
+    }
+
+    useEffect(() => {
+        refreshToken()
+    }, []);
+
+
     useEffect(() => {
         // Redirect to home if user exists and when trying to access '/'
         if (token && (location.pathname === '/')) {
@@ -59,6 +83,7 @@ function App() {
     if (loading) {
         return null;
     }
+
 
     return (
         <>

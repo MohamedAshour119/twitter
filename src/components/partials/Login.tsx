@@ -53,6 +53,7 @@ function Login(props: Props) {
             .then(res=> {
                 setUser(res.data.data.data)
                 localStorage.setItem('token', res.data.data.token)
+                localStorage.setItem('expires_at', res.data.data.expires_at)
                 navigate(from, { replace: true })
             })
             .catch((err) => {
