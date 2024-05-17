@@ -5,7 +5,7 @@ import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import NewTweetNotification from "../layouts/NewTweetNotification.tsx";
+import NewNotification from "../layouts/NewNotification.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
 
@@ -17,6 +17,7 @@ function Notifications() {
         allNotifications,
         setAllNotifications,
         originalNotifications,
+        setOriginalNotifications,
         getAllNotifications,
         notificationsPageURL,
         isModalOpen,
@@ -63,7 +64,7 @@ function Notifications() {
     }, [location?.pathname])
 
     const notifications = allNotifications.slice(0, allNotifications.length - 1).map(notification => (
-        <NewTweetNotification
+        <NewNotification
             key={notification.id}
             id={notification.id}
             type={notification.type}
@@ -129,6 +130,7 @@ function Notifications() {
                         }
                     })
                     setAllNotifications(updatedNotifications)
+                    setOriginalNotifications(updatedNotifications)
                     setNotificationsCount(0)
                 })
                 .catch(err => {
@@ -208,7 +210,7 @@ function Notifications() {
                         {notifications}
                         <div ref={lastNotificationRef}>
                             {allNotifications.length > 0 && (
-                                <NewTweetNotification allNotifications={allNotifications} {...allNotifications[allNotifications.length - 1]} />
+                                <NewNotification allNotifications={allNotifications} {...allNotifications[allNotifications.length - 1]} />
                             )}
                         </div>
                     </div>

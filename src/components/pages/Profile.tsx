@@ -261,7 +261,7 @@ function Profile() {
                     </div>
                     <div className={`w-full`}>
                         <h1 className={`font-semibold text-xl`}>
-                            {userInfo?.username}
+                            {!isLoading && userInfo?.username}
                             {isLoading &&
                                 <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                             }

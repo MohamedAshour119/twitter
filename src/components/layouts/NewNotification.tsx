@@ -10,13 +10,13 @@ import {Notification} from "../../Interfaces.tsx";
 interface Props extends Notification {
     allNotifications: Notification[]
 }
-function NewTweetNotification(props: Props) {
+function NewNotification(props: Props) {
 
     const {baseUrl, setNotificationsCount} = useContext(AppContext)
 
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
-    const [isRead, setIsRead] = useState(props.is_read);
+    // const [isRead, setIsRead] = useState(props.is_read);
 
     const popUpWindow = useRef<HTMLDivElement>(null)
     useEffect( () => {
@@ -37,10 +37,10 @@ function NewTweetNotification(props: Props) {
         'type': props.type,
     }
     const markNotificationAsRead = () => {
-        if(!isRead) {
+        if(!props.is_read) {
             ApiClient().put('/mark-as-read', notificationInfo)
                 .then(res => {
-                    setIsRead(res.data.data.notification.is_read)
+                    // setIsRead(res.data.data.notification.is_read)
                     setNotificationsCount(res.data.data.notifications_count)
 
                     props.allNotifications.map((notification: Notification) => {
@@ -57,7 +57,7 @@ function NewTweetNotification(props: Props) {
     }
 
     const notificationCommonContent =
-        <div className={`flex gap-x-4 mt-4 items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!isRead ? 'bg-sky-300/10' : ''} p-4 px-1 xxs:px-4 border-y border-zinc-700 relative transition`}>
+        <div className={`flex gap-x-4 mt-4 items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!props.is_read ? 'bg-sky-300/10' : ''} p-4 px-1 xxs:px-4 border-y border-zinc-700 relative transition`}>
             <div className={`flex items-center gap-x-3 w-[75%] xxs:w-auto`}>
                 <img
                     src={`${baseUrl}/storage/${props.user?.avatar}`}
@@ -131,4 +131,4 @@ function NewTweetNotification(props: Props) {
     )
 }
 
-export default NewTweetNotification
+export default NewNotification

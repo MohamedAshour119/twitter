@@ -48,12 +48,12 @@ function App() {
     }, [])
 
     // Refresh Token
+    const expiresDate = localStorage.getItem('expires_at');
     const refreshToken = () => {
-        const expiresDate = localStorage.getItem('expires_at');
-        if (expiresDate !== null) {
+        if (expiresDate) {
             const callAfter = (new Date(expiresDate).getTime() - new Date().getTime()) - 300000;
-            console.log('called')
             // Call this setTimeOut before token expiration date by 5 minutes
+            console.log('called')
             setTimeout(() => {
                 ApiClient().post('/refresh-token')
                     .then(res => {
@@ -61,6 +61,7 @@ function App() {
                         localStorage.removeItem('expires_at')
                         localStorage.setItem('token', res.data.data.token)
                         localStorage.setItem('expires_at', res.data.data.expires_at)
+                        setUser(res.data.data.user)
                     })
             }, callAfter)
         }
@@ -69,6 +70,14 @@ function App() {
     useEffect(() => {
         refreshToken()
     }, []);
+
+    useEffect(() => {
+        const currentDate = new Date().getTime()
+        if (expiresDate && (currentDate === new Date(expiresDate).getTime())) {
+            localStorage.removeItem('token')
+            localStorage.removeItem('expires_at')
+        }
+    }, [])
 
 
     useEffect(() => {

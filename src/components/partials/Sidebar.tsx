@@ -38,6 +38,7 @@ function Sidebar() {
             ApiClient().get('/logout')
                 .then( () => {
                     localStorage.removeItem('token')
+                    localStorage.removeItem('expires_at')
                     setUser(null)
                     setRandomTweets([])
                     navigate('/')

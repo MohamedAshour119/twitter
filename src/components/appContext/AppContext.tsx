@@ -31,6 +31,7 @@ interface AppContextType {
     allNotifications: Notification[]
     setAllNotifications: Dispatch<SetStateAction<Notification[]>>
     originalNotifications: Notification[]
+    setOriginalNotifications: Dispatch<SetStateAction<Notification[]>>
     notificationsPageURL: string | null
     getAllNotifications: (pageUrl: string) => void
     goBack: () => void
@@ -59,6 +60,7 @@ export const AppContext = createContext<AppContextType>({
     allNotifications: [],
     setAllNotifications: () => null,
     originalNotifications: [],
+    setOriginalNotifications: () => null,
     notificationsPageURL: null,
     getAllNotifications: () => null,
     goBack: () => null,
@@ -233,6 +235,7 @@ const AppProvider = ({children}: AppProviderProps) => {
                 allNotifications,
                 setAllNotifications,
                 originalNotifications,
+                setOriginalNotifications,
                 notificationsPageURL,
                 getAllNotifications,
                 goBack,
