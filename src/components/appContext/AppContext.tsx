@@ -4,7 +4,7 @@ import {
     UserDefaultValues,
     UserInfo,
     FormError,
-    Gender, FormErrorsDefaultValues, Notification, tweetDefaultValues
+    Gender, FormErrorsDefaultValues, tweetDefaultValues
 } from "../../Interfaces.tsx";
 import {GroupBase, StylesConfig} from "react-select";
 import ApiClient from "../services/ApiClient.tsx";
@@ -12,7 +12,7 @@ import {useNavigate} from "react-router-dom";
 
 interface AppContextType {
     user: UserInfo | null
-    setUser: Dispatch<SetStateAction<UserInfo | null>>
+    setUser: Dispatch<SetStateAction<UserInfo>>
     baseUrl: string
     handleModalOpen: () => void
     isModalOpen: boolean
@@ -26,15 +26,8 @@ interface AppContextType {
     reactSelectStyles: StylesConfig<OptionType, false, GroupBase<OptionType>>
     displayNotResultsFound: boolean
     setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
-    notificationsCount: number
-    setNotificationsCount: Dispatch<SetStateAction<number>>
-    allNotifications: Notification[]
-    setAllNotifications: Dispatch<SetStateAction<Notification[]>>
-    originalNotifications: Notification[]
-    setOriginalNotifications: Dispatch<SetStateAction<Notification[]>>
-    notificationsPageURL: string | null
-    getAllNotifications: (pageUrl: string) => void
     goBack: () => void
+    loading: boolean
 }
 
 type OptionType = Gender;
@@ -55,15 +48,8 @@ export const AppContext = createContext<AppContextType>({
     reactSelectStyles: {},
     displayNotResultsFound: false,
     setDisplayNotResultsFound: () => null,
-    notificationsCount: 0,
-    setNotificationsCount: () => null,
-    allNotifications: [],
-    setAllNotifications: () => null,
-    originalNotifications: [],
-    setOriginalNotifications: () => null,
-    notificationsPageURL: null,
-    getAllNotifications: () => null,
     goBack: () => null,
+    loading: true
 });
 
 interface AppProviderProps {
@@ -79,15 +65,13 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     const [isModelOpen, setIsModelOpen] = useState(false)
     const [isCommentOpen, setIsCommentOpen] = useState(false);
-    const [user, setUser] = useState<UserInfo | null>(UserDefaultValues)
+    const [user, setUser] = useState<UserInfo>(UserDefaultValues)
     const [clickedTweet, setClickedTweet] = useState<TweetInfo>(tweetDefaultValues)
     const baseUrl = 'http://api.twitter.test'
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
-    const [notificationsCount, setNotificationsCount] = useState(0)
-    const [allNotifications, setAllNotifications] = useState<Notification[]>([])
-    const [originalNotifications, setOriginalNotifications] = useState<Notification[]>([])
-    const [notificationsPageURL, setNotificationsPageURL] = useState(null)
+    const [loading, setLoading] = useState(true);
+
 
     // Handle model open state
     const handleModelOpen = () => {
@@ -96,38 +80,55 @@ const AppProvider = ({children}: AppProviderProps) => {
     }
 
     // Get all notifications
-    const getAllNotifications = (pageURL: string) => {
-
-        ApiClient().get(pageURL)
-            .then(res => {
-                setAllNotifications(prevState => ([
-                    ...prevState,
-                    ...res.data.data.notifications
-                ]))
-                setOriginalNotifications(prevState => ([
-                    ...prevState,
-                    ...res.data.data.notifications
-                ]))
-                setNotificationsPageURL(res.data.data.next_page_url)
-                setNotificationsCount(res.data.data.notifications_count)
-
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }
+    // const getAllNotifications = (pageURL: string) => {
+    //
+    //     ApiClient().get(pageURL)
+    //         .then(res => {
+    //             setAllNotifications(prevState => ([
+    //                 ...prevState,
+    //                 ...res.data.data.notifications
+    //             ]))
+    //             setOriginalNotifications(prevState => ([
+    //                 ...prevState,
+    //                 ...res.data.data.notifications
+    //             ]))
+    //             setNotificationsPageURL(res.data.data.next_page_url)
+    //             setNotificationsCount(res.data.data.notifications_count)
+    //
+    //         })
+    //         .catch(err => {
+    //             console.log(err)
+    //         })
+    // }
 
     const token = localStorage.getItem('token')
 
     useEffect( () => {
         if (!localStorage.getItem('token')) {
-            setOriginalNotifications([])
-            setAllNotifications([])
+            setUser(prevState => ({
+                ...prevState,
+                originalNotifications: [],
+                allNotifications: [],
+            }))
         }
     }, [user])
 
-    useEffect( () => {
-        getAllNotifications('/notifications')
+    // Check if user still logged in or not
+    useEffect( ()=> {
+        ApiClient().get('/info')
+            .then(res => {
+                setUser(res.data.data.user_info)
+                setUser((prevState) : UserInfo => ({
+                    ...prevState,
+                    allNotifications: res.data.data.notifications,
+                    originalNotifications: res.data.data.notifications.notifications_info
+                }))
+                setLoading(false);
+            })
+            .catch(() => {
+                setUser(UserDefaultValues)
+                setLoading(false);
+            })
     }, [token])
 
 
@@ -230,15 +231,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 reactSelectStyles,
                 displayNotResultsFound,
                 setDisplayNotResultsFound,
-                notificationsCount,
-                setNotificationsCount,
-                allNotifications,
-                setAllNotifications,
-                originalNotifications,
-                setOriginalNotifications,
-                notificationsPageURL,
-                getAllNotifications,
                 goBack,
+                loading,
             }}>
             {children}
         </AppContext.Provider>

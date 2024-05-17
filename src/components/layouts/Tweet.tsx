@@ -267,8 +267,6 @@ function Tweet(props: Props) {
 
         if(clickedTweet.user.id === user?.id) {
             ApiClient().post(`/pin-tweet`, data)
-                .then()
-                .catch()
                 .finally(() => {
                     tweetMenuRef.current?.classList.add('animate-fade-out')
                     setTimeout(() => {

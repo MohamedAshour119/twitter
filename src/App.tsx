@@ -2,7 +2,7 @@ import './App.css'
 import {Route, Routes, useNavigate} from "react-router-dom";
 import Home from './components/pages/Home'
 import PageNotFound from "./components/pages/PageNotFound.tsx";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect} from "react";
 import ApiClient from "./components/services/ApiClient.tsx";
 import {AppContext} from "./components/appContext/AppContext.tsx";
 import AuthRoute from "./components/auth/AuthRoute.tsx";
@@ -20,9 +20,8 @@ import {ToastContainer} from "react-toastify";
 
 function App() {
 
-    const {setUser} = useContext(AppContext)
+    const {setUser, loading} = useContext(AppContext)
     const navigate = useNavigate();
-    const [loading, setLoading] = useState(true);
     const token = localStorage.getItem('token');
 
     const options = {
@@ -33,19 +32,6 @@ function App() {
         scroll.scrollToTop(options)
     }
 
-
-    // Check if user still logged in or not
-    useEffect( ()=> {
-        ApiClient().get('/info')
-            .then(res => {
-                setUser(res.data.data)
-                setLoading(false);
-            })
-            .catch(() => {
-                setUser(null)
-                setLoading(false);
-            })
-    }, [])
 
     // Refresh Token
     const expiresDate = localStorage.getItem('expires_at');
@@ -68,7 +54,9 @@ function App() {
     }
 
     useEffect(() => {
-        refreshToken()
+        if (expiresDate) {
+            refreshToken()
+        }
     }, []);
 
     useEffect(() => {

@@ -46,6 +46,8 @@ export interface UserInfo {
     followers_number: number | null
     is_followed: boolean
     tweets_count: number | null
+    allNotifications: Notification[]
+    originalNotifications: Notification[]
 }
 
 export interface Notification {
@@ -165,6 +167,8 @@ export const UserDefaultValues =
         followers_number: null,
         is_followed: false,
         tweets_count: null,
+        allNotifications: [],
+        originalNotifications: [],
     }
 
 export const FormErrorsDefaultValues =
