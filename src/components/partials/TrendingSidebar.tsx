@@ -150,7 +150,14 @@ function TrendingSidebar(props: Props) {
 
     const trendingHashtags = hashtags?.map(hashtag => {
         return (
-            <TrendingHashtag key={hashtag.id} id={Number(hashtag.id)} hashtag={hashtag.hashtag} count={hashtag.count}/>
+            <TrendingHashtag
+                key={hashtag.id}
+                id={Number(hashtag.id)}
+                hashtag={hashtag.hashtag}
+                count={hashtag.count}
+                hashtags={hashtags}
+                setHashtags={setHashtags}
+            />
         )
     })
 
@@ -263,7 +270,7 @@ function TrendingSidebar(props: Props) {
                     }
 
                     {suggestedUsersToFollow?.map(user => (
-                        <FollowUser key={user.id} suggestedUsersToFollow={user}/>
+                        <FollowUser key={user.user_info.id} suggestedUsersToFollow={user}/>
                     ))}
                 </div>
             </div>

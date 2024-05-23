@@ -19,33 +19,38 @@ export interface Tweet {
 
 export interface TweetInfo extends Tweet{
     user: {
-        id: number
-        username: string
-        avatar: string
-        display_name: string
-        is_followed: boolean
+        user_info: {
+            id: number
+            username: string
+            avatar: string
+            display_name: string
+            is_followed: boolean
+        };
     }
 
     main_tweet: Tweet
 }
 
 export interface UserInfo {
-    id: number
-    username: string
-    email: string
-    gender: string
-    display_name: string
-    bio: string
-    avatar: string
-    cover: string
-    birth_date: string
-    ban_status: number | null
-    created_at: string
-    updated_at: string
-    following_number: number | null
-    followers_number: number | null
-    is_followed: boolean
-    tweets_count: number | null
+    user_info: {
+        id: number
+        username: string
+        email: string
+        gender: string
+        display_name: string
+        bio: string
+        avatar: string
+        cover: string
+        birth_date: string
+        ban_status: number | null
+        created_at: string
+        updated_at: string
+        following_number: number | null
+        followers_number: number | null
+        is_followed: boolean
+        tweets_count: number | null
+    }
+
     allNotifications: {
         notifications_info: Notification[],
         notifications_count: number | null
@@ -110,11 +115,13 @@ export interface Gender {
 
 export const tweetDefaultValues = {
     user: {
-        id: 0,
-        username: '',
-        avatar: '',
-        display_name: '',
-        is_followed: false,
+        user_info: {
+            id: 0,
+            username: '',
+            avatar: '',
+            display_name: '',
+            is_followed: false,
+        }
     },
     title: '',
     user_id: 0,
@@ -154,22 +161,24 @@ export const tweetDefaultValues = {
 
 export const UserDefaultValues =
     {
-        id: 0,
-        username: '',
-        email: '',
-        gender: '',
-        display_name: '',
-        bio: '',
-        avatar: '',
-        cover: '',
-        birth_date: '',
-        ban_status: null,
-        created_at: '',
-        updated_at: '',
-        following_number: null,
-        followers_number: null,
-        is_followed: false,
-        tweets_count: null,
+        user_info: {
+            id: 0,
+            username: '',
+            email: '',
+            gender: '',
+            display_name: '',
+            bio: '',
+            avatar: '',
+            cover: '',
+            birth_date: '',
+            ban_status: null,
+            created_at: '',
+            updated_at: '',
+            following_number: null,
+            followers_number: null,
+            is_followed: false,
+            tweets_count: null,
+        },
         allNotifications: {
             notifications_info: [],
             notifications_count: null

@@ -14,14 +14,14 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
     const {baseUrl} = useContext(AppContext)
 
     const [isFollowed, setIsFollowed] = useState(false)
-    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(suggestedUsersToFollow.is_followed)
+    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(suggestedUsersToFollow.user_info.is_followed)
 
-    const checkDisplayName = suggestedUsersToFollow.display_name ? suggestedUsersToFollow.display_name : suggestedUsersToFollow.username
+    const checkDisplayName = suggestedUsersToFollow.user_info.display_name ? suggestedUsersToFollow.user_info.display_name : suggestedUsersToFollow.user_info.username
     const handleFollow = () => {
         setIsFollowedBtnDisabled(true)
 
         if(!isFollowed){
-            ApiClient().post(`/${suggestedUsersToFollow.id}/follow`)
+            ApiClient().post(`/${suggestedUsersToFollow.user_info.id}/follow`)
                 .then(() => {
                     toast.success(`You are following ${checkDisplayName}`, toastStyle)
                     setIsFollowed(true)
@@ -34,7 +34,7 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
                 });
         } else {
 
-            ApiClient().post(`/${suggestedUsersToFollow.id}/unfollow`)
+            ApiClient().post(`/${suggestedUsersToFollow.user_info.id}/unfollow`)
                 .then(() => {
                     toast.error(`You are not following ${checkDisplayName} anymore!`, toastStyle)
                     setIsFollowed(false)
@@ -52,15 +52,15 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
 
     return (
         <div className={`flex justify-between hover:bg-[#25323f30] px-4 py-3`}>
-            <Link to={`/users/${suggestedUsersToFollow.username}`} className={`flex gap-x-2 cursor-pointer`}>
+            <Link to={`/users/${suggestedUsersToFollow.user_info.username}`} className={`flex gap-x-2 cursor-pointer`}>
 
                 <img className={`size-11 rounded-full object-cover`}
-                     src={`${baseUrl}/storage/${suggestedUsersToFollow?.avatar}`} alt=""
+                     src={`${baseUrl}/storage/${suggestedUsersToFollow?.user_info.avatar}`} alt=""
                 />
 
                 <div className={`flex flex-col`}>
                     <span>{checkDisplayName}</span>
-                    <span className={`text-[#71767b]`}>@{suggestedUsersToFollow?.username}</span>
+                    <span className={`text-[#71767b]`}>@{suggestedUsersToFollow?.user_info.username}</span>
                 </div>
             </Link>
 

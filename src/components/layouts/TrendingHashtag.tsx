@@ -1,23 +1,22 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
-import {useContext, useEffect, useRef, useState} from "react";
+import {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
 import {HiMiniXMark} from "react-icons/hi2";
 import ApiClient from "../services/ApiClient.tsx";
-import {AppContext} from "../appContext/AppContext.tsx";
 import {FaRegFaceAngry} from "react-icons/fa6";
+import {Hashtag} from "../../Interfaces.tsx";
 
 interface Props {
     id: number
     hashtag: string
     count: number,
+    hashtags: Hashtag[]
+    setHashtags: Dispatch<SetStateAction<Hashtag[]>>
 }
 function TrendingHashtag(props: Props) {
 
-    const { setHashtags, hashtags } = useContext(AppContext)
-
     const [disableLink, setDisableLink] = useState(false)
     const [isHashtagMenuOpen, setIsHashtagMenuOpen] = useState(false)
-
     const popupMenu = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -47,9 +46,8 @@ function TrendingHashtag(props: Props) {
         closeWithAnimation()
 
         ApiClient().post(`/uninterested-hashtag/${props.id}`)
-            .then(() => {
-                const filteredHashtags = hashtags.filter(hashtag => hashtag.id !== props.id)
-                setHashtags(filteredHashtags)
+            .then(res => {
+                props.setHashtags(res.data.data)
             })
             .catch(err => {
                 console.log(err)

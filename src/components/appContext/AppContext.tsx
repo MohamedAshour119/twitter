@@ -99,11 +99,14 @@ const AppProvider = ({children}: AppProviderProps) => {
         ApiClient().get('/info')
             .then(res => {
                 setUser(res.data.data.user_info)
-                setUser((prevState) : UserInfo => ({
-                    ...prevState,
-                    allNotifications: res.data.data.notifications,
-                    originalNotifications: res.data.data.notifications.notifications_info
-                }))
+                if (res.data.data.notifications) {
+                    setUser((prevState) : UserInfo => ({
+                        ...prevState,
+                        allNotifications: res.data.data.notifications,
+                        originalNotifications: res.data.data.notifications.notifications_info
+                    }))
+                }
+
                 setLoading(false);
             })
             .catch(() => {

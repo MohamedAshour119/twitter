@@ -114,11 +114,13 @@ function Tweet(props: Props) {
     const addTweetInfo = () => {
         const tweet = {
             user: {
-                id: props.user_id,
-                username: props.user.username,
-                avatar: props.user.avatar,
-                display_name: props.user.display_name,
-                is_followed: props.user.is_followed,
+                user_info: {
+                    id: props.user_id,
+                    username: props.user.user_info.username,
+                    avatar: props.user.user_info.avatar,
+                    display_name: props.user.user_info.display_name,
+                    is_followed: props.user.user_info.is_followed,
+                }
             },
 
             user_id: props.user_id,
@@ -265,7 +267,7 @@ function Tweet(props: Props) {
             'tweet_id': clickedTweet.id
         }
 
-        if(clickedTweet.user.id === user?.id) {
+        if(clickedTweet.user.user_info.id === user?.id) {
             ApiClient().post(`/pin-tweet`, data)
                 .finally(() => {
                     tweetMenuRef.current?.classList.add('animate-fade-out')
@@ -279,18 +281,18 @@ function Tweet(props: Props) {
     const tweetCommonContent =
         <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
             <div className={`flex gap-x-2`}>
-                <Link to={`/users/${props.user?.username}`} className={`md:w-[10%] w-[14%]`}>
+                <Link to={`/users/${props.user?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
                     <img
                         className={`size-11 object-cover rounded-full select-none`}
-                        src={`${baseUrl}/storage/${props.user?.avatar}`}
+                        src={`${baseUrl}/storage/${props.user?.user_info.avatar}`}
                         alt=""
                     />
                 </Link>
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
-                        <Link to={`/users/${props.user?.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.display_name ? props.user?.display_name : props.user?.username}</h1>
-                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.username}</h1>
+                        <Link to={`/users/${props.user?.user_info.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
+                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.user_info.display_name ? props.user?.user_info.display_name : props.user?.user_info.username}</h1>
+                            <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.user_info.username}</h1>
                         </Link>
                         {(location?.pathname === `/home` || !props.comment_to) &&
                             <span className={`font-light text-[#71767b] cursor-pointer`}>
@@ -354,7 +356,7 @@ function Tweet(props: Props) {
                     </div>
                 }
 
-                {((isRetweeted || props.main_tweet) && username !== props.user?.username && location?.pathname === `/users/${username}` ) &&
+                {((isRetweeted || props.main_tweet) && username !== props.user?.user_info.username && location?.pathname === `/users/${username}` ) &&
                     <div className={` group-hover:bg-zinc-800/20 transition`}>
                         <Link to={`/users/${username}`} className={`w-fit flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                             <BsRepeat/>

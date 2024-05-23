@@ -64,7 +64,7 @@ function NewNotification(props: Props) {
         <div className={`flex gap-x-4 mt-4 items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!props.is_read ? 'bg-sky-300/10' : ''} p-4 px-1 xxs:px-4 border-y border-zinc-700 relative transition`}>
             <div className={`flex items-center gap-x-3 w-[75%] xxs:w-auto`}>
                 <img
-                    src={`${baseUrl}/storage/${props.user?.avatar}`}
+                    src={`${baseUrl}/storage/${props.user?.user_info.avatar}`}
                     alt=""
                     className={`size-12 object-cover rounded-full`}
                 />
@@ -72,9 +72,9 @@ function NewNotification(props: Props) {
                     <Link
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
-                        to={`/users/${props.user?.username}`}
+                        to={`/users/${props.user?.user_info.username}`}
                         className={`text-sky-500 font-semibold hover:text-sky-600 transition`}>
-                        {props.user?.username + ' '}
+                        {props.user?.user_info.username + ' '}
                     </Link>
                     {props.type === 'tweet' ? 'posted a new tweet, check it out' : `followed you!`}
                 </div>
@@ -120,7 +120,7 @@ function NewNotification(props: Props) {
         <>
             {!disableLink ? (
                 <div onClick={markNotificationAsRead}>
-                    <Link to={props.type === 'tweet' ? `/tweets/${props.tweet_id}` : `/users/${props.user?.username}`}>
+                    <Link to={props.type === 'tweet' ? `/tweets/${props.tweet_id}` : `/users/${props.user?.user_info.username}`}>
                         {notificationCommonContent}
                     </Link>
                 </div>
