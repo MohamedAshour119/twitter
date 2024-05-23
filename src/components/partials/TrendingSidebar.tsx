@@ -14,17 +14,14 @@ import {useNavigate} from "react-router-dom";
 interface Props {
     setPageUrl?: Dispatch<SetStateAction<string>>
     setDisplayNotFoundMsg?: Dispatch<SetStateAction<boolean>>
+    loadingExplorePage: boolean
+    setLoadingExplorePage: Dispatch<SetStateAction<boolean>>
 }
 
 function TrendingSidebar(props: Props) {
 
-    const {
-        setDisplayNotResultsFound,
-    } = useContext(AppContext)
-
-    const {
-        setRandomTweets,
-    } = useContext(TweetContext)
+    const {setDisplayNotResultsFound,} = useContext(AppContext)
+    const {setRandomTweets,} = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
@@ -35,6 +32,9 @@ function TrendingSidebar(props: Props) {
     const debounceValue = useDebounce(searchValue)
 
     const sendRequest = () => {
+        if (props.setLoadingExplorePage) {
+            props.setLoadingExplorePage(false);
+        }
         ApiClient().get(`/search-user/${debounceValue}`)
             .then(res => {
                 setSearchResults(res.data.data.users)
@@ -169,8 +169,8 @@ function TrendingSidebar(props: Props) {
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {
                 props.setPageUrl && props.setPageUrl(res.data.data.pagination)
-                setRandomTweets( prevResults => ([
-                    ...prevResults,
+                setRandomTweets( prevState => ([
+                    ...prevState,
                     ...res.data.data.tweets
                 ]))
                 setIsOpen(false)
@@ -182,6 +182,7 @@ function TrendingSidebar(props: Props) {
             .catch((err) => {
                 console.log(err)
             })
+            .finally(() => props.setLoadingExplorePage(false))
     }
 
     const inputRef = useRef<HTMLInputElement>(null)
@@ -190,6 +191,7 @@ function TrendingSidebar(props: Props) {
         props.setPageUrl && props.setPageUrl('')
         setRandomTweets([])
         searchForKeyword(searchValue)
+        props.setLoadingExplorePage(true)
         setIsOpen(false)
         setSearchValue('')
         inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
@@ -229,7 +231,6 @@ function TrendingSidebar(props: Props) {
                             <div
                                 onClick={() => {
                                     props.setPageUrl && props.setPageUrl('')
-                                    setRandomTweets([])
                                     searchForKeyword(debounceValue)
                                     setIsOpen(false)
                                     setSearchValue('')

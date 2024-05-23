@@ -49,7 +49,7 @@ export const AppContext = createContext<AppContextType>({
     displayNotResultsFound: false,
     setDisplayNotResultsFound: () => null,
     goBack: () => null,
-    loading: true
+    loading: true,
 });
 
 interface AppProviderProps {

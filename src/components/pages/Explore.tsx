@@ -13,6 +13,7 @@ import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
 import {CgSmileSad} from "react-icons/cg";
 import ExploreHashtag from "../layouts/ExploreHashtag.tsx";
+import SpinLoader from "../helper/SpinLoader.tsx";
 
 
 function Explore() {
@@ -35,6 +36,7 @@ function Explore() {
     const [pageURL, setPageURL] = useState('')
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
+    const [loadingExplorePage, setLoadingExplorePage] = useState(true);
     const debounceValue = useDebounce(searchValue)
     const handleOpen = () => {
         setIsOpen(true)
@@ -75,6 +77,7 @@ function Explore() {
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setLoadingExplorePage(false))
     }, []);
 
 
@@ -120,6 +123,7 @@ function Explore() {
 
     const searchForKeyword = (keyword: string) => {
         setDisplayNotResultsFound(false)
+        setLoadingExplorePage(true)
         setExplorePageHashtags([])
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {
@@ -136,6 +140,7 @@ function Explore() {
             .catch((err) => {
                 console.log(err)
             })
+            .finally(() => setLoadingExplorePage(false))
     }
 
     useEffect(() => {
@@ -204,7 +209,7 @@ function Explore() {
                            isOpen &&
                            <div
                                className={`bg-black absolute w-[77%] rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                               {(searchResults.length > 0 && debounceValue) &&
+                               {(searchResults && debounceValue) &&
                                    <div
                                        onClick={() => {
                                            setRandomTweets([])
@@ -249,12 +254,13 @@ function Explore() {
                 {/* Middle section */}
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
                     <div className={`mt-20`}>
-                        {showExplorePageHashtags &&
+                        {(showExplorePageHashtags && randomTweets.length == 0 && !loadingExplorePage) &&
                             <div>
                                 {hashtags}
                             </div>
                         }
-                        {displayResults}
+                        {!loadingExplorePage && displayResults}
+                        {loadingExplorePage && <SpinLoader/>}
                         <div ref={lastResultRef}>
                             {randomTweets.length > 0 && (
                                 <Tweet {...randomTweets[randomTweets.length - 1]} />
@@ -270,7 +276,7 @@ function Explore() {
                     </div>
                 </div>
 
-                <TrendingSidebar/>
+                <TrendingSidebar loadingExplorePage={loadingExplorePage} setLoadingExplorePage={setLoadingExplorePage}/>
             </div>
             <Model />
         </div>
