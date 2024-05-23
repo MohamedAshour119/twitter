@@ -51,7 +51,11 @@ function Login(props: Props) {
 
         ApiClient().post('/login', formData)
             .then(res=> {
-                setUser(res.data.data.data)
+                console.log(res.data.data.data)
+                setUser(prevState => ({
+                    ...prevState,
+                    user_info: res.data.data.data
+                }))
                 localStorage.setItem('token', res.data.data.token)
                 localStorage.setItem('expires_at', res.data.data.expires_at)
                 navigate(from, { replace: true })

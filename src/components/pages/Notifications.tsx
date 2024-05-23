@@ -57,7 +57,7 @@ function Notifications() {
         }
     }, [location?.pathname])
 
-    const notifications = user?.allNotifications.notifications_info.map(notification => (
+    const notifications = user?.allNotifications?.notifications_info?.map(notification => (
         <NewNotification
             key={notification.id}
             id={notification.id}
@@ -78,7 +78,7 @@ function Notifications() {
         const filteredNotifications = user?.allNotifications.notifications_info.filter(notification => !notification.is_read)
         filteredNotifications?.map(notification => {
             if(notification.tweet_id && user){
-                notificationsInfoDiff.users_id?.push(user?.id)
+                notificationsInfoDiff.users_id?.push(user?.user_info?.id)
             }
         })
         setNotificationsInfo(notificationsInfoDiff)

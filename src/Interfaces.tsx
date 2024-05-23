@@ -66,7 +66,10 @@ export interface Notification {
     follower_id: number | null
     followed_id: number | null
     created_at: string
-    user: UserInfo
+    user: {
+        username: string
+        avatar: string
+    }
 }
 
 export interface Hashtag {
