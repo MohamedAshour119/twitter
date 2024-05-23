@@ -14,16 +14,10 @@ type NotificationsInfo = {
 }
 function Notifications() {
     const {
-        allNotifications,
-        setAllNotifications,
-        originalNotifications,
-        setOriginalNotifications,
-        getAllNotifications,
-        notificationsPageURL,
         isModalOpen,
         isCommentOpen,
         user,
-        setNotificationsCount
+        setUser,
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
@@ -63,7 +57,7 @@ function Notifications() {
         }
     }, [location?.pathname])
 
-    const notifications = allNotifications.slice(0, allNotifications.length - 1).map(notification => (
+    const notifications = user?.allNotifications.notifications_info.map(notification => (
         <NewNotification
             key={notification.id}
             id={notification.id}
@@ -74,64 +68,49 @@ function Notifications() {
             tweet_id={notification.tweet_id}
             is_read={notification.is_read}
             user={notification.user}
-            allNotifications={allNotifications}
+            allNotifications={user?.allNotifications.notifications_info}
         />
     ));
-
-    // Detect when scroll to last element
-    const lastNotificationRef = useRef<HTMLDivElement>(null)
-    useEffect(() => {
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && notificationsPageURL) {
-                getAllNotifications(notificationsPageURL)
-            }
-        }, {
-            threshold: 0.5 // Trigger when 50% of the last tweet is visible
-        });
-
-        // Watch the last tweet
-        if (lastNotificationRef.current) {
-            observer.observe(lastNotificationRef.current)
-        }
-
-        // Cleanup
-        return () => {
-            if (lastNotificationRef.current) {
-                observer.unobserve(lastNotificationRef.current);
-            }
-        };
-    }, [notificationsPageURL])
 
     // Mark all notifications as read
     useEffect( () => {
         const notificationsInfoDiff: NotificationsInfo = {'users_id': []}
-        const filteredNotifications = allNotifications.filter(notification => !notification.is_read)
-        filteredNotifications.map(notification => {
+        const filteredNotifications = user?.allNotifications.notifications_info.filter(notification => !notification.is_read)
+        filteredNotifications?.map(notification => {
             if(notification.tweet_id && user){
                 notificationsInfoDiff.users_id?.push(user?.id)
             }
         })
         setNotificationsInfo(notificationsInfoDiff)
-    }, [getAllNotifications])
+    }, [])
 
 
     const markAllNotificationsAsRead = () => {
 
         let numberOfUnreadNotifications = 0;
-        allNotifications.map(notification => !notification.is_read ? numberOfUnreadNotifications++ : numberOfUnreadNotifications)
+        user?.allNotifications.notifications_info.map(notification => !notification.is_read ? numberOfUnreadNotifications++ : numberOfUnreadNotifications)
 
         if(numberOfUnreadNotifications > 0) {
             ApiClient().put(`/mark-all`, notificationsInfo)
                 .then(() => {
-                    const updatedNotifications = allNotifications.map(notification => {
+                    const updatedNotifications = user?.allNotifications.notifications_info.map(notification => {
                         return {
                             ...notification,
                             is_read: true,
                         }
                     })
-                    setAllNotifications(updatedNotifications)
-                    setOriginalNotifications(updatedNotifications)
-                    setNotificationsCount(0)
+                    if (updatedNotifications) {
+                        setUser(prevState => ({
+                            ...prevState,
+                            allNotifications: {
+                                ...prevState.allNotifications,
+                                notifications_info: [...updatedNotifications],
+                                notifications_count: null
+                            },
+                            originalNotifications: [...updatedNotifications]
+                        }))
+                    }
+
                 })
                 .catch(err => {
                     console.log(err)
@@ -140,13 +119,26 @@ function Notifications() {
     }
 
     const filteredVerifiedNotifications = () => {
-        const filteredNotifications = allNotifications.filter(notification => notification.type === 'follow')
-        setAllNotifications(() => ([...filteredNotifications]))
+        const filteredNotifications = user?.allNotifications.notifications_info.filter(notification => notification.type === 'follow')
+        if (filteredNotifications) {
+            setUser(prevState => ({
+                ...prevState,
+                allNotifications: {
+                    ...prevState.allNotifications,
+                    notifications_info: [...filteredNotifications]
+                }
+            }))
+        }
     }
 
     const allNotificationsReset = () => {
-        setAllNotifications(() => ([...originalNotifications]))
-    }
+        setUser(prevState => ({
+            ...prevState,
+            allNotifications: {
+                ...prevState.allNotifications,
+                notifications_info: prevState.originalNotifications
+            }
+        }))    }
 
     useEffect(() => {
         isActive.all ? allNotificationsReset() : filteredVerifiedNotifications()
@@ -198,21 +190,17 @@ function Notifications() {
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
                     {/* All user notifications */}
                     <div className={`mt-28 pb-5`}>
-                        {allNotifications.length > 1 &&
-                            <div
-                                onClick={markAllNotificationsAsRead}
-                                className={`flex gap-x-3 bg-sky-500 w-fit px-6 py-2 relative left-1/2 -translate-x-1/2 cursor-pointer hover:bg-sky-600 transition rounded-md`}>
-                                <span>Mark all as read</span>
-                                <IoCheckmarkDoneOutline className={`size-6`}/>
-                            </div>
+                        {(user?.allNotifications.notifications_count && user?.allNotifications.notifications_count > 1) ?
+                            (
+                                <div
+                                    onClick={markAllNotificationsAsRead}
+                                    className={`flex gap-x-3 bg-sky-500 w-fit px-6 py-2 relative left-1/2 -translate-x-1/2 cursor-pointer hover:bg-sky-600 transition rounded-md`}>
+                                    <span>Mark all as read</span>
+                                    <IoCheckmarkDoneOutline className={`size-6`}/>
+                                </div>
+                            ) : ('')
                         }
-
                         {notifications}
-                        <div ref={lastNotificationRef}>
-                            {allNotifications.length > 0 && (
-                                <NewNotification allNotifications={allNotifications} {...allNotifications[allNotifications.length - 1]} />
-                            )}
-                        </div>
                     </div>
 
 

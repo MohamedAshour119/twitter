@@ -12,11 +12,10 @@ interface Props extends Notification {
 }
 function NewNotification(props: Props) {
 
-    const {baseUrl, setNotificationsCount} = useContext(AppContext)
+    const {baseUrl, setUser} = useContext(AppContext)
 
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
-    // const [isRead, setIsRead] = useState(props.is_read);
 
     const popUpWindow = useRef<HTMLDivElement>(null)
     useEffect( () => {
@@ -40,8 +39,13 @@ function NewNotification(props: Props) {
         if(!props.is_read) {
             ApiClient().put('/mark-as-read', notificationInfo)
                 .then(res => {
-                    // setIsRead(res.data.data.notification.is_read)
-                    // setNotificationsCount(res.data.data.notifications_count)
+                    setUser(prevState => ({
+                        ...prevState,
+                        allNotifications: {
+                            ...prevState.allNotifications,
+                            notifications_count: res.data.data.notifications_count
+                        }
+                    }))
 
                     props.allNotifications.map((notification: Notification) => {
                         notification.tweet_id === notificationInfo.tweet_id ? notification.is_read = true : ''

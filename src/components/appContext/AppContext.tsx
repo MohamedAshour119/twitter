@@ -86,7 +86,10 @@ const AppProvider = ({children}: AppProviderProps) => {
             setUser(prevState => ({
                 ...prevState,
                 originalNotifications: [],
-                allNotifications: [],
+                allNotifications: {
+                    notifications_info: [],
+                    notifications_count: null
+                },
             }))
         }
     }, [token])
