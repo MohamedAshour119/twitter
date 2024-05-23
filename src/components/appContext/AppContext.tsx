@@ -79,28 +79,6 @@ const AppProvider = ({children}: AppProviderProps) => {
         setIsCommentOpen(false)
     }
 
-    // Get all notifications
-    // const getAllNotifications = (pageURL: string) => {
-    //
-    //     ApiClient().get(pageURL)
-    //         .then(res => {
-    //             setAllNotifications(prevState => ([
-    //                 ...prevState,
-    //                 ...res.data.data.notifications
-    //             ]))
-    //             setOriginalNotifications(prevState => ([
-    //                 ...prevState,
-    //                 ...res.data.data.notifications
-    //             ]))
-    //             setNotificationsPageURL(res.data.data.next_page_url)
-    //             setNotificationsCount(res.data.data.notifications_count)
-    //
-    //         })
-    //         .catch(err => {
-    //             console.log(err)
-    //         })
-    // }
-
     const token = localStorage.getItem('token')
 
     useEffect( () => {
@@ -111,7 +89,7 @@ const AppProvider = ({children}: AppProviderProps) => {
                 allNotifications: [],
             }))
         }
-    }, [user])
+    }, [token])
 
     // Check if user still logged in or not
     useEffect( ()=> {

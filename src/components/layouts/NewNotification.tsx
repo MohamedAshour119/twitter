@@ -41,7 +41,7 @@ function NewNotification(props: Props) {
             ApiClient().put('/mark-as-read', notificationInfo)
                 .then(res => {
                     // setIsRead(res.data.data.notification.is_read)
-                    setNotificationsCount(res.data.data.notifications_count)
+                    // setNotificationsCount(res.data.data.notifications_count)
 
                     props.allNotifications.map((notification: Notification) => {
                         notification.tweet_id === notificationInfo.tweet_id ? notification.is_read = true : ''

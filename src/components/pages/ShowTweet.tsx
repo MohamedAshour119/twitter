@@ -60,10 +60,10 @@ function ShowTweet() {
             })
     }
 
-    useEffect(() => {
-        // setComments([])
-        // getComments(first_page_url)
-    }, [commentsCount]);
+    // useEffect(() => {
+    //     // setComments([])
+    //     // getComments(first_page_url)
+    // }, [commentsCount]);
 
 
     // Detect when scroll to last element

@@ -61,7 +61,7 @@ function App() {
 
     useEffect(() => {
         const currentDate = new Date().getTime()
-        if (expiresDate && (currentDate === new Date(expiresDate).getTime())) {
+        if (expiresDate && (currentDate >= new Date(expiresDate).getTime())) {
             localStorage.removeItem('token')
             localStorage.removeItem('expires_at')
         }

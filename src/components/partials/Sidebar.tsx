@@ -11,6 +11,7 @@ import ApiClient from "../services/ApiClient.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import {TbLogout} from "react-icons/tb";
+import {UserDefaultValues} from "../../Interfaces.tsx";
 
 function Sidebar() {
 
@@ -19,7 +20,6 @@ function Sidebar() {
         setUser,
         baseUrl,
         setIsModalOpen,
-        notificationsCount,
     } = useContext(AppContext)
 
     const {setRandomTweets, setTweet} = useContext(TweetContext)
@@ -39,7 +39,7 @@ function Sidebar() {
                 .then( () => {
                     localStorage.removeItem('token')
                     localStorage.removeItem('expires_at')
-                    setUser(null)
+                    setUser(UserDefaultValues)
                     setRandomTweets([])
                     navigate('/')
                 })
@@ -105,10 +105,10 @@ function Sidebar() {
                         className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}>
                         <div className={`relative`}>
                             <BsBell className={`size-8`}/>
-                            {notificationsCount > 0 &&
+                            {user?.allNotifications.notifications_count && user.allNotifications.notifications_count > 0 &&
                                 <div
                                     className={`absolute -top-3 left-4 text-sm bg-sky-500 rounded-full min-w-[1.5rem] min-h-[1.5rem] flex justify-center items-center`}>
-                                    {notificationsCount}
+                                    {user?.allNotifications.notifications_count && user.allNotifications.notifications_count}
                                 </div>
                             }
                         </div>
