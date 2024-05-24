@@ -98,7 +98,10 @@ const AppProvider = ({children}: AppProviderProps) => {
     useEffect( ()=> {
         ApiClient().get('/info')
             .then(res => {
-                setUser(res.data.data.user_info)
+                setUser(prevState => ({
+                    ...prevState,
+                    user_info: res.data.data.user_info
+                }))
                 if (res.data.data.notifications) {
                     setUser((prevState) : UserInfo => ({
                         ...prevState,

@@ -51,7 +51,6 @@ function Login(props: Props) {
 
         ApiClient().post('/login', formData)
             .then(res=> {
-                console.log(res.data.data.data)
                 setUser(prevState => ({
                     ...prevState,
                     user_info: res.data.data.data

@@ -120,7 +120,7 @@ function Sidebar() {
                 </li>
                 <li>
                     <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
-                          to={`/users/${user?.username}`}>
+                          to={`/users/${user?.user_info.username}`}>
                         <LuUser className={`size-8`}/>
                         <span className={`hidden xl:block`}>Profile</span>
                     </Link>
@@ -143,7 +143,7 @@ function Sidebar() {
                 </button>
                 <button disabled={!logoutWindowOpen} onClick={logout} className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>
                     <TbLogout className={`size-5`}/>
-                    Logout @{user?.username}
+                    Logout @{user?.user_info.username}
                 </button>
             </div>
 
@@ -151,11 +151,11 @@ function Sidebar() {
             <div ref={logoutRef} onClick={handleClick} className={`mx-4 self-end flex justify-between justify-self-end 2xl:w-[80%] xl:w-[18rem] items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
                 <div className={`flex items-center gap-x-4`}>
 
-                    <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.avatar}`} alt=""/>
+                    <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info.avatar}`} alt=""/>
 
                     <div className={`hidden xl:block`}>
-                        <div className={`font-semibold`}>{user?.display_name ? user.display_name : user?.username}</div>
-                        <div className={`text-neutral-500`}>@{user?.username}</div>
+                        <div className={`font-semibold`}>{user?.user_info.display_name ? user?.user_info.display_name : user?.user_info.username}</div>
+                        <div className={`text-neutral-500`}>@{user?.user_info.username}</div>
                     </div>
                 </div>
 

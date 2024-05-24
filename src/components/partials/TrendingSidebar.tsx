@@ -14,8 +14,8 @@ import {useNavigate} from "react-router-dom";
 interface Props {
     setPageUrl?: Dispatch<SetStateAction<string>>
     setDisplayNotFoundMsg?: Dispatch<SetStateAction<boolean>>
-    loadingExplorePage: boolean
-    setLoadingExplorePage: Dispatch<SetStateAction<boolean>>
+    loadingExplorePage?: boolean
+    setLoadingExplorePage?: Dispatch<SetStateAction<boolean>>
 }
 
 function TrendingSidebar(props: Props) {
@@ -182,7 +182,7 @@ function TrendingSidebar(props: Props) {
             .catch((err) => {
                 console.log(err)
             })
-            .finally(() => props.setLoadingExplorePage(false))
+            .finally(() => props.setLoadingExplorePage && props.setLoadingExplorePage(false))
     }
 
     const inputRef = useRef<HTMLInputElement>(null)
@@ -191,7 +191,7 @@ function TrendingSidebar(props: Props) {
         props.setPageUrl && props.setPageUrl('')
         setRandomTweets([])
         searchForKeyword(searchValue)
-        props.setLoadingExplorePage(true)
+        props.setLoadingExplorePage && props.setLoadingExplorePage(true)
         setIsOpen(false)
         setSearchValue('')
         inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
