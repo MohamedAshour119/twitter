@@ -218,7 +218,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                         [res.data.data, ...prevState]
                     ));
 
-                    if (location.pathname === `/users/${userInfo?.username}`) {
+                    if (location.pathname === `/users/${userInfo?.user_info.username}`) {
 
                         setUserInfo((prevState: UserInfo | undefined) => ({
                             ...prevState,

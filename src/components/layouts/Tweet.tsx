@@ -65,7 +65,7 @@ function Tweet(props: Props) {
 
     // Handle tweet retweet
     const handleRetweet = () => {
-        if (!isRetweeted && (props.main_tweet ? props.main_tweet?.user_id !== user?.id : props.user_id !== user?.id) ) {
+        if (!isRetweeted && (props.main_tweet ? props.main_tweet?.user_id !== user?.user_info.id : props.user_id !== user?.user_info.id) ) {
             ApiClient().post(`/retweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -79,7 +79,7 @@ function Tweet(props: Props) {
                 .catch((err) => {
                     console.log(err)
                 })
-        } else if (isRetweeted && (props.main_tweet ? props.main_tweet?.user_id !== user?.id : props.user_id !== user?.id) )  {
+        } else if (isRetweeted && (props.main_tweet ? props.main_tweet?.user_id !== user?.user_info.id : props.user_id !== user?.user_info.id) )  {
             ApiClient().post(`/removeRetweet`, {id: tweetId})
                 .then((res) => {
                     setIsRetweeted(res.data.data.is_retweeted)
@@ -198,7 +198,7 @@ function Tweet(props: Props) {
                         // @ts-expect-error
                         props.setUserInfo(prevState => ({
                             ...prevState,
-                            tweets_count: props.userInfo?.tweets_count ? props.userInfo?.tweets_count - 1 : null
+                            tweets_count: props.userInfo?.user_info.tweets_count ? props.userInfo?.user_info.tweets_count - 1 : null
                         }))
                     }
 
@@ -267,7 +267,7 @@ function Tweet(props: Props) {
             'tweet_id': clickedTweet.id
         }
 
-        if(clickedTweet.user.user_info.id === user?.id) {
+        if(clickedTweet.user.user_info.id === user?.user_info.id) {
             ApiClient().post(`/pin-tweet`, data)
                 .finally(() => {
                     tweetMenuRef.current?.classList.add('animate-fade-out')
@@ -361,7 +361,7 @@ function Tweet(props: Props) {
                         <Link to={`/users/${username}`} className={`w-fit flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
                             <BsRepeat/>
                             <span
-                                className={`text-sm`}>{(username === user?.username) ? 'You retweeted' : `"${props.userInfo?.display_name ? props.userInfo.display_name : username}" retweeted`}</span>
+                                className={`text-sm`}>{(username === user?.user_info.username) ? 'You retweeted' : `"${props.userInfo?.user_info.display_name ? props.userInfo.user_info.display_name : username}" retweeted`}</span>
                         </Link>
                     </div>
                 }
@@ -383,7 +383,7 @@ function Tweet(props: Props) {
                             className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
                             <HiMiniXMark/>
                         </div>
-                        {props.user_id === user?.id &&
+                        {props.user_id === user?.user_info.id &&
                             <>
                                 <button
                                     onClick={deleteTweet}
@@ -403,7 +403,7 @@ function Tweet(props: Props) {
                                 }
                             </>
                         }
-                        {props.user_id !== user?.id &&
+                        {props.user_id !== user?.user_info.id &&
                             <>
                                 <button
                                     onClick={handleRetweet}

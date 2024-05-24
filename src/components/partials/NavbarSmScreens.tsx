@@ -7,7 +7,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 
 function NavbarSmScreens() {
 
-    const {notificationsCount, isModalOpen, isCommentOpen} = useContext(AppContext)
+    const {isModalOpen, isCommentOpen, user} = useContext(AppContext)
 
     return (
         <ul className={`xs:hidden fixed bottom-0 bg-black flex w-full justify-center py-2 gap-x-16 text-neutral-200 border-t border-zinc-700/70 ${isModalOpen || isCommentOpen ? 'opacity-20' : ''}`}>
@@ -32,10 +32,10 @@ function NavbarSmScreens() {
                     className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}>
                     <div className={`relative`}>
                         <BsBell className={`size-8`}/>
-                        {notificationsCount > 0 &&
+                        {user?.allNotifications.notifications_count && user.allNotifications.notifications_count > 0 &&
                             <div
                                 className={`absolute -top-3 left-4 text-sm bg-sky-500 rounded-full min-w-[1.5rem] min-h-[1.5rem] flex justify-center items-center`}>
-                                {notificationsCount}
+                                {user.allNotifications.notifications_count}
                             </div>
                         }
                     </div>
