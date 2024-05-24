@@ -253,27 +253,25 @@ function Profile() {
                 />
             }
 
-            <div>
-                <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
-                    <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-4 rounded-full transition cursor-pointer`}>
-                        <RiArrowLeftLine className={`size-5`}/>
-                    </div>
-                    <div className={`w-full`}>
-                        <h1 className={`font-semibold text-xl`}>
-                            {!isLoading && userInfo?.user_info.username}
-                            {isLoading &&
-                                <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
-                            }
-                        </h1>
-                        {(!isLoading && userInfo?.user_info.tweets_count) && <div
-                            className={`text-[#71767b] text-sm`}>{userInfo?.user_info.tweets_count && userInfo.user_info.tweets_count <= 1 ? `${userInfo.user_info.tweets_count} post` : `${userInfo?.user_info.tweets_count} posts`}</div>
-                        }
+            <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+                <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-4 rounded-full transition cursor-pointer`}>
+                    <RiArrowLeftLine className={`size-5`}/>
+                </div>
+                <div className={`w-full`}>
+                    <h1 className={`font-semibold text-xl`}>
+                        {!isLoading && userInfo?.user_info.username}
                         {isLoading &&
-                            <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
+                            <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                         }
-                    </div>
-                </header>
-            </div>
+                    </h1>
+                    {(!isLoading && userInfo?.user_info.tweets_count) && <div
+                        className={`text-[#71767b] text-sm`}>{userInfo?.user_info.tweets_count && userInfo.user_info.tweets_count <= 1 ? `${userInfo.user_info.tweets_count} post` : `${userInfo?.user_info.tweets_count} posts`}</div>
+                    }
+                    {isLoading &&
+                        <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
+                    }
+                </div>
+            </header>
 
             <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} `}>
 

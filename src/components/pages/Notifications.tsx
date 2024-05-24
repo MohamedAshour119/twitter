@@ -1,7 +1,5 @@
 import {Link} from "react-router-dom";
 import {RiArrowLeftLine} from "react-icons/ri";
-import Sidebar from "../partials/Sidebar.tsx";
-import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
@@ -145,51 +143,43 @@ function Notifications() {
     }, [isActive]);
 
     return (
-        <div className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+        <div className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} border-r border-l border-zinc-700/70 min-h-svh`}>
 
-            <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
-                <div></div>
-                <header className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 pt-1 text-neutral-200 bg-black/50 backdrop-blur-sm`}>
-                    <div className={`flex items-center gap-x-3 font-semibold text-xl px-4`}>
-                        <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
-                            <RiArrowLeftLine className={`size-5`}/>
-                        </Link>
-                        <div className={`w-full`}>Notifications</div>
-                    </div>
-
-                    {/* Buttons section */}
-                    <ul className={`w-full flex text-[#71767b] mt-1`}>
-                        <li
-                            ref={allNotificationsRef}
-                            onClick={allNotificationsReset}
-                            className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.all ? 'text-neutral-200 font-semibold ' : ''}`}
-                        >
-                            <div
-                                className={`${isActive.all ? 'border-b-2 border-sky-500 w-fit' : ''}  pb-4 px-3`}>All</div>
-                        </li>
-                        <li
-                            ref={followNotificationsRef}
-                            onClick={filteredVerifiedNotifications}
-                            className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.verified ? 'text-neutral-200 font-semibold ' : ''}`}
-                        >
-                            <div
-                                className={`${isActive.verified ? 'border-b-2 border-sky-500 w-fit' : ''} pb-4 px-3`}>Verified</div>
-                        </li>
-                    </ul>
-                </header>
-                <div></div>
-            </div>
-
-            <div className={`${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
-
-                {/* Sidebar */}
-                <div className={`justify-end hidden sm:flex relative`}>
-                    <Sidebar/>
+            <header className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 text-neutral-200 pt-1 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+                <div className={`flex items-center gap-x-3 font-semibold text-xl px-4`}>
+                    <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+                        <RiArrowLeftLine className={`size-5`}/>
+                    </Link>
+                    <div className={`w-full`}>Notifications</div>
                 </div>
+
+                {/* Buttons section */}
+                <ul className={`w-full flex text-[#71767b] mt-1`}>
+                    <li
+                        ref={allNotificationsRef}
+                        onClick={allNotificationsReset}
+                        className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.all ? 'text-neutral-200 font-semibold ' : ''}`}
+                    >
+                        <div
+                            className={`${isActive.all ? 'border-b-2 border-sky-500 w-fit' : ''}  pb-4 px-3`}>All</div>
+                    </li>
+                    <li
+                        ref={followNotificationsRef}
+                        onClick={filteredVerifiedNotifications}
+                        className={`relative hover:bg-neutral-700/30 w-1/2 flex justify-center sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.verified ? 'text-neutral-200 font-semibold ' : ''}`}
+                    >
+                        <div
+                            className={`${isActive.verified ? 'border-b-2 border-sky-500 w-fit' : ''} pb-4 px-3`}>Verified</div>
+                    </li>
+                </ul>
+            </header>
+
+            <div className={`${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''}`}>
+
                 {/* Middle section */}
-                <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
+                <div className={`text-neutral-200`}>
                     {/* All user notifications */}
-                    <div className={`mt-28 pb-5`}>
+                    <div>
                         {(user?.allNotifications.notifications_count && user?.allNotifications.notifications_count > 1) ?
                             (
                                 <div
@@ -205,8 +195,6 @@ function Notifications() {
 
 
                 </div>
-
-                <TrendingSidebar/>
             </div>
             <Model />
         </div>

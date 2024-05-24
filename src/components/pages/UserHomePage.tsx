@@ -144,48 +144,48 @@ function UserHomePage() {
 
 
     return (
-        <div className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} `}>
-             <header className={`w-full fixed z-[200] grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem] `}>
-                    {/* Header but only on small screens */}
-                    <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
-                        <Link to={`/users/${user?.user_info?.username}`}>
-                            <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt=""/>
-                        </Link>
-                        <Link to={`/home`}>
-                            <FaXTwitter className={`size-9`}/>
+        <div className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} border border-t-0 border-zinc-700/70 min-h-svh`}>
+         <header className={`w-full fixed z-[200] grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border-zinc-700/70 3xl:max-w-[42.9rem] 2xl:max-w-[38.54rem] xl:max-w-[31.65rem] lg:max-w-[31.58rem] md:max-w-[37.64rem] sm:max-w-[29.95rem] xs:max-w-[31.16rem] xxs:max-w-[27.77rem] `}>
+                {/* Header but only on small screens */}
+                <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
+                    <Link to={`/users/${user?.user_info?.username}`}>
+                        <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt=""/>
+                    </Link>
+                    <Link to={`/home`}>
+                        <FaXTwitter className={`size-9`}/>
 
-                        </Link>
-                        <IoSettingsOutline className={`size-9`}/>
-                    </div>
-                    {/* Header for the rest of screens */}
-                    <div className={`w-full text-neutral-200`}>
-                        <button
-                            onClick={() => {
-                                handleForYouBtnClick()
-                                setRandomTweets([])
-                                setPageURL('')
-                                getHomeTweets('home-tweets')
-                            }}
-                            className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
-                            <span className={`${isActive.forYou && 'border-b-2 px-4 border-sky-500 pb-4'}`}>For you</span>
-                        </button>
-                        <button
-                            onClick={() => {
-                                handleFollowingBtnClick()
-                                setRandomTweets([])
-                                followUsersTweets('/followed-users-tweets')
-                            }}
-                            className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
-                            <span className={`${isActive.following && 'border-b-2 px-4 border-sky-500 pb-4'}`}>Following</span>
-                        </button>
-                    </div>
-                </header>
+                    </Link>
+                    <IoSettingsOutline className={`size-9`}/>
+                </div>
+                {/* Header for the rest of screens */}
+                <div className={`w-full text-neutral-200`}>
+                    <button
+                        onClick={() => {
+                            handleForYouBtnClick()
+                            setRandomTweets([])
+                            setPageURL('')
+                            getHomeTweets('home-tweets')
+                        }}
+                        className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
+                        <span className={`${isActive.forYou && 'border-b-2 px-4 border-sky-500 pb-4'}`}>For you</span>
+                    </button>
+                    <button
+                        onClick={() => {
+                            handleFollowingBtnClick()
+                            setRandomTweets([])
+                            followUsersTweets('/followed-users-tweets')
+                        }}
+                        className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
+                        <span className={`${isActive.following && 'border-b-2 px-4 border-sky-500 pb-4'}`}>Following</span>
+                    </button>
+                </div>
+            </header>
 
             <div
                 className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} `}>
                 {/* Middle content */}
                 <div
-                    className={`text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative`}>
+                    className={`text-neutral-200 w-full relative`}>
 
                     {randomTweets.length > 0 ||
                         <SpinLoader/>
@@ -212,7 +212,6 @@ function UserHomePage() {
                     </div>
 
                 </div>
-                {/*<TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setPageUrl={setPageURL} />*/}
             </div>
             {/* Tweet model  */}
             <Model/>
