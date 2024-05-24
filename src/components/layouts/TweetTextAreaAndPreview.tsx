@@ -187,10 +187,12 @@ function TweetTextAreaAndPreview() {
                                 </div>
                             </div>
 
-                            <div onClick={sendRequest}
+                            <button
+                                onClick={sendRequest}
+                                 disabled={isPostBtnDisabled}
                                  className={`bg-sky-600 px-6 font-semibold flex justify-center items-center rounded-full ${isPostBtnDisabled ? 'bg-sky-800 text-neutral-400 cursor-not-allowed' : 'cursor-pointer'}`}>
                                 {!isModalOpen && (isCommentOpen || location?.pathname !== '/home') ? 'Reply' : 'Post'}
-                            </div>
+                            </button>
                         </div>
                     </div>
                 </div>
