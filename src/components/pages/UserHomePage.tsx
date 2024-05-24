@@ -145,8 +145,7 @@ function UserHomePage() {
 
     return (
         <div className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} `}>
-             <header
-                    className={`w-full fixed z-[200] grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem] `}>
+             <header className={`w-full fixed z-[200] grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem] `}>
                     {/* Header but only on small screens */}
                     <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                         <Link to={`/users/${user?.user_info?.username}`}>
@@ -195,7 +194,7 @@ function UserHomePage() {
                     {randomTweets.length > 0 && <TweetTextAreaAndPreview/>}
 
                     {/*  All Tweets  */}
-                    <div className={`pb-[4.5rem]`}>
+                    <div className={`${randomTweets.length > 0 ? 'pb-[4.5rem]' : ''} `}>
                         {displayRandomTweets}
                         <div ref={lastTweetRef}>
                             {randomTweets.length > 0 && (

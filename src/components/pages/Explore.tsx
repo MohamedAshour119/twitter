@@ -1,5 +1,3 @@
-import Sidebar from "../partials/Sidebar.tsx";
-import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import Model from "../layouts/Model.tsx";
 import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
@@ -185,74 +183,67 @@ function Explore() {
     })
 
     return (
-        <div className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} w-screen h-svh flex justify-center overflow-x-hidden`}>
+        <div className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} ${!loadingExplorePage ? 'border' : ''} min-h-svh border-t-0 border-zinc-700/70`}>
+            <header className={`fixed z-[200] grid grid-cols-1 mt-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 3xl:max-w-[42.90rem] 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] md:max-w-[37.62rem] sm:max-w-[29.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.74rem] w-full`}>
+                <div
+                    ref={exploreSearchRef}
+                    className={`w-full relative`}>
+                    <form onSubmit={handleSubmit}>
+                        <input
+                            ref={inputRef}
+                            onClick={handleOpen}
+                            onChange={handleSearchChange}
+                            value={searchValue}
+                            type="text"
+                            placeholder={`Search`}
+                            className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} text-neutral-200 bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
+                        />
+                    </form>
 
-            <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
-                <div></div>
-                <header className={`px-20 pb-3 pt-3 flex border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 pt-1 text-neutral-200 bg-black/50 backdrop-blur-sm`}>
-                   <div
-                       ref={exploreSearchRef}
-                       className={`w-full`}>
-                       <form onSubmit={handleSubmit}>
-                           <input
-                               ref={inputRef}
-                               onClick={handleOpen}
-                               onChange={handleSearchChange}
-                               value={searchValue}
-                               type="text"
-                               placeholder={`Search`}
-                               className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
-                           />
-                       </form>
+                    {
+                        isOpen &&
+                        <div
+                            className={`bg-black absolute w-full text-neutral-200 rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
+                            {(searchResults && debounceValue) &&
+                                <div
+                                    onClick={() => {
+                                        setRandomTweets([])
+                                        searchForKeyword(debounceValue)
+                                        setIsOpen(false)
+                                        setSearchValue('')
+                                    }}
+                                    className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''}  border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                                >
+                                    Search for "{debounceValue}"
+                                </div>
+                            }
+                            {users}
+                            <div ref={lastResultRef}>
+                                {searchResults.length > 0 && (
+                                    <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>
+                                )}
+                            </div>
+                        </div>
+                    }
 
-                       {
-                           isOpen &&
-                           <div
-                               className={`bg-black absolute w-[77%] rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                               {(searchResults && debounceValue) &&
-                                   <div
-                                       onClick={() => {
-                                           setRandomTweets([])
-                                           searchForKeyword(debounceValue)
-                                           setIsOpen(false)
-                                           setSearchValue('')
-                                       }}
-                                       className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''}  border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
-                                   >
-                                       Search for "{debounceValue}"
-                                   </div>
-                               }
-                               {users}
-                               <div ref={lastResultRef}>
-                                   {searchResults.length > 0 && (
-                                       <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>
-                                   )}
-                               </div>
-                           </div>
-                       }
-
-                       <HiMiniMagnifyingGlass className={`absolute top-1/2 left-24 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>
-                       {(isOpen && searchValue !== '') &&
-                           <div
-                               onClick={() => setSearchValue('')}
-                               className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-24 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
-                               <HiMiniXMark
-                                   className={`size-5`}/>
-                           </div>
-                       }
-                   </div>
-                </header>
-                <div></div>
-            </div>
-
-            <div className={`${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
-
-                {/* Sidebar */}
-                <div className={`justify-end hidden sm:flex relative`}>
-                    <Sidebar/>
+                    {isOpen || <HiMiniMagnifyingGlass
+                        className={`absolute top-1/2 right-6 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>}
+                    {(isOpen && searchValue !== '') &&
+                        <div
+                            onClick={() => setSearchValue('')}
+                            className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-6 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
+                            <HiMiniXMark
+                                className={`size-5`}/>
+                        </div>
+                    }
                 </div>
-                {/* Middle section */}
-                <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
+            </header>
+            <div
+                className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} `}>
+                {/* Middle content */}
+                <div
+                    className={`text-neutral-200 w-full relative`}>
+
                     <div className={`mt-20`}>
                         {(showExplorePageHashtags && randomTweets.length == 0 && !loadingExplorePage) &&
                             <div>
@@ -274,11 +265,12 @@ function Explore() {
                             </div>
                         }
                     </div>
-                </div>
 
-                <TrendingSidebar loadingExplorePage={loadingExplorePage} setLoadingExplorePage={setLoadingExplorePage}/>
+                </div>
+                {/*<TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setPageUrl={setPageURL} />*/}
             </div>
-            <Model />
+            {/* Tweet model  */}
+            <Model/>
         </div>
     )
 }
