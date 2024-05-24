@@ -88,7 +88,7 @@ function TweetTextAreaAndPreview() {
 
     return (
         <div className={`${location?.pathname !== `/home` && !isModalOpen && !isCommentOpen ? 'border-t border-zinc-700/70' : ''} `}>
-            <div className={`flex flex-col py-3 sm:px-6 px-2 ${location?.pathname !== `/home` || isModalOpen || isCommentOpen ? 'mt-0' : 'sm:mt-16 mt-36 border-b'} border-zinc-700/70 z-10`}>
+            <div className={`flex flex-col py-3 sm:px-6 px-2 ${location?.pathname !== `/home` || isModalOpen || isCommentOpen ? 'mt-0' : 'sm:mt-14 mt-[7.9rem] border-b'} border-zinc-700/70 z-10`}>
                 <div className={`flex gap-x-3`}>
                         <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt=""/>
 

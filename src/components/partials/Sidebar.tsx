@@ -75,8 +75,8 @@ function Sidebar() {
     }
 
     return (
-        <div className={`text-neutral-100 lg:px-0 px-4 pb-5 pt-1 h-dvh grid grid-cols-1 justify-center container fixed min-w-fit 2xl:max-w-[22%] z-[300]`}>
-            <ul className={`flex flex-col gap-y-5 justify-self-end 2xl:w-[80%] xl:w-[22%] mx-4 select-none`}>
+        <div className={`text-neutral-100 lg:px-0 px-4 pb-5 pt-1 h-dvh grid grid-cols-1 justify-center container fixed min-w-fit max-w-[24rem] 3xl:max-w-[22%] z-[300]`}>
+            <ul className={`flex flex-col gap-y-5 justify-self-end 2xl:w-[80%] xl:w-[18rem] mx-4 select-none`}>
                 <li className={`flex items-center`}>
                     <Link to={`/home`}>
                         <div className={`hover:bg-neutral-600/30 rounded-full p-3 `}>

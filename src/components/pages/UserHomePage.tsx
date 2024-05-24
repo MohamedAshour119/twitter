@@ -1,8 +1,6 @@
-import Sidebar from "../partials/Sidebar.tsx";
 import {FaXTwitter} from "react-icons/fa6";
 import {useContext, useEffect, useRef, useState} from "react";
 import Tweet from "../layouts/Tweet.tsx";
-import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import {IoSettingsOutline} from "react-icons/io5";
 import * as React from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
@@ -146,13 +144,9 @@ function UserHomePage() {
 
 
     return (
-        <div
-            className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} h-svh w-screen flex justify-center`}>
-
-            <div className={`z-[200] container fixed 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
-                <div></div>
-                <header
-                    className={`w-full grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border-zinc-700/70 2xl:max-w-[43rem] xl:max-w-[34rem] lg:max-w-[34rem] md:max-w-[40.34rem] sm:max-w-[32rem] xs:max-w-[31.30rem] xxs:max-w-[28rem] `}>
+        <div className={`${(isModalOpen || isCommentOpen) ? 'bg-[#1d252d]' : 'bg-black'} `}>
+             <header
+                    className={`w-full fixed z-[200] grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem] `}>
                     {/* Header but only on small screens */}
                     <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                         <Link to={`/users/${user?.user_info?.username}`}>
@@ -187,17 +181,9 @@ function UserHomePage() {
                         </button>
                     </div>
                 </header>
-                <div></div>
-            </div>
 
             <div
-                className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
-
-                {/* Sidebar */}
-                <div className={`justify-end hidden sm:flex relative`}>
-                    <Sidebar/>
-                </div>
-
+                className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} `}>
                 {/* Middle content */}
                 <div
                     className={`text-neutral-200 border border-t-0 border-zinc-700/70 w-full relative`}>
@@ -227,8 +213,7 @@ function UserHomePage() {
                     </div>
 
                 </div>
-
-                <TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setPageUrl={setPageURL} />
+                {/*<TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setPageUrl={setPageURL} />*/}
             </div>
             {/* Tweet model  */}
             <Model/>
