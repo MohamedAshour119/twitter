@@ -60,9 +60,8 @@ function App() {
     const expiresDate = localStorage.getItem('expires_at');
     const refreshToken = () => {
         if (expiresDate) {
-            const callAfter = (new Date(expiresDate).getTime() - new Date().getTime()) - 300000;
-            // Call this setTimeOut before token expiration date by 5 minutes
-            console.log('called');
+            const callAfter = (new Date(expiresDate).getTime() - new Date().getTime()) - 72000000;
+            // Call this setTimeOut before token expiration date by 20 hours
             setTimeout(() => {
                 ApiClient().post('/refresh-token')
                     .then(res => {
