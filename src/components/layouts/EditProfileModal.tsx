@@ -18,8 +18,8 @@ function EditProfileModal(props: Props) {
     const { user, setUser, baseUrl, formErrors, setFormErrors } = useContext(AppContext)
 
     const [userInfo, setUserInfo] = useState<EditUserProfile>({
-        display_name: user?.display_name ? user.display_name : '',
-        bio: user?.bio ? user.bio : '',
+        display_name: user?.user_info.display_name ? user.user_info.display_name : '',
+        bio: user?.user_info.bio ? user.user_info.bio : '',
         password: '',
         password_confirmation: '',
         birth_date: '',
@@ -141,9 +141,9 @@ function EditProfileModal(props: Props) {
                             <p className={'text-red-500 font-semibold'}>{formErrors?.cover}</p>}
                         <div className={`bg-[#333639] rounded h-48 relative`}>
                             {
-                                user?.cover && !userInfo.cover &&
+                                user?.user_info.cover && !userInfo.cover &&
                                 <img
-                                    src={`${baseUrl}/storage/${user.cover}`}
+                                    src={`${baseUrl}/storage/${user.user_info.cover}`}
                                     alt="cover"
                                     className={`w-full object-cover h-48 brightness-75`}
                                 />
@@ -177,10 +177,10 @@ function EditProfileModal(props: Props) {
                         </div>
                         {/*  Avatar  */}
                         {
-                            user?.avatar &&
+                            user?.user_info.avatar &&
                                 <div className={`absolute top-2/3 left-2 border-4 border-black rounded-full`}>
-                                    {user.avatar && !userInfo.avatar &&
-                                        <img src={`${baseUrl}/storage/${user?.avatar}`}
+                                    {user.user_info.avatar && !userInfo.avatar &&
+                                        <img src={`${baseUrl}/storage/${user?.user_info.avatar}`}
                                              alt="avatar"
                                              className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}/>
                                     }
@@ -239,7 +239,7 @@ function EditProfileModal(props: Props) {
                         {/*  Birth date  */}
                         <div className={`text-zinc-500`}>
                             <div className={`mt-5 font-semibold`}>Birth date</div>
-                            <div className={`text-neutral-200 text-xl`}>{user?.birth_date}</div>
+                            <div className={`text-neutral-200 text-xl`}>{user?.user_info.birth_date}</div>
 
                             <ReactSelect userInfo={userInfo} setUserInfo={setUserInfo}/>
                         </div>
