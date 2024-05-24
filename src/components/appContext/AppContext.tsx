@@ -28,6 +28,8 @@ interface AppContextType {
     setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
     goBack: () => void
     loading: boolean
+    isShowEditInfoModal: boolean
+    setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
 }
 
 type OptionType = Gender;
@@ -50,6 +52,8 @@ export const AppContext = createContext<AppContextType>({
     setDisplayNotResultsFound: () => null,
     goBack: () => null,
     loading: true,
+    isShowEditInfoModal: false,
+    setIsShowEditInfoModal: () => null,
 });
 
 interface AppProviderProps {
@@ -71,7 +75,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
     const [loading, setLoading] = useState(true);
-
+    const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
 
     // Handle model open state
     const handleModelOpen = () => {
@@ -220,6 +224,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 setDisplayNotResultsFound,
                 goBack,
                 loading,
+                isShowEditInfoModal,
+                setIsShowEditInfoModal,
             }}>
             {children}
         </AppContext.Provider>

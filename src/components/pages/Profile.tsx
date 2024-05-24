@@ -1,5 +1,3 @@
-import Sidebar from "../partials/Sidebar.tsx";
-import TrendingSidebar from "../partials/TrendingSidebar.tsx";
 import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
@@ -13,6 +11,7 @@ import EditProfileModal from "../layouts/EditProfileModal.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {toast} from "react-toastify";
 import {toastStyle} from "../helper/ToastifyStyle.tsx";
+import SpinLoader from "../helper/SpinLoader.tsx";
 
 
 function Profile() {
@@ -22,7 +21,10 @@ function Profile() {
         isModalOpen,
         baseUrl,
         isCommentOpen,
+        isShowEditInfoModal,
+        setIsShowEditInfoModal,
         goBack,
+        user,
     } = useContext(AppContext)
     const {
         allProfileUserTweets,
@@ -39,7 +41,6 @@ function Profile() {
         replies: false,
         likes: false,
     })
-    const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
     const [isLoading, setIsLoading] = useState(true)
 
     const toggleModel = () => {
@@ -56,7 +57,6 @@ function Profile() {
         ApiClient().get(pageURL)
             .then(res => {
                 setUserInfo(res.data.data.user)
-                setIsLoading(false)
                 const tweets = res.data.data.pagination.data
                 if(tweets){
                     setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
@@ -66,6 +66,7 @@ function Profile() {
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setIsLoading(false))
     }
 
     useEffect(() => {
@@ -77,12 +78,11 @@ function Profile() {
 
     // Get the tweets which is suitable to the button which is clicked
     const getSuitableTweets = (pageURL: string) => {
-        setAllProfileUserTweets([])
         setPageURL('')
         ApiClient().get(pageURL)
             .then(res => {
-                setAllProfileUserTweets(prevAllProfileUserTweets => ([
-                    ...prevAllProfileUserTweets,
+                setAllProfileUserTweets(prevState => ([
+                    ...prevState,
                     ...res.data.data.pagination.data
                 ]))
                 setPageURL(res.data.data.pagination.next_page_url)
@@ -203,8 +203,10 @@ function Profile() {
     const lastTweetRef = useRef<HTMLDivElement>(null)
     useEffect( () => {
         const observer = new IntersectionObserver(entries => {
-            if(entries[0].isIntersecting) {
+            if(entries[0].isIntersecting && isActive.posts) {
                 getAllUserTweets(pageURL)
+            } else if (entries[0].isIntersecting && (isActive.likes || isActive.replies)) {
+                getSuitableTweets(pageURL)
             }
         }, {
             threshold: 0.5  // Trigger when 50% of the last tweet is visible
@@ -240,7 +242,7 @@ function Profile() {
     }, [isModalOpen, isCommentOpen, isShowEditInfoModal]);
 
     return (
-        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? '' : 'bg-black'} h-svh w-screen flex justify-center`}>
+        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? '' : 'bg-black'} text-neutral-200`}>
 
             {/* Edit user info model */}
             {isShowEditInfoModal &&
@@ -251,10 +253,9 @@ function Profile() {
                 />
             }
 
-            <div className={`container z-[100] 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] fixed lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr]`}>
-                <div></div>
-                <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 gap-x-8 py-1 px-4 items-center text-neutral-200 bg-black/50 backdrop-blur-sm`}>
-                    <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+            <div>
+                <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+                    <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-4 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
                     </div>
                     <div className={`w-full`}>
@@ -264,7 +265,7 @@ function Profile() {
                                 <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                             }
                         </h1>
-                        {!isLoading && <div
+                        {(!isLoading && userInfo?.user_info.tweets_count) && <div
                             className={`text-[#71767b] text-sm`}>{userInfo?.user_info.tweets_count && userInfo.user_info.tweets_count <= 1 ? `${userInfo.user_info.tweets_count} post` : `${userInfo?.user_info.tweets_count} posts`}</div>
                         }
                         {isLoading &&
@@ -272,18 +273,12 @@ function Profile() {
                         }
                     </div>
                 </header>
-                <div></div>
             </div>
 
-            <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} container 2xl:px-12 sm:px-4 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
+            <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} `}>
 
-                {/* Sidebar */}
-                <div className={`justify-end hidden sm:flex relative`}>
-                    <Sidebar/>
-                </div>
                 {/* Middle section */}
-                <div className={`text-neutral-200 border-r border-l border-zinc-700/70`}>
-                    <div className={`h-14 bg-black z-10`}></div>
+                <div className={`text-neutral-200 border-r border-l border-zinc-700/70 ${isLoading ? 'max-h-[35.95rem]' : ''} `}>
                     {/* Cover image */}
                     <div className={`h-[14rem] w-full relative`}>
                         {
@@ -312,12 +307,12 @@ function Profile() {
                     <div className={`relative`}>
                         <div className={`px-4 h-[16rem]`}>
                             <div className={`flex justify-between`}>
-                                <div className={`relative -translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black ${!userInfo ? 'animate-pulse' : ''}`}>
+                                <div className={`relative -translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black`}>
                                     <img src={`${baseUrl}/storage/${userInfo?.user_info.avatar}`} alt=""
                                          className={`object-cover w-full h-full rounded-full ${isLoading ? 'invisible' : ''}`}/>
-                                    {isLoading &&
+                                    {(isLoading || !userInfo?.user_info.avatar) &&
                                         <div
-                                            className="absolute animate-pulse top-0 flex items-center justify-center w-full h-full rounded-full bg-[#2a2d32b3]">
+                                            className={`absolute animate-pulse top-0 flex items-center justify-center w-full h-full rounded-full bg-[#2a2d32b3]`}>
                                             <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
                                                  xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 18">
                                                 <path
@@ -326,13 +321,13 @@ function Profile() {
                                         </div>}
                                 </div>
 
-                                {(username === userInfo?.user_info?.username && !isLoading) &&
+                                {(username === user?.user_info?.username && !isLoading) &&
                                     <button
                                         onClick={toggleModel}
                                         className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile
                                     </button>
                                 }
-                                {(username !== userInfo?.user_info?.username && !isLoading) &&
+                                {(username !== user?.user_info?.username && !isLoading) &&
                                     <button
                                         disabled={isFollowedBtnDisabled}
                                         onClick={handleFollow}
@@ -386,14 +381,20 @@ function Profile() {
                         {/* Buttons section */}
                         <ul className={`w-full flex border-b border-zinc-700/70 text-[#71767b] mt-10`}>
                             <li
-                                onClick={() => getSuitableTweets(`/users/${username}`)}
+                                onClick={() => {
+                                    setAllProfileUserTweets([])
+                                    getSuitableTweets(`/users/${username}`)
+                                }}
                                 ref={postsRef}
                                 className={`relative hover:bg-neutral-700/30 sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.posts ? 'text-neutral-200 font-semibold ' : ''}`}
                             >
                                 <div className={`${isActive.posts ? 'border-b-2 border-sky-500' : ''}  pb-4 px-3`}>Posts</div>
                             </li>
                             <li
-                                onClick={() => getSuitableTweets(`/replies/${username}`)}
+                                onClick={() => {
+                                    setAllProfileUserTweets([])
+                                    getSuitableTweets(`/replies/${username}`)
+                                }}
                                 ref={repliesRef}
                                 className={`relative hover:bg-neutral-700/30 sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.replies ? 'text-neutral-200 font-semibold ' : ''}`}
                             >
@@ -401,7 +402,10 @@ function Profile() {
                             </li>
 
                             <li
-                                onClick={() => getSuitableTweets(`/likes/${username}`)}
+                                onClick={() => {
+                                    setAllProfileUserTweets([])
+                                    getSuitableTweets(`/likes/${username}`)
+                                }}
                                 ref={likesRef}
                                 className={`relative hover:bg-neutral-700/30 sm:px-8 px-6 pt-3 cursor-pointer transition ${isActive.likes ? 'text-neutral-200 font-semibold ' : ''}`}
                             >
@@ -411,7 +415,8 @@ function Profile() {
                     </div>
 
                     {/* All user tweets */}
-                    {tweets}
+                    {isLoading && <SpinLoader/>}
+                    {!isLoading && tweets}
                     <div className={`invisible opacity-0 pointer-events-none`} ref={lastTweetRef}>
                         {allProfileUserTweets.length > 0 && (
                             <Tweet
@@ -424,7 +429,6 @@ function Profile() {
 
                 </div>
 
-                <TrendingSidebar/>
             </div>
             <Model />
         </div>
