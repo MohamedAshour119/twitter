@@ -184,7 +184,7 @@ function Notifications() {
                             (
                                 <div
                                     onClick={markAllNotificationsAsRead}
-                                    className={`flex gap-x-3 bg-sky-500 w-fit px-6 py-2 relative left-1/2 -translate-x-1/2 cursor-pointer hover:bg-sky-600 transition rounded-md`}>
+                                    className={`my-5 flex gap-x-3 bg-sky-500 w-fit px-6 py-2 relative left-1/2 -translate-x-1/2 cursor-pointer hover:bg-sky-600 transition rounded-md`}>
                                     <span>Mark all as read</span>
                                     <IoCheckmarkDoneOutline className={`size-6`}/>
                                 </div>

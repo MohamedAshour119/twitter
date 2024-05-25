@@ -57,6 +57,7 @@ function Profile() {
         ApiClient().get(pageURL)
             .then(res => {
                 setUserInfo(res.data.data.user)
+                setIsLoading(false)
                 const tweets = res.data.data.pagination.data
                 if(tweets){
                     setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
@@ -66,7 +67,6 @@ function Profile() {
             .catch(err => {
                 console.log(err)
             })
-            .finally(() => setIsLoading(false))
     }
 
     useEffect(() => {
@@ -259,12 +259,12 @@ function Profile() {
                 </div>
                 <div className={`w-full`}>
                     <h1 className={`font-semibold text-xl`}>
-                        {!isLoading && userInfo?.user_info.username}
+                        {!isLoading && (userInfo?.user_info.display_name ? userInfo.user_info.display_name : userInfo?.user_info.username)}
                         {isLoading &&
                             <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
                         }
                     </h1>
-                    {(!isLoading && userInfo?.user_info.tweets_count) && <div
+                    {!isLoading && <div
                         className={`text-[#71767b] text-sm`}>{userInfo?.user_info.tweets_count && userInfo.user_info.tweets_count <= 1 ? `${userInfo.user_info.tweets_count} post` : `${userInfo?.user_info.tweets_count} posts`}</div>
                     }
                     {isLoading &&

@@ -35,7 +35,7 @@ function Tweet(props: Props) {
         setClickedTweet,
     } = useContext(AppContext);
 
-    const {randomTweets ,setRandomTweets} = useContext(TweetContext)
+    const {randomTweets ,setRandomTweets, allProfileUserTweets, setAllProfileUserTweets,} = useContext(TweetContext)
 
     const { comments, setComments, setCommentsCount} = useContext(TweetContext)
 
@@ -276,7 +276,41 @@ function Tweet(props: Props) {
                     }, 200)
                 })
         }
+
+        updatedTweets()
     }
+
+    // ReArrange User tweets after make tweet pinned
+    const updatedTweets = () => {
+        const prevPinnedTweetIndex = allProfileUserTweets.findIndex(tweet => tweet.is_pinned);
+        if (prevPinnedTweetIndex !== -1) { // Check if the pinned tweet exists or not
+            const updatedTweetsArr = [...allProfileUserTweets]; // Make a copy of allProfileUserTweets to prevent updating the original state
+            updatedTweetsArr[prevPinnedTweetIndex] = {
+                ...updatedTweetsArr[prevPinnedTweetIndex],
+                is_pinned: false
+            };
+
+            // Update new pinned tweet 'is_pinned' property
+            const newPinnedTweetIndex = updatedTweetsArr.findIndex(tweet => tweet.id === tweetId);
+            if (newPinnedTweetIndex !== -1) { // Check if the new pinned tweet exists
+                updatedTweetsArr[newPinnedTweetIndex] = {
+                    ...updatedTweetsArr[newPinnedTweetIndex],
+                    is_pinned: true
+                };
+
+                // Re-arrange tweets with the new pinned tweet at the beginning
+                const newUpdatedTweets = [
+                    updatedTweetsArr[newPinnedTweetIndex],
+                    ...updatedTweetsArr.slice(0, newPinnedTweetIndex),
+                    ...updatedTweetsArr.slice(newPinnedTweetIndex + 1)
+                ];
+
+                setAllProfileUserTweets(newUpdatedTweets);
+            }
+        }
+    };
+
+
 
     const tweetCommonContent =
         <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
