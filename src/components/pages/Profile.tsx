@@ -276,7 +276,7 @@ function Profile() {
             <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} `}>
 
                 {/* Middle section */}
-                <div className={`text-neutral-200 border-r border-l border-zinc-700/70 ${isLoading ? 'max-h-[35.95rem]' : ''} `}>
+                <div className={`text-neutral-200 border-r border-l border-zinc-700/70 min-h-svh ${isLoading ? 'max-h-[35.95rem]' : ''} `}>
                     {/* Cover image */}
                     <div className={`h-[14rem] w-full relative`}>
                         {
