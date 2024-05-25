@@ -96,7 +96,7 @@ function ShowTweet() {
     })
 
     return (
-        <div className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d] overflow-y-hidden' : 'bg-black'} min-h-svh border border-y-0 border-zinc-700/70`}>
+        <div className={`min-h-svh border border-y-0 border-zinc-700/70`}>
 
             <header
                 className={`w-full grid grid-cols-1 ${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 px-4 border border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>

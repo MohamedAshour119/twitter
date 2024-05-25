@@ -143,7 +143,7 @@ function Notifications() {
     }, [isActive]);
 
     return (
-        <div className={`${isModalOpen || isCommentOpen ? 'bg-[#1d252d]' : 'bg-black'} border-r border-l border-zinc-700/70 min-h-svh`}>
+        <div className={`border-r border-l border-zinc-700/70 min-h-svh`}>
 
             <header className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 text-neutral-200 pt-1 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
                 <div className={`flex items-center gap-x-3 font-semibold text-xl px-4`}>

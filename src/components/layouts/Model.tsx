@@ -82,7 +82,7 @@ function Model() {
 
 
     return (
-        <div ref={model} className={`z-[500] fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex-col gap-y-3  ${isModalOpen || isCommentOpen ? 'animate-slide-down' : 'close-slide-down'} `}>
+        <div ref={model} className={`z-[500] fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[40rem] w-[95%] p-3 rounded-2xl flex-col gap-y-3  ${isModalOpen || isCommentOpen ? 'animate-slide-down' : 'close-slide-down hidden'} `}>
             <div
                 onClick={handleModalOpen}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">
