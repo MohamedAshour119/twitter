@@ -42,6 +42,7 @@ function Profile() {
         likes: false,
     })
     const [isLoading, setIsLoading] = useState(true)
+    const [scroll, setScroll] = useState(0)
 
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
@@ -250,6 +251,22 @@ function Profile() {
         }
     }, [isModalOpen, isCommentOpen, isShowEditInfoModal]);
 
+
+    useEffect(() => {
+        const detectScroll = () => {
+            const scrollYValue = window.scrollY
+            if (scrollYValue >= 23) {
+                setScroll(23)
+            } else {
+                setScroll(0)
+            }
+        }
+        window.addEventListener('scroll', detectScroll)
+        return () => {
+            window.removeEventListener('scroll', detectScroll)
+        }
+    }, []);
+
     return (
         <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? '' : 'bg-black'} text-neutral-200`}>
 
@@ -262,7 +279,7 @@ function Profile() {
                 />
             }
 
-            <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+            <header className={`flex border border-r-1 ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} ${scroll >= 23 ? 'backdrop-blur-md' : 'backdrop-blur-none'} w-full fixed z-[500] py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
                 <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-4 rounded-full transition cursor-pointer`}>
                     <RiArrowLeftLine className={`size-5`}/>
                 </div>
@@ -287,6 +304,7 @@ function Profile() {
                 {/* Middle section */}
                 <div className={`text-neutral-200 border-r border-l border-zinc-700/70 min-h-svh ${isLoading ? 'max-h-[35.95rem]' : ''} `}>
                     {/* Cover image */}
+                    <div className={`h-[70px]`}></div>
                     <div className={`h-[14rem] w-full relative`}>
                         {
                             (!isLoading && userInfo?.user_info.cover) &&

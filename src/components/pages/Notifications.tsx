@@ -145,7 +145,7 @@ function Notifications() {
     return (
         <div className={`border-r border-l border-zinc-700/70 min-h-svh`}>
 
-            <header className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 text-neutral-200 pt-1 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+            <header className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-l-0 backdrop-blur-md w-full fixed z-[500] gap-x-3 text-neutral-200 pt-1 border-zinc-700/70 3xl:max-w-[42.91rem] 2xl:max-w-[38.52rem] xl:max-w-[31.70rem] lg:max-w-[31.62rem] md:max-w-[37.68rem] sm:max-w-[29.95rem] xs:max-w-[31.20rem] xxs:max-w-[27.81rem]`}>
                 <div className={`flex items-center gap-x-3 font-semibold text-xl px-4`}>
                     <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
@@ -179,6 +179,7 @@ function Notifications() {
                 {/* Middle section */}
                 <div className={`text-neutral-200`}>
                     {/* All user notifications */}
+                    <div className={`h-[100px]`}></div>
                     <div>
                         {(user?.allNotifications.notifications_count && user?.allNotifications.notifications_count > 1) ?
                             (
