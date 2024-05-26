@@ -70,10 +70,19 @@ function Profile() {
     }
 
     useEffect(() => {
-        setPageURL('');
-        setAllProfileUserTweets([])
-        getAllUserTweets(`users/${username}`)
-    }, [userInfo?.user_info.avatar, userInfo?.user_info.display_name, username]);
+            setPageURL('');
+            setAllProfileUserTweets([])
+            getAllUserTweets(`users/${username}`)
+    }, [username]);
+
+    useEffect(() => {
+        const updateUserTweets = allProfileUserTweets
+        updateUserTweets.map(tweet => {
+            tweet.user.user_info.display_name = user?.user_info.display_name as string
+            tweet.user.user_info.avatar = user?.user_info.avatar as string
+        })
+        setAllProfileUserTweets(updateUserTweets)
+    }, [userInfo?.user_info.avatar, userInfo?.user_info.display_name,]);
 
 
     // Get the tweets which is suitable to the button which is clicked
