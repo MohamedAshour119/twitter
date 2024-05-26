@@ -310,22 +310,22 @@ function Tweet(props: Props) {
         }
     };
 
-
+    const condition = location.pathname !== `/users/${username}`
 
     const tweetCommonContent =
         <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
             <div className={`flex gap-x-2`}>
-                <Link to={`/users/${props.user?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
+                <Link to={`/users/${condition ? props.user?.user_info.username : props.userInfo?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
                     <img
                         className={`size-11 object-cover rounded-full select-none`}
-                        src={`${baseUrl}/storage/${props.user?.user_info.avatar}`}
+                        src={`${baseUrl}/storage/${condition ? props.user?.user_info.avatar : props.userInfo?.user_info.avatar}`}
                         alt=""
                     />
                 </Link>
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
-                        <Link to={`/users/${props.user?.user_info.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
-                            <h1 className={`font-semibold cursor-pointer`}>{props.user?.user_info.display_name ? props.user?.user_info.display_name : props.user?.user_info.username}</h1>
+                        <Link to={`/users/${condition ? props.user?.user_info.username : props.userInfo?.user_info.username}`} className={`xs:flex gap-x-2 ${location?.pathname === `/tweets/${clickedTweet.id}` && !props.comment_to ? 'flex-col' : 'flex-row'}`}>
+                            <h1 className={`font-semibold cursor-pointer`}>{(condition && props.user?.user_info.display_name) ? props.user?.user_info.display_name : condition && props.user?.user_info.username ? props.user.user_info.username : props.userInfo?.user_info.display_name ? props.userInfo.user_info.display_name : props.userInfo?.user_info.username}</h1>
                             <h1 className={`font-light text-[#71767b] cursor-pointer`}>@{props.user?.user_info.username}</h1>
                         </Link>
                         {(location?.pathname === `/home` || !props.comment_to) &&
