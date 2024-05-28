@@ -283,30 +283,31 @@ function Tweet(props: Props) {
     // ReArrange User tweets after make tweet pinned
     const updatedTweets = () => {
         const prevPinnedTweetIndex = allProfileUserTweets.findIndex(tweet => tweet.is_pinned);
+
+        const updatedTweetsArr = [...allProfileUserTweets]; // Make a copy of allProfileUserTweets to prevent updating the original state
         if (prevPinnedTweetIndex !== -1) { // Check if the pinned tweet exists or not
-            const updatedTweetsArr = [...allProfileUserTweets]; // Make a copy of allProfileUserTweets to prevent updating the original state
             updatedTweetsArr[prevPinnedTweetIndex] = {
                 ...updatedTweetsArr[prevPinnedTweetIndex],
                 is_pinned: false
             };
+        }
 
-            // Update new pinned tweet 'is_pinned' property
-            const newPinnedTweetIndex = updatedTweetsArr.findIndex(tweet => tweet.id === tweetId);
-            if (newPinnedTweetIndex !== -1) { // Check if the new pinned tweet exists
-                updatedTweetsArr[newPinnedTweetIndex] = {
-                    ...updatedTweetsArr[newPinnedTweetIndex],
-                    is_pinned: true
-                };
+        // Update new pinned tweet 'is_pinned' property
+        const newPinnedTweetIndex = updatedTweetsArr.findIndex(tweet => tweet.id === tweetId);
+        if (newPinnedTweetIndex !== -1) { // Check if the new pinned tweet exists
+            updatedTweetsArr[newPinnedTweetIndex] = {
+                ...updatedTweetsArr[newPinnedTweetIndex],
+                is_pinned: true
+            };
 
-                // Re-arrange tweets with the new pinned tweet at the beginning
-                const newUpdatedTweets = [
-                    updatedTweetsArr[newPinnedTweetIndex],
-                    ...updatedTweetsArr.slice(0, newPinnedTweetIndex),
-                    ...updatedTweetsArr.slice(newPinnedTweetIndex + 1)
-                ];
+            // Re-arrange tweets with the new pinned tweet at the beginning
+            const newUpdatedTweets = [
+                updatedTweetsArr[newPinnedTweetIndex],
+                ...updatedTweetsArr.slice(0, newPinnedTweetIndex),
+                ...updatedTweetsArr.slice(newPinnedTweetIndex + 1)
+            ];
 
-                setAllProfileUserTweets(newUpdatedTweets);
-            }
+            setAllProfileUserTweets(newUpdatedTweets);
         }
     };
 
