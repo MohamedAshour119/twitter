@@ -257,7 +257,6 @@ function Profile() {
             const scrollYValue = window.scrollY
             if (scrollYValue >= 23) {
                 setScroll(23)
-                console.log(scrollYValue)
             } else {
                 setScroll(0)
             }

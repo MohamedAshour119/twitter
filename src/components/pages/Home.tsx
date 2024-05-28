@@ -1,6 +1,5 @@
 import {FaXTwitter} from "react-icons/fa6";
 import {Link} from "react-router-dom";
-import {FcGoogle} from "react-icons/fc";
 import Footer from "../partials/Footer.tsx";
 import {useContext, useEffect, useState} from "react";
 import Register from "../partials/Register.tsx";
@@ -51,16 +50,6 @@ function Home() {
 
                         <div className="max-w-[21rem] flex flex-col items-center md:block">
                             <h6 className="mt-12 text-3xl font-bold">Join today.</h6>
-                            <button className="flex items-center justify-center bg-white text-black/85 font-semibold w-full rounded-3xl mt-6 py-3 gap-x-2 hover:bg-gray-100 transition">
-                                <div className="text-lg">
-                                    <FcGoogle />
-                                </div>
-                                Sign up with Google
-                            </button>
-                            <div className="relative flex items-center justify-center mt-2">
-                                <div className="absolute w-full h-[1px] bg-white/20"></div>
-                                <span className="z-10 bg-black rounded-full size-7 text-center">or</span>
-                            </div>
 
                             <button
                                 onClick={() => setIsRegisterModelOpen(true)}

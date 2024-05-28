@@ -181,7 +181,7 @@ function Notifications() {
                     {/* All user notifications */}
                     <div className={`h-[100px]`}></div>
                     <div>
-                        {(user?.allNotifications.notifications_count && user?.allNotifications.notifications_count > 1) ?
+                        {(user?.allNotifications.notifications_count && user?.allNotifications.notifications_count > 1 && user.allNotifications.notifications_info.length > 1) ?
                             (
                                 <div
                                     onClick={markAllNotificationsAsRead}

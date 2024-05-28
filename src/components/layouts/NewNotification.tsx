@@ -62,7 +62,7 @@ function NewNotification(props: Props) {
 
 
     const notificationCommonContent =
-        <div className={`flex gap-x-4 ${props.id !== props.allNotifications[0].id ? 'mt-4' : 'border-t-0'} items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!props.is_read ? 'bg-sky-300/10' : ''} p-4 px-1 xxs:px-4 border-y border-zinc-700 relative transition`}>
+        <div className={`flex gap-x-4 ${props.id === props.allNotifications[0].id && props.allNotifications.length == 1 ? 'border-t-0' : 'mt-4 border-t'} items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!props.is_read ? 'bg-sky-300/10' : ''} p-4 px-1 xxs:px-4 border-y border-zinc-700 relative transition`}>
             <div className={`flex items-center gap-x-3 w-[75%] xxs:w-auto`}>
                 <img
                     src={`${baseUrl}/storage/${props.user?.avatar}`}
