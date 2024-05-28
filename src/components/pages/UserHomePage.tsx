@@ -37,11 +37,12 @@ function UserHomePage() {
         forYou: true,
         following: false,
     })
+    const [isLoading, setIsLoading] = useState(true)
 
-    // const parentRef = useRef<HTMLDivElement>(null)
+
     // Fetch random tweets
-
     const getHomeTweets = (pageURL: string) => {
+        setIsLoading(true)
         ApiClient().get(pageURL)
             .then(res => {
                 setPageURL(res.data.data.pagination.next_page_url)
@@ -50,11 +51,11 @@ function UserHomePage() {
                     ...res.data.data.tweets,
                 ]))
                 res.data.data.tweets.length === 0 ? setDisplayNotFoundMsg(true) : ''
-                // parentRef.current && parentRef.current?.classList.remove('h-svh')
             })
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setIsLoading(false))
     }
 
     useEffect(() => {
@@ -99,6 +100,7 @@ function UserHomePage() {
     ));
 
     const followUsersTweets = (pageUrl: string) => {
+        setIsLoading(true)
         setPageURL('')
         ApiClient().post(pageUrl)
             .then(res => {
@@ -111,6 +113,7 @@ function UserHomePage() {
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setIsLoading(false))
     }
 
     const handleFollowingBtnClick = () => {
@@ -187,7 +190,7 @@ function UserHomePage() {
                 <div
                     className={`text-neutral-200 w-full relative`}>
 
-                    {randomTweets.length > 0 ||
+                    {isLoading &&
                         <SpinLoader/>
                     }
 

@@ -117,7 +117,7 @@ function EditProfileModal(props: Props) {
     return (
         <>
             <div ref={editProfileInfoModal}
-                 className={`fixed z-[310] h-[37rem] overflow-y-scroll w-full md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] bg-black p-4 mt-20 text-neutral-200 rounded-2xl animate-slide-down`}
+                 className={`fixed z-[310] h-[37rem] overflow-y-scroll left-6 md:left-auto w-[95%] md:w-[75%] lg:w-[60%] xl:w-[50%] 2xl:w-[40%] bg-black p-4 mt-20 text-neutral-200 rounded-2xl animate-slide-down`}
             >
 
                 <div className={`flex items-center justify-between`}>

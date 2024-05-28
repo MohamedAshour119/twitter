@@ -277,6 +277,7 @@ function Profile() {
                     setIsShowEditInfoModal={setIsShowEditInfoModal}
                     setUserInfo={setUserInfo}
                 />
+
             }
 
             <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} ${scroll >= 23 ? 'backdrop-blur-md border-r' : 'backdrop-blur-none border-r-0'} w-full fixed z-[500] py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>

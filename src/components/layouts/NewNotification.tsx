@@ -71,6 +71,8 @@ function NewNotification(props: Props) {
                 />
                 <div>
                     <Link
+                        onTouchStart={() => setDisableLink(true)}
+                        onTouchEnd={() => setDisableLink(true)}
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
                         to={`/users/${props.user?.username}`}
@@ -87,6 +89,8 @@ function NewNotification(props: Props) {
                     className={`hover:bg-sky-600/20 hover:text-sky-500 cursor-pointer flex justify-center items-center p-2 rounded-full transition`}
                     onMouseEnter={() => setDisableLink(true)}
                     onMouseLeave={() => setDisableLink(false)}
+                    onTouchStart={() => setDisableLink(true)}
+                    onTouchEnd={() => setDisableLink(true)}
                 >
                     <HiOutlineDotsHorizontal/>
                 </div>
@@ -98,6 +102,8 @@ function NewNotification(props: Props) {
                     ref={popUpWindow}
                     onMouseEnter={() => setDisableLink(true)}
                     onMouseLeave={() => setDisableLink(false)}
+                    onTouchStart={() => setDisableLink(true)}
+                    onTouchEnd={() => setDisableLink(true)}
                     className={`shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
                     <div
                         onClick={() => setNotificationMenuOpen(false)}
@@ -106,6 +112,8 @@ function NewNotification(props: Props) {
                     </div>
 
                     <button
+                        onTouchStart={() => setDisableLink(true)}
+                        onTouchEnd={() => setDisableLink(true)}
                         onClick={markNotificationAsRead}
                         disabled={!notificationMenuOpen}
                         className={`flex gap-x-4 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!notificationMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
