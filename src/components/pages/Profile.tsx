@@ -48,10 +48,10 @@ function Profile() {
         setIsShowEditInfoModal(!isShowEditInfoModal)
     }
 
-    // Reset allProfileUserTweets state when username changes
-    useEffect(() => {
-        setAllProfileUserTweets([]);
-    }, [location?.pathname, username]);
+    // // Reset allProfileUserTweets state when username changes
+    // useEffect(() => {
+    //     setAllProfileUserTweets([]);
+    // }, [location.pathname]);
     
     // Get all user tweets
     const getAllUserTweets = (pageURL: string) => {
@@ -72,7 +72,6 @@ function Profile() {
 
     useEffect(() => {
             setPageURL('');
-            setAllProfileUserTweets([])
             getAllUserTweets(`users/${username}`)
     }, [username]);
 

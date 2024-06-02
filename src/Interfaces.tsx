@@ -15,6 +15,16 @@ export interface Tweet {
     comments_count: number
     is_reacted: boolean
     is_retweeted: boolean
+
+    user: {
+        user_info: {
+            id: number
+            username: string
+            avatar: string
+            display_name: string
+            is_followed: boolean
+        };
+    }
 }
 
 export interface TweetInfo extends Tweet{
@@ -159,6 +169,15 @@ export const tweetDefaultValues = {
         comments_count: 0,
         is_reacted: false,
         is_retweeted: false,
+        user: {
+            user_info: {
+                id: 0,
+                username: '',
+                avatar: '',
+                display_name: '',
+                is_followed: false,
+            }
+        },
     }
 }
 

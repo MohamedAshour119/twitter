@@ -1,10 +1,21 @@
-import {ChangeEvent, createContext, Dispatch, MouseEventHandler, ReactNode, SetStateAction, useContext, useState} from "react";
+import {
+    ChangeEvent,
+    createContext,
+    Dispatch,
+    MouseEventHandler,
+    ReactNode,
+    SetStateAction,
+    useContext,
+    useEffect,
+    useState
+} from "react";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-expect-error
 import {EmojiData} from "emoji-picker-react";
 import {tweetDefaultValues, TweetInfo, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
+import {useParams} from "react-router-dom";
 
 interface TweetContextType {
     tweet: Tweet
@@ -77,6 +88,7 @@ export const TweetContext = createContext<TweetContextType>({
 
 const TweetProvider = ({children}: TweetProviderProps) => {
 
+    const { username } = useParams()
 
     const {
         setIsModalOpen,
@@ -106,6 +118,12 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             [name]: value
         }));
     };
+
+
+    // Reset allProfileUserTweets state when username changes
+    useEffect(() => {
+        setAllProfileUserTweets([]);
+    }, [location.pathname]);
 
     const onEmojiClick = (emojiObject: EmojiData) => {
         setTweet(prevTweet => ({
