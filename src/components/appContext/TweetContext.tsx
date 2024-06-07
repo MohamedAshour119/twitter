@@ -36,8 +36,6 @@ interface TweetContextType {
     sendRequest: () => void
     comments: TweetInfo[]
     setComments: Dispatch<SetStateAction<TweetInfo[]>>
-    commentsCount: number
-    setCommentsCount: Dispatch<SetStateAction<number>>
     allProfileUserTweets: TweetInfo[]
     setAllProfileUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
     userInfo: UserInfo | undefined
@@ -77,8 +75,6 @@ export const TweetContext = createContext<TweetContextType>({
     sendRequest: () => null,
     comments: [tweetDefaultValues],
     setComments: () => null,
-    commentsCount: 0,
-    setCommentsCount: () => null,
     allProfileUserTweets: [tweetDefaultValues],
     setAllProfileUserTweets: () => null,
     userInfo: UserDefaultValues,
@@ -87,9 +83,7 @@ export const TweetContext = createContext<TweetContextType>({
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
-
-    const { username } = useParams()
-
+    const { id } = useParams()
     const {
         setIsModalOpen,
         setIsCommentOpen,
@@ -109,7 +103,6 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
-    const [commentsCount, setCommentsCount] = useState(0)
     const [userInfo, setUserInfo] = useState<UserInfo | undefined>(UserDefaultValues)
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
@@ -204,12 +197,32 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             ApiClient().post(`/addComment`, formData)
                 .then(res => {
                     makeInputEmpty()
-                    setComments(prevComments => ([
-                        res.data.data.tweet,
-                        ...prevComments,
-                    ]))
+                    if (clickedTweet.id === Number(id)) {
+                        setComments(prevComments => ([
+                            res.data.data.tweet,
+                            ...prevComments,
+                        ]))
+                    }
 
-                    setCommentsCount(prevState => prevState + 1)
+                    const target_tweet_id = res.data.data.main_tweet.id
+                    randomTweets.map((tweet, index) => {
+                        if (tweet.id === target_tweet_id) {
+                            setRandomTweets(prevState => ([
+                                ...prevState,
+                                randomTweets[index].comments_count = res.data.data.main_tweet.comments_count
+                            ]))
+                        }
+                    })
+
+                    const target_comment_id = res.data.data.main_tweet.id
+                    comments.map((comment, index) => {
+                        if (comment.id === target_comment_id) {
+                            setComments(prevState => ([
+                                ...prevState,
+                                comments[index].comments_count = res.data.data.main_tweet.comments_count
+                            ]))
+                        }
+                    })
 
                     randomTweets.map((tweet, index) => {
                         const i = (tweet.id === res.data.data.main_tweet.id) ? index : null
@@ -293,8 +306,6 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 sendRequest,
                 comments,
                 setComments,
-                commentsCount,
-                setCommentsCount,
                 allProfileUserTweets,
                 setAllProfileUserTweets,
                 userInfo,

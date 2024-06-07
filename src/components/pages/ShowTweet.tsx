@@ -22,7 +22,7 @@ function ShowTweet() {
     const {
         comments,
         setComments,
-        commentsCount,
+        randomTweets
     } = useContext(TweetContext)
     const {id} = useParams();
 
@@ -45,7 +45,7 @@ function ShowTweet() {
 
     useEffect( () => {
         displayTweetFn()
-    }, [id, commentsCount])
+    }, [id, randomTweets])
 
     const getComments = (pageURL: string) => {
         ApiClient().get(pageURL)
@@ -57,12 +57,6 @@ function ShowTweet() {
                 setPageURL(res.data.data.pagination.next_page_url)
             })
     }
-
-    // useEffect(() => {
-    //     // setComments([])
-    //     // getComments(first_page_url)
-    // }, [commentsCount]);
-
 
     // Detect when scroll to last element
     const lastCommentRef = useRef<HTMLDivElement>(null)
@@ -96,7 +90,7 @@ function ShowTweet() {
     })
 
     return (
-        <div className={`min-h-svh border border-y-0 border-zinc-700/70`}>
+        <div className={`min-h-svh border border-y-0 border-zinc-700/70 ${isCommentOpen || isModalOpen ? 'overflow-y-hidden' : ''} `}>
 
             <header
                 className={`w-full grid grid-cols-1 ${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 px-4 border border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
@@ -116,7 +110,7 @@ function ShowTweet() {
                 </div>
             </header>
                 {/* Middle content */}
-                <div className={`text-neutral-200 w-full relative`}>
+                <div className={`${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} text-neutral-200 w-full relative`}>
                     {
                         displayTweet &&
                         <Tweet {...displayTweet!}/>

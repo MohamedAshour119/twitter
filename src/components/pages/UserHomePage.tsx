@@ -136,16 +136,6 @@ function UserHomePage() {
         document.body.style.backgroundColor = 'black'
     }
 
-    useEffect(() => {
-        const bodyEl = document.body;
-        if (isModalOpen || isCommentOpen) {
-            bodyEl.style.overflow = 'hidden';
-        } else {
-            bodyEl.style.overflow = 'auto';
-        }
-    }, [isModalOpen, isCommentOpen]);
-
-
     return (
         <div className={`border border-t-0 border-zinc-700/70 min-h-svh`}>
          <header className={`w-full fixed z-[200] grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border-zinc-700/70 3xl:max-w-[42.9rem] 2xl:max-w-[38.54rem] xl:max-w-[31.65rem] lg:max-w-[31.58rem] md:max-w-[37.64rem] sm:max-w-[29.95rem] xs:max-w-[31.16rem] xxs:max-w-[27.77rem] `}>

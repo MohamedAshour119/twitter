@@ -21,6 +21,16 @@ import { ToastContainer } from "react-toastify";
 
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
+
+    useEffect(() => {
+        const bodyEl = document.body;
+        if (isModalOpen || isCommentOpen) {
+            bodyEl.style.overflow = 'hidden';
+        } else {
+            bodyEl.style.overflow = 'auto';
+        }
+    }, [isModalOpen, isCommentOpen]);
+
     return (
         <div className={`flex justify-center ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d]' : 'bg-black'}`}>
             <div className={`container sm:px-4 gap-x-8 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>

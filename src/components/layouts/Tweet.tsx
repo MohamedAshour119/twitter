@@ -35,9 +35,15 @@ function Tweet(props: Props) {
         setClickedTweet,
     } = useContext(AppContext);
 
-    const {randomTweets ,setRandomTweets, allProfileUserTweets, setAllProfileUserTweets,} = useContext(TweetContext)
+    const {
+        randomTweets ,
+        setRandomTweets,
+        allProfileUserTweets,
+        setAllProfileUserTweets,
+        comments,
+        setComments,
+    } = useContext(TweetContext)
 
-    const { comments, setComments, setCommentsCount} = useContext(TweetContext)
 
     const {username} = useParams();
 
@@ -223,7 +229,6 @@ function Tweet(props: Props) {
         } else {
             ApiClient().post(`/delete-tweet/${clickedTweet.id}`, hashtags)
                 .then(() => {
-                    setCommentsCount(prevState => prevState - 1)
                     const filteredTweetComments = comments?.filter(comment => comment.id !== clickedTweet.id)
                     setComments(filteredTweetComments)
                     toast.success(`Comment deleted successfully`, toastStyle)
@@ -486,7 +491,7 @@ function Tweet(props: Props) {
                                 <FaRegComment/>
                             </div>
                             <span
-                                className={`group-hover/icon:text-sky-500 transition`}>{props.comments_count}</span>
+                                className={`group-hover/icon:text-sky-500 transition`}>{props.main_tweet ? props.main_tweet.comments_count : props.comments_count}</span>
                         </div>
 
                         <div onClick={handleRetweet} className={`flex items-center cursor-pointer group/icon`}>
