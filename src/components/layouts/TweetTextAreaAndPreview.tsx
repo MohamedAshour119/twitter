@@ -92,7 +92,7 @@ function TweetTextAreaAndPreview() {
                 <div className={`flex gap-x-3`}>
                         <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt=""/>
 
-                    <div className={`flex flex-wrap w-full ${!tweet.image ? 'gap-y-3' : ''}`}>
+                    <div className={`flex flex-wrap w-full ${!tweet.image || !tweet.video ? 'gap-y-3' : ''}`}>
                                 <textarea
                                     ref={textAreaRef}
                                     maxLength={255}
@@ -100,7 +100,7 @@ function TweetTextAreaAndPreview() {
                                     placeholder={ (isModalOpen || !isCommentOpen) && location?.pathname === '/home' || isModalOpen ? 'What is happening?!' : 'Post your reply'}
                                     name={`title`}
                                     value={tweet.title}
-                                    className={`${isModalOpen || isCommentOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image ? 'border-b pb-3' : 'min-h-0'}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
+                                    className={`${isModalOpen || isCommentOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image || !tweet.video ? 'border-b pb-3' : 'min-h-0'}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                                 />
 
                         {/* Preview uploaded image */}
@@ -120,20 +120,20 @@ function TweetTextAreaAndPreview() {
                         {/* Preview uploaded video */}
                         {(tweet.video && !tweet.image) &&
                             <div
-                                className={`${!tweet.video ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 relative'}`}>
+                                className={`${!tweet.video ? 'invisible' : 'visible border-b w-full pb-3  relative'}`}>
                                 <div onClick={removeUploadedFile}
                                      className="absolute z-50 right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                                     <HiMiniXMark className={`size-6`}/>
                                 </div>
                                 <video
                                     src={videoURL}
-                                    className={`w-full max-h-[40rem]`}
+                                    className={`w-full max-h-[30rem]`}
                                     controls
                                 />
                             </div>
                         }
 
-                        <div className={`flex justify-between w-full ${tweet.image ? 'mt-2' : 'mt-0'}`}>
+                        <div className={`flex justify-between w-full ${tweet.image || !tweet.video ? 'mt-2' : 'mt-0'}`}>
                             <div className={`flex text-2xl text-sky-600`}>
                                 <label htmlFor="uploadInput">
                                     <div

@@ -27,6 +27,10 @@ function Model() {
         tweet,
     } = useContext(TweetContext)
 
+    const closeModel = () => {
+        handleModalOpen()
+        addAnimation()
+    }
 
     // Handle start animation when page loaded
     const model = useRef<HTMLDivElement>(null);
@@ -55,10 +59,7 @@ function Model() {
             if(!model.current?.contains(e.target as Node) && (isModalOpen || isCommentOpen) && !showEmojiElInModel){
                 addAnimation()
             }
-
         }
-
-
 
         document.addEventListener('mousedown', handleClickOutside)
         return () => {
@@ -84,7 +85,7 @@ function Model() {
     return (
         <div ref={model} className={`z-[500] fixed bg-black text-neutral-200 sm:top-16 top-36 sm:w-[38rem] left-6 md:left-auto w-[95%] p-3 rounded-2xl flex-col gap-y-3  ${isModalOpen || isCommentOpen ? 'animate-slide-down' : 'close-slide-down hidden'} `}>
             <div
-                onClick={handleModalOpen}
+                onClick={closeModel}
                 className="w-fit p-1 cursor-pointer hover:bg-neutral-800 text-neutral-300 flex justify-center items-center rounded-full transition">
                 <HiMiniXMark className={`size-6`}/>
             </div>
