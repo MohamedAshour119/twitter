@@ -9,24 +9,20 @@ import {useLocation} from "react-router";
 
 interface User {
     email: string
-    password: string
 }
 
 interface Props {
-    isLoginModelOpen: boolean
-    setIsLoginModelOpen: Dispatch<SetStateAction<boolean>>
-    setIsRegisterModelOpen?: Dispatch<SetStateAction<boolean>>
     setIsResetPasswordOpen: Dispatch<SetStateAction<boolean>>
+    isResetPasswordOpen: boolean
 }
 
-function Login(props: Props) {
+function ResetPassword(props: Props) {
 
     const navigate = useNavigate();
     const location = useLocation()
     const from = location.state?.from?.pathname || '/home'
 
     const {
-        setUser,
         setFormErrors,
         formErrors,
     } = useContext(AppContext)
@@ -35,34 +31,21 @@ function Login(props: Props) {
     const [loginBtnLoading, setLoginBtnLoading] = useState(false)
     const [userCredentials, setUserCredentials] = useState<User>({
         email: '',
-        password: '',
     })
-    const [wrongCredentialsMsg, setWrongCredentialsMsg] = useState("")
     const handleClick = () => {
-        props.setIsLoginModelOpen && props.setIsLoginModelOpen(false)
+        props.setIsResetPasswordOpen && props.setIsResetPasswordOpen(false)
     }
 
     const sendData = () => {
-        const formData = new FormData();
-
-        formData.append('email', userCredentials.email);
-        formData.append('password', userCredentials.password);
 
         setLoginBtnLoading(true)
 
-        ApiClient().post('/login', formData)
-            .then(res=> {
-                setUser(prevState => ({
-                    ...prevState,
-                    user_info: res.data.data.data
-                }))
-                localStorage.setItem('token', res.data.data.token)
-                localStorage.setItem('expires_at', res.data.data.expires_at)
+        ApiClient().post('/forgot-password', userCredentials.email)
+            .then(()=> {
                 navigate(from, { replace: true })
             })
             .catch((err) => {
                 setFormErrors(err.response.data.errors)
-                setWrongCredentialsMsg(err.response.data.message)
             })
             .finally(() => setLoginBtnLoading(false))
     }
@@ -91,7 +74,7 @@ function Login(props: Props) {
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
             if(!loginRef.current?.contains(e.target as Node)){
-                props.setIsLoginModelOpen(false)
+                props.setIsResetPasswordOpen(false)
             }
         }
         document.addEventListener('mousedown', handleClickOutside)
@@ -101,7 +84,7 @@ function Login(props: Props) {
     },[])
 
     return (
-        <div className={`flex ${props.isLoginModelOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
+        <div className={`flex ${props.isResetPasswordOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
             <div ref={loginRef} className={`bg-black container 2xl:w-2/4 lg:w-3/4 w-full rounded-xl h-fit relative top-1/2 -translate-y-1/2`}>
 
                 {isLoading &&
@@ -134,7 +117,7 @@ function Login(props: Props) {
                     <div className={`${!isLoading ? 'visible ' : 'invisible'} relative `}>
                         <main className={`text-gray-200 md:mt-6`}>
                             <div className={`flex items-center justify-between`}>
-                                <h1 className={`sm:text-3xl text-xl font-semibold`}>Login</h1>
+                                <h1 className={`sm:text-3xl text-xl font-semibold`}>Reset your password</h1>
                                 <div
                                     className="flex md:hidden cursor-pointer hover:bg-neutral-600/30 text-2xl justify-center items-center rounded-full h-9 w-9 transition"
                                     onClick={handleClick}
@@ -151,61 +134,23 @@ function Login(props: Props) {
                                         name={`email`}
                                         value={userCredentials?.email}
                                         onChange={handleInputsChange}
-                                        placeholder="Email"
+                                        placeholder="Your Email"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
                                     {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
                                 </div>
 
-                                <div>
-                                    <input
-                                        maxLength={30}
-                                        className={`${formErrors?.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                        name={`password`}
-                                        value={userCredentials?.password}
-                                        type="password"
-                                        onChange={handleInputsChange}
-                                        placeholder="Password"
-                                        disabled={isLoading}
-                                        autoComplete="one-time-code"
-                                    />
-                                    {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors?.password}</p>}
-                                </div>
                             </div>
-                            {(!formErrors?.email && !formErrors?.password) && <p className={'text-red-500 font-semibold'}>{wrongCredentialsMsg}</p>}
 
 
                             <button type={"submit"}
                                     className={`${loginBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
                                 <span className={`flex gap-x-2`}>
-                                    {loginBtnLoading ? 'Logging in' :  'Login'}
+                                    {loginBtnLoading ? 'Sending...' :  'Send verification code'}
                                     <CgSpinnerTwoAlt className={`animate-spin size-6 ${loginBtnLoading ? 'block' : 'hidden'}`}/>
                                 </span>
                             </button>
-
-                            <div className={`sm:translate-x-1/2 sm:w-1/2 w-full mt-4 flex justify-center gap-x-2`}>
-                                Don't have account?
-                                <button
-                                    onClick={() => {
-                                        props.setIsLoginModelOpen(false)
-                                        props.setIsRegisterModelOpen && props.setIsRegisterModelOpen(true)
-                                    }}
-                                    className={`text-sky-600 font-semibold hover:text-sky-400 transition`}>
-                                    Create one
-                                </button>
-                            </div>
-                            <div className={`sm:translate-x-1/2 sm:w-1/2 w-full mt-2 flex justify-center gap-x-2`}>
-                                Forget Password?
-                                <button
-                                    onClick={() => {
-                                        props.setIsLoginModelOpen(false)
-                                        props.setIsResetPasswordOpen && props.setIsResetPasswordOpen(true)
-                                    }}
-                                    className={`text-sky-600 font-semibold hover:text-sky-400 transition`}>
-                                    Reset
-                                </button>
-                            </div>
                         </main>
                     </div>
                 </form>
@@ -214,4 +159,4 @@ function Login(props: Props) {
     )
 }
 
-export default Login
+export default ResetPassword

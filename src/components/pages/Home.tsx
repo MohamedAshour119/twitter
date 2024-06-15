@@ -6,6 +6,7 @@ import Register from "../partials/Register.tsx";
 import Login from "../partials/Login.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {FormErrorsDefaultValues} from "../../Interfaces.tsx";
+import ResetPassword from "../partials/ResetPassword.tsx";
 
 function Home() {
 
@@ -13,6 +14,8 @@ function Home() {
 
     const [isRegisterModelOpen, setIsRegisterModelOpen] = useState(false)
     const [isLoginModelOpen, setIsLoginModelOpen] = useState(false)
+    const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false)
+
 
     useEffect(() => {
         setFormErrors(FormErrorsDefaultValues)
@@ -38,8 +41,19 @@ function Home() {
                     setIsLoginModelOpen={setIsLoginModelOpen}
                     isLoginModelOpen={isLoginModelOpen}
                     setIsRegisterModelOpen={setIsRegisterModelOpen}
+                    setIsResetPasswordOpen={setIsResetPasswordOpen}
                 />
             }
+
+            {/* Password Reset model */}
+            {
+                isResetPasswordOpen &&
+                <ResetPassword
+                    setIsResetPasswordOpen={setIsResetPasswordOpen}
+                    isResetPasswordOpen={isResetPasswordOpen}
+                />
+            }
+
             <div className={`grid grid-cols-1 w-full h-screen items-end justify-center text-zinc-200 ${(isRegisterModelOpen || isLoginModelOpen) ? 'opacity-30 pointer-events-none': ''} `}>
                 <div className={` flex flex-col md:flex-row justify-around`}>
                     <div className="text-[3rem] md:text-[23.5rem] w-full md:w-auto flex justify-center">
