@@ -1,20 +1,26 @@
 import {FaXTwitter} from "react-icons/fa6";
 import {Link} from "react-router-dom";
 import Footer from "../partials/Footer.tsx";
-import {useContext, useEffect, useState} from "react";
+import {Dispatch, SetStateAction, useContext, useEffect, useState} from "react";
 import Register from "../partials/Register.tsx";
 import Login from "../partials/Login.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {FormErrorsDefaultValues} from "../../Interfaces.tsx";
-import ResetPassword from "../partials/ResetPassword.tsx";
+import ResetPasswordLink from "../partials/ResetPasswordLink.tsx";
+import ResetPasswordForm from "../partials/ResetPasswordForm.tsx";
 
-function Home() {
+interface Props {
+    setIsResetPasswordOpen: Dispatch<SetStateAction<boolean>>
+    isResetPasswordOpen: boolean
+}
+function Home(props: Props) {
 
     const {setFormErrors} = useContext(AppContext)
 
     const [isRegisterModelOpen, setIsRegisterModelOpen] = useState(false)
     const [isLoginModelOpen, setIsLoginModelOpen] = useState(false)
     const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false)
+
 
 
     useEffect(() => {
@@ -45,12 +51,21 @@ function Home() {
                 />
             }
 
-            {/* Password Reset model */}
+            {/* Password reset link model */}
             {
                 isResetPasswordOpen &&
-                <ResetPassword
+                <ResetPasswordLink
                     setIsResetPasswordOpen={setIsResetPasswordOpen}
                     isResetPasswordOpen={isResetPasswordOpen}
+                />
+            }
+
+            {/* Password reset from model */}
+            {
+                props.isResetPasswordOpen &&
+                <ResetPasswordForm
+                    setIsResetPasswordFormOpen={props.setIsResetPasswordOpen}
+                    isResetPasswordFormOpen={props.isResetPasswordOpen}
                 />
             }
 

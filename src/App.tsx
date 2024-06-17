@@ -2,7 +2,7 @@ import './App.css';
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Home from './components/pages/Home';
 import PageNotFound from "./components/pages/PageNotFound.tsx";
-import { useContext, useEffect } from "react";
+import {useContext, useEffect, useState} from "react";
 import ApiClient from "./components/services/ApiClient.tsx";
 import { AppContext } from "./components/appContext/AppContext.tsx";
 import AuthRoute from "./components/auth/AuthRoute.tsx";
@@ -18,7 +18,7 @@ import TrendingSidebar from "./components/partials/TrendingSidebar.tsx";
 import { LuArrowBigUp } from "react-icons/lu";
 import { animateScroll as scroll } from "react-scroll";
 import { ToastContainer } from "react-toastify";
-
+import {useLocation} from "react-router";
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
 
@@ -53,8 +53,32 @@ function AuthLayout() {
     );
 }
 
+
+const useQuery = () => {
+    return new URLSearchParams(useLocation().search)
+}
 function App() {
-    const { setUser, loading } = useContext(AppContext);
+    const [isResetPasswordFormOpen, setIsResetPasswordFormOpen] = useState(false)
+    const query = useQuery()
+
+    useEffect(() => {
+
+        const token = query.get('token')
+        const passwordResetParam = query.get('password-reset-param')
+        const userId = query.get('user_id')
+
+        if (passwordResetParam && token && userId) {
+            setIsResetPasswordFormOpen(true)
+            setUser(prevState => ({
+                ...prevState,
+                user_info: {...user?.user_info, id: userId}
+            }))
+        }
+    }, [query]);
+
+
+    const { setUser, user, loading } = useContext(AppContext);
+
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
 
@@ -118,7 +142,7 @@ function App() {
                 <Route element={<AuthRoute />}>
                     <Route path="/*" element={<AuthLayout />} />
                 </Route>
-                <Route path={`/`} element={<Home />} />
+                <Route path={`/`} element={<Home isResetPasswordOpen={isResetPasswordFormOpen} setIsResetPasswordOpen={setIsResetPasswordFormOpen}/>} />
                 <Route path={"*"} element={<PageNotFound />} />
             </Routes>
             <NavbarSmScreens />

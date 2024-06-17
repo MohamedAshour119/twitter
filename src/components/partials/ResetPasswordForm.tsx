@@ -1,22 +1,23 @@
+import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {useLocation} from "react-router";
+import {AppContext} from "../appContext/AppContext.tsx";
+import ApiClient from "../services/ApiClient.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
-import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import ApiClient from "../services/ApiClient.tsx";
-import {AppContext} from "../appContext/AppContext.tsx";
-import {useLocation} from "react-router";
-
-interface User {
-    email: string
-}
 
 interface Props {
-    setIsResetPasswordOpen: Dispatch<SetStateAction<boolean>>
-    isResetPasswordOpen: boolean
+    isResetPasswordFormOpen: boolean,
+    setIsResetPasswordFormOpen: Dispatch<SetStateAction<boolean>>
 }
 
-function ResetPassword(props: Props) {
+interface Credentials {
+    currentPassword: string
+    newPassword: string
+    confirmNewPassword: string
+}
+function ResetPasswordForm(props: Props) {
 
     const navigate = useNavigate();
     const location = useLocation()
@@ -29,18 +30,20 @@ function ResetPassword(props: Props) {
 
     const [isLoading, setIsLoading] = useState(true)
     const [loginBtnLoading, setLoginBtnLoading] = useState(false)
-    const [userCredentials, setUserCredentials] = useState<User>({
-        email: '',
+    const [userCredentials, setUserCredentials] = useState<Credentials>({
+        currentPassword: '',
+        newPassword: '',
+        confirmNewPassword: '',
     })
     const handleClick = () => {
-        props.setIsResetPasswordOpen && props.setIsResetPasswordOpen(false)
+        props.setIsResetPasswordFormOpen(false)
     }
 
     const sendData = () => {
 
         setLoginBtnLoading(true)
 
-        ApiClient().post('/forgot-password', userCredentials.email)
+        ApiClient().post('/forgot-password', {'email': userCredentials.newPassword})
             .then(()=> {
                 navigate(from, { replace: true })
             })
@@ -74,7 +77,7 @@ function ResetPassword(props: Props) {
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
             if(!loginRef.current?.contains(e.target as Node)){
-                props.setIsResetPasswordOpen(false)
+                props.setIsResetPasswordFormOpen(false)
             }
         }
         document.addEventListener('mousedown', handleClickOutside)
@@ -83,8 +86,9 @@ function ResetPassword(props: Props) {
         }
     },[])
 
+
     return (
-        <div className={`flex ${props.isResetPasswordOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
+        <div className={`flex ${props.isResetPasswordFormOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
             <div ref={loginRef} className={`bg-black container 2xl:w-2/4 lg:w-3/4 w-full rounded-xl h-fit relative top-1/2 -translate-y-1/2`}>
 
                 {isLoading &&
@@ -131,10 +135,34 @@ function ResetPassword(props: Props) {
                                 <div>
                                     <input
                                         className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                        name={`email`}
-                                        value={userCredentials?.email}
+                                        name={`currentPassword`}
+                                        value={userCredentials?.currentPassword}
                                         onChange={handleInputsChange}
-                                        placeholder="Your Email"
+                                        placeholder="Current password"
+                                        disabled={isLoading}
+                                        autoComplete="one-time-code"
+                                    />
+                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
+                                </div>
+                                <div>
+                                    <input
+                                        className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        name={`newPassword`}
+                                        value={userCredentials?.newPassword}
+                                        onChange={handleInputsChange}
+                                        placeholder="New password"
+                                        disabled={isLoading}
+                                        autoComplete="one-time-code"
+                                    />
+                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
+                                </div>
+                                <div>
+                                    <input
+                                        className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        name={`confirmNewPassword`}
+                                        value={userCredentials?.confirmNewPassword}
+                                        onChange={handleInputsChange}
+                                        placeholder="Confirm new password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
@@ -147,7 +175,7 @@ function ResetPassword(props: Props) {
                             <button type={"submit"}
                                     className={`${loginBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
                                 <span className={`flex gap-x-2`}>
-                                    {loginBtnLoading ? 'Sending...' :  'Send verification code'}
+                                    {loginBtnLoading ? 'changing' :  'Change password'}
                                     <CgSpinnerTwoAlt className={`animate-spin size-6 ${loginBtnLoading ? 'block' : 'hidden'}`}/>
                                 </span>
                             </button>
@@ -159,4 +187,4 @@ function ResetPassword(props: Props) {
     )
 }
 
-export default ResetPassword
+export default ResetPasswordForm
