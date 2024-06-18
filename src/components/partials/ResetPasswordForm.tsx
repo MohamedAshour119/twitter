@@ -1,15 +1,16 @@
 import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
-import {useNavigate} from "react-router-dom";
-import {useLocation} from "react-router";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
+import {toast} from "react-toastify";
+import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
 interface Props {
     isResetPasswordFormOpen: boolean,
     setIsResetPasswordFormOpen: Dispatch<SetStateAction<boolean>>
+    setIsLoginModelOpen: Dispatch<SetStateAction<boolean>>
 }
 
 interface Credentials {
@@ -19,15 +20,12 @@ interface Credentials {
 }
 function ResetPasswordForm(props: Props) {
 
-    const navigate = useNavigate();
-    const location = useLocation()
-    const from = location.state?.from?.pathname || '/home'
-
     const {
         setFormErrors,
         formErrors,
     } = useContext(AppContext)
 
+    const {user} = useContext(AppContext)
     const [isLoading, setIsLoading] = useState(true)
     const [loginBtnLoading, setLoginBtnLoading] = useState(false)
     const [userCredentials, setUserCredentials] = useState<Credentials>({
@@ -40,12 +38,19 @@ function ResetPasswordForm(props: Props) {
     }
 
     const sendData = () => {
+        const formData = new FormData()
+        formData.append('current_password', userCredentials.currentPassword)
+        formData.append('new_password', userCredentials.newPassword)
+        formData.append('new_password_confirmation', userCredentials.confirmNewPassword)
+        formData.append('username', String(user?.user_info.username))
 
         setLoginBtnLoading(true)
 
-        ApiClient().post('/forgot-password', {'email': userCredentials.newPassword})
+        ApiClient().post('/reset-password', formData)
             .then(()=> {
-                navigate(from, { replace: true })
+                toast.success('Password reset successfully', toastStyle)
+                props.setIsResetPasswordFormOpen(false)
+                props.setIsLoginModelOpen(true)
             })
             .catch((err) => {
                 setFormErrors(err.response.data.errors)
@@ -133,40 +138,49 @@ function ResetPasswordForm(props: Props) {
                             </div>
                             <div className={`mt-5 sm:mt-7 flex flex-col gap-y-2 sm:gap-y-3`}>
                                 <div>
+                                    <h2 className={`text-lg text-zinc-400`}>Current password</h2>
                                     <input
-                                        className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        className={`${formErrors?.current_password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                         name={`currentPassword`}
+                                        type={"password"}
+                                        maxLength={30}
                                         value={userCredentials?.currentPassword}
                                         onChange={handleInputsChange}
                                         placeholder="Current password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
+                                    {formErrors?.current_password && <p className={'text-red-500 font-semibold'}>{formErrors.current_password}</p>}
                                 </div>
                                 <div>
+                                    <h2 className={`text-lg text-zinc-400`}>New password</h2>
                                     <input
-                                        className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        className={`${formErrors?.new_password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                         name={`newPassword`}
+                                        type={"password"}
+                                        maxLength={30}
                                         value={userCredentials?.newPassword}
                                         onChange={handleInputsChange}
                                         placeholder="New password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
+                                    {formErrors?.new_password && <p className={'text-red-500 font-semibold'}>{formErrors.new_password}</p>}
                                 </div>
                                 <div>
+                                    <h2 className={`text-lg text-zinc-400`}>Confirm new password</h2>
                                     <input
-                                        className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        className={`${formErrors?.new_password_confirmation?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                         name={`confirmNewPassword`}
+                                        type={"password"}
+                                        maxLength={30}
                                         value={userCredentials?.confirmNewPassword}
                                         onChange={handleInputsChange}
                                         placeholder="Confirm new password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
+                                    {formErrors?.new_password_confirmation && <p className={'text-red-500 font-semibold'}>{formErrors.new_password_confirmation}</p>}
                                 </div>
 
                             </div>

@@ -66,6 +66,7 @@ function Home(props: Props) {
                 <ResetPasswordForm
                     setIsResetPasswordFormOpen={props.setIsResetPasswordOpen}
                     isResetPasswordFormOpen={props.isResetPasswordOpen}
+                    setIsLoginModelOpen={setIsLoginModelOpen}
                 />
             }
 

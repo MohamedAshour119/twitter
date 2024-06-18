@@ -99,6 +99,9 @@ export interface FormError {
     cover: string[]
     display_name: string[]
     bio: string[]
+    current_password: string[]
+    new_password: string[]
+    new_password_confirmation: string[]
 }
 
 export interface RegisterUser {

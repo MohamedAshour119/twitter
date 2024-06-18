@@ -17,8 +17,10 @@ import Sidebar from "./components/partials/Sidebar.tsx";
 import TrendingSidebar from "./components/partials/TrendingSidebar.tsx";
 import { LuArrowBigUp } from "react-icons/lu";
 import { animateScroll as scroll } from "react-scroll";
-import { ToastContainer } from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import {useLocation} from "react-router";
+import apiClient from "./components/services/ApiClient.tsx";
+import {toastStyle} from "./components/helper/ToastifyStyle.tsx";
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
 
@@ -58,26 +60,34 @@ const useQuery = () => {
     return new URLSearchParams(useLocation().search)
 }
 function App() {
+
+// Reset Password
     const [isResetPasswordFormOpen, setIsResetPasswordFormOpen] = useState(false)
     const query = useQuery()
 
     useEffect(() => {
 
         const token = query.get('token')
-        const passwordResetParam = query.get('password-reset-param')
-        const userId = query.get('user_id')
+        const username = query.get('username') || ''
 
-        if (passwordResetParam && token && userId) {
-            setIsResetPasswordFormOpen(true)
-            setUser(prevState => ({
-                ...prevState,
-                user_info: {...user?.user_info, id: userId}
-            }))
-        }
-    }, [query]);
+        apiClient().get(`check-token/${token}/${username}`)
+            .then(() => {
+                setIsResetPasswordFormOpen(true)
+                setUser(prevState => ({
+                    ...prevState,
+                    user_info: {...prevState.user_info, username: username}
+                }))
+            })
+            .catch((err) => {
+                if (err.response.data.errors) {
+                    toast.error('Invalid token sent', toastStyle)
+                }
+            })
 
+    }, []);
+// End Reset Password
 
-    const { setUser, user, loading } = useContext(AppContext);
+    const { setUser, loading } = useContext(AppContext);
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token');

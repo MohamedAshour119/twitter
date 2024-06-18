@@ -4,7 +4,7 @@ import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../services/ApiClient.tsx";
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
@@ -17,7 +17,7 @@ function HashtagTweets() {
         baseUrl,
         user,
     } = useContext(AppContext)
-
+    const navigate = useNavigate()
     const { hashtag } = useParams()
 
     const [hashtagsTweets, setHashtagsTweets] = useState<TweetInfo[]>([])
@@ -26,6 +26,7 @@ function HashtagTweets() {
         ApiClient().get(`/${hashtag}`)
             .then(res => {
                 setHashtagsTweets(res.data.data)
+                navigate('/home')
             })
             .catch(() => {
 
