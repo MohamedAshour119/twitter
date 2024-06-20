@@ -223,4 +223,7 @@ export const FormErrorsDefaultValues =
         cover: [],
         display_name: [],
         bio: [],
+        current_password: [],
+        new_password: [],
+        new_password_confirmation: [],
     }

@@ -6,7 +6,7 @@ function AuthRoute() {
     const location = useLocation()
 
     return (
-        token ? <Outlet/> : <Navigate to={`/`} state={{ from: location }} replace/>
+        token ? <Outlet/> : '' //<Navigate to={`/`} state={{ from: location }} replace/>
     )
 }
 
