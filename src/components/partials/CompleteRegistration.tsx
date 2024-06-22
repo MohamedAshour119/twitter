@@ -1,66 +1,73 @@
-import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
-import {AppContext} from "../appContext/AppContext.tsx";
-import ApiClient from "../services/ApiClient.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
-import {toast} from "react-toastify";
-import {toastStyle} from "../helper/ToastifyStyle.tsx";
+import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
+import {useNavigate} from "react-router-dom";
+import ApiClient from "../services/ApiClient.tsx";
+import {AppContext} from "../appContext/AppContext.tsx";
+import {useLocation} from "react-router";
+
+interface User {
+    email: string
+    password: string
+}
 
 interface Props {
-    isResetPasswordFormOpen: boolean,
-    setIsResetPasswordFormOpen: Dispatch<SetStateAction<boolean>>
-    setIsLoginModelOpen: Dispatch<SetStateAction<boolean>>
+    setIsCompleteRegistrationOpen: Dispatch<SetStateAction<boolean>>
+    isCompleteRegistrationOpen: boolean
 }
 
-interface Credentials {
-    currentPassword: string
-    newPassword: string
-    confirmNewPassword: string
-}
-function ResetPasswordForm(props: Props) {
+function Login(props: Props) {
+
+    const navigate = useNavigate();
+    const location = useLocation()
+    const from = location.state?.from?.pathname || '/home'
 
     const {
+        setUser,
         setFormErrors,
         formErrors,
     } = useContext(AppContext)
 
-    const {user} = useContext(AppContext)
     const [isLoading, setIsLoading] = useState(true)
-    const [resetBtnLoading, setResetBtnLoading] = useState(false)
-    const [userCredentials, setUserCredentials] = useState<Credentials>({
-        currentPassword: '',
-        newPassword: '',
-        confirmNewPassword: '',
+    const [signUpBtnLoading, setSignUpBtnLoading] = useState(false)
+    const [userCredentials, setUserCredentials] = useState<User>({
+        email: '',
+        password: '',
     })
+    const [wrongCredentialsMsg, setWrongCredentialsMsg] = useState("")
     const handleClick = () => {
-        props.setIsResetPasswordFormOpen(false)
+        props.setIsCompleteRegistrationOpen(false)
     }
 
     const sendData = () => {
-        const formData = new FormData()
-        formData.append('current_password', userCredentials.currentPassword)
-        formData.append('new_password', userCredentials.newPassword)
-        formData.append('new_password_confirmation', userCredentials.confirmNewPassword)
-        formData.append('username', String(user?.user_info.username))
+        const formData = new FormData();
 
-        setResetBtnLoading(true)
+        formData.append('email', userCredentials.email);
+        formData.append('password', userCredentials.password);
 
-        ApiClient().post('/reset-password', formData)
-            .then(()=> {
-                toast.success('Password reset successfully', toastStyle)
-                props.setIsResetPasswordFormOpen(false)
-                props.setIsLoginModelOpen(true)
+        setSignUpBtnLoading(true)
+
+        ApiClient().post('/login', formData)
+            .then(res=> {
+                setUser(prevState => ({
+                    ...prevState,
+                    user_info: res.data.data.data
+                }))
+                localStorage.setItem('token', res.data.data.token)
+                localStorage.setItem('expires_at', res.data.data.expires_at)
+                navigate(from, { replace: true })
             })
             .catch((err) => {
                 setFormErrors(err.response.data.errors)
+                setWrongCredentialsMsg(err.response.data.message)
             })
-            .finally(() => setResetBtnLoading(false))
+            .finally(() => setSignUpBtnLoading(false))
     }
 
     // Handle Submit button (Next btn)
     const handleSubmitBtn = (e: React.FormEvent<HTMLFormElement>) => {
-        setResetBtnLoading(true)
+        setSignUpBtnLoading(true)
         e.preventDefault();
         sendData();
     }
@@ -82,7 +89,7 @@ function ResetPasswordForm(props: Props) {
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
             if(!loginRef.current?.contains(e.target as Node)){
-                props.setIsResetPasswordFormOpen(false)
+                props.setIsCompleteRegistrationOpen(false)
             }
         }
         document.addEventListener('mousedown', handleClickOutside)
@@ -91,9 +98,8 @@ function ResetPasswordForm(props: Props) {
         }
     },[])
 
-
     return (
-        <div className={`flex ${props.isResetPasswordFormOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
+        <div className={`flex ${props.isCompleteRegistrationOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
             <div ref={loginRef} className={`bg-black container 2xl:w-2/4 lg:w-3/4 w-full rounded-xl h-fit relative top-1/2 -translate-y-1/2`}>
 
                 {isLoading &&
@@ -126,7 +132,7 @@ function ResetPasswordForm(props: Props) {
                     <div className={`${!isLoading ? 'visible ' : 'invisible'} relative `}>
                         <main className={`text-gray-200 md:mt-6`}>
                             <div className={`flex items-center justify-between`}>
-                                <h1 className={`sm:text-3xl text-xl font-semibold`}>Reset your password</h1>
+                                <h1 className={`sm:text-3xl text-xl font-semibold`}>Login</h1>
                                 <div
                                     className="flex md:hidden cursor-pointer hover:bg-neutral-600/30 text-2xl justify-center items-center rounded-full h-9 w-9 transition"
                                     onClick={handleClick}
@@ -138,61 +144,44 @@ function ResetPasswordForm(props: Props) {
                             </div>
                             <div className={`mt-5 sm:mt-7 flex flex-col gap-y-2 sm:gap-y-3`}>
                                 <div>
-                                    <h2 className={`text-lg text-zinc-400`}>Current password</h2>
                                     <input
-                                        className={`${formErrors?.current_password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                        name={`currentPassword`}
-                                        type={"password"}
-                                        maxLength={30}
-                                        value={userCredentials?.currentPassword}
+                                        className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        name={`email`}
+                                        value={userCredentials?.email}
                                         onChange={handleInputsChange}
-                                        placeholder="Current password"
+                                        placeholder="Email"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {formErrors?.current_password && <p className={'text-red-500 font-semibold'}>{formErrors.current_password}</p>}
-                                </div>
-                                <div>
-                                    <h2 className={`text-lg text-zinc-400`}>New password</h2>
-                                    <input
-                                        className={`${formErrors?.new_password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                        name={`newPassword`}
-                                        type={"password"}
-                                        maxLength={30}
-                                        value={userCredentials?.newPassword}
-                                        onChange={handleInputsChange}
-                                        placeholder="New password"
-                                        disabled={isLoading}
-                                        autoComplete="one-time-code"
-                                    />
-                                    {formErrors?.new_password && <p className={'text-red-500 font-semibold'}>{formErrors.new_password}</p>}
-                                </div>
-                                <div>
-                                    <h2 className={`text-lg text-zinc-400`}>Confirm new password</h2>
-                                    <input
-                                        className={`${formErrors?.new_password_confirmation?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                        name={`confirmNewPassword`}
-                                        type={"password"}
-                                        maxLength={30}
-                                        value={userCredentials?.confirmNewPassword}
-                                        onChange={handleInputsChange}
-                                        placeholder="Confirm new password"
-                                        disabled={isLoading}
-                                        autoComplete="one-time-code"
-                                    />
-                                    {formErrors?.new_password_confirmation && <p className={'text-red-500 font-semibold'}>{formErrors.new_password_confirmation}</p>}
+                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
                                 </div>
 
+                                <div>
+                                    <input
+                                        maxLength={30}
+                                        className={`${formErrors?.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        name={`password`}
+                                        value={userCredentials?.password}
+                                        type="password"
+                                        onChange={handleInputsChange}
+                                        placeholder="Password"
+                                        disabled={isLoading}
+                                        autoComplete="one-time-code"
+                                    />
+                                    {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors?.password}</p>}
+                                </div>
                             </div>
+                            {(!formErrors?.email && !formErrors?.password) && <p className={'text-red-500 font-semibold'}>{wrongCredentialsMsg}</p>}
 
 
                             <button type={"submit"}
-                                    className={`${resetBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
+                                    className={`${signUpBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
                                 <span className={`flex gap-x-2`}>
-                                    {resetBtnLoading ? 'changing' :  'Change password'}
-                                    <CgSpinnerTwoAlt className={`animate-spin size-6 ${resetBtnLoading ? 'block' : 'hidden'}`}/>
+                                    {signUpBtnLoading ? 'Signing up' :  'Sign up'}
+                                    <CgSpinnerTwoAlt className={`animate-spin size-6 ${signUpBtnLoading ? 'block' : 'hidden'}`}/>
                                 </span>
                             </button>
+
                         </main>
                     </div>
                 </form>
@@ -201,4 +190,4 @@ function ResetPasswordForm(props: Props) {
     )
 }
 
-export default ResetPasswordForm
+export default Login

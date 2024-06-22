@@ -70,24 +70,24 @@ function App() {
         const token = query.get('token')
         const username = query.get('username') || ''
 
-        apiClient().get(`check-token/${token}/${username}`)
-            .then(() => {
-                setIsResetPasswordFormOpen(true)
-                setUser(prevState => ({
-                    ...prevState,
-                    user_info: {...prevState.user_info, username: username}
-                }))
-            })
-            .catch((err) => {
-                if (err.response.data.errors) {
-                    toast.error('Invalid token sent', toastStyle)
-                }
-            })
-
+        if (token && username) {
+            apiClient().get(`check-token/${token}/${username}`)
+                .then(() => {
+                    setIsResetPasswordFormOpen(true)
+                    setUser(prevState => ({
+                        ...prevState,
+                        user_info: {...prevState.user_info, username: username}
+                    }))
+                })
+                .catch((err) => {
+                    if (err.response.data.errors) {
+                        toast.error('Invalid token sent', toastStyle)
+                    }
+                })
+        }
     }, []);
 // End Reset Password
-
-    const { setUser, loading } = useContext(AppContext);
+    const { setUser } = useContext(AppContext);
 
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
@@ -119,7 +119,6 @@ function App() {
             }, callAfter);
         }
     };
-
     useEffect(() => {
         if (expiresDate) {
             refreshToken();
@@ -140,11 +139,6 @@ function App() {
             navigate('/home');
         }
     }, [location.pathname, navigate, token]);
-
-    // Render nothing if the loading state === true to prevent components to being visible for milliseconds when trying to access it
-    if (loading) {
-        return null;
-    }
 
     return (
         <>

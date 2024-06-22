@@ -100,26 +100,28 @@ const AppProvider = ({children}: AppProviderProps) => {
 
     // Check if user still logged in or not
     useEffect( ()=> {
-        ApiClient().get('/info')
-            .then(res => {
-                setUser(prevState => ({
-                    ...prevState,
-                    user_info: res.data.data.user_info
-                }))
-                if (res.data.data.notifications) {
-                    setUser((prevState) : UserInfo => ({
+        if (token) {
+            ApiClient().get('/info')
+                .then(res => {
+                    setUser(prevState => ({
                         ...prevState,
-                        allNotifications: res.data.data.notifications,
-                        originalNotifications: res.data.data.notifications.notifications_info
+                        user_info: res.data.data.user_info
                     }))
-                }
+                    if (res.data.data.notifications) {
+                        setUser((prevState) : UserInfo => ({
+                            ...prevState,
+                            allNotifications: res.data.data.notifications,
+                            originalNotifications: res.data.data.notifications.notifications_info
+                        }))
+                    }
 
-                setLoading(false);
-            })
-            .catch(() => {
-                setUser(UserDefaultValues)
-                setLoading(false);
-            })
+                    setLoading(false);
+                })
+                .catch(() => {
+                    setUser(UserDefaultValues)
+                    setLoading(false);
+                })
+        }
     }, [token])
 
 

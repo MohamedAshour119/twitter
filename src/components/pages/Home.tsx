@@ -11,6 +11,7 @@ import ResetPasswordForm from "../partials/ResetPasswordForm.tsx";
 import apiClient from "../services/ApiClient.tsx";
 import SpinLoader from "../helper/SpinLoader.tsx";
 import {FaGithub} from "react-icons/fa";
+import CompleteRegistration from "../partials/CompleteRegistration.tsx";
 
 interface Props {
     setIsResetPasswordOpen: Dispatch<SetStateAction<boolean>>
@@ -23,6 +24,7 @@ function Home(props: Props) {
     const [isRegisterModelOpen, setIsRegisterModelOpen] = useState(false)
     const [isLoginModelOpen, setIsLoginModelOpen] = useState(false)
     const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false)
+    const [isCompleteRegistrationOpen, setIsCompleteRegistrationOpen] = useState(false)
 
     const navigate = useNavigate()
 
@@ -42,16 +44,18 @@ function Home(props: Props) {
                 homeParent.current.classList.add('hidden');
             }
             setIsVisible(false)
+            apiClient().get(`/auth/callback?code=${codeParam}`)
+                .then(res => {
+                    // localStorage.setItem('token', res.data.token);
+                    navigate('/')
+                    homeParent.current?.classList.remove('hidden');
+                    setIsVisible(true)
+                    setIsLoginModelOpen(true)
+                })
+                .catch(error => {
+                    console.error('Error logging in with GitHub', error);
+                });
         }
-        apiClient().get(`/auth/callback?code=${codeParam}`)
-            .then(res => {
-                localStorage.setItem('token', res.data.token);
-                navigate('/');
-            })
-            .catch(error => {
-                console.error('Error logging in with GitHub', error);
-            });
-
     }, []);
 
 
@@ -69,7 +73,7 @@ function Home(props: Props) {
                 </div>
             )}
             <div ref={homeParent}>
-                {/* Register model */}
+                {/* Register modal */}
                 {isRegisterModelOpen && (
                     <Register
                         setIsRegisterModelOpen={setIsRegisterModelOpen}
@@ -78,7 +82,7 @@ function Home(props: Props) {
                     />
                 )}
 
-                {/* Login model */}
+                {/* Login modal */}
                 {isLoginModelOpen && (
                     <Login
                         setIsLoginModelOpen={setIsLoginModelOpen}
@@ -88,7 +92,7 @@ function Home(props: Props) {
                     />
                 )}
 
-                {/* Password reset link model */}
+                {/* Password reset link modal */}
                 {isResetPasswordOpen && (
                     <ResetPasswordLink
                         setIsResetPasswordOpen={setIsResetPasswordOpen}
@@ -96,12 +100,20 @@ function Home(props: Props) {
                     />
                 )}
 
-                {/* Password reset form model */}
+                {/* Password reset form modal */}
                 {props.isResetPasswordOpen && (
                     <ResetPasswordForm
                         setIsResetPasswordFormOpen={props.setIsResetPasswordOpen}
                         isResetPasswordFormOpen={props.isResetPasswordOpen}
                         setIsLoginModelOpen={setIsLoginModelOpen}
+                    />
+                )}
+
+                {/* Complete Registration form modal */}
+                {isCompleteRegistrationOpen && (
+                    <CompleteRegistration
+                        isCompleteRegistrationOpen={isCompleteRegistrationOpen}
+                        setIsCompleteRegistrationOpen={setIsCompleteRegistrationOpen}
                     />
                 )}
 
