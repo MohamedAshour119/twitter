@@ -3,27 +3,27 @@ import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
 import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
-import {useLocation} from "react-router";
 import ReactSelect from "../helper/ReactSelect.tsx";
-import {Gender, GithubRegister} from "../../Interfaces.tsx";
+import {Gender} from "../../Interfaces.tsx";
 import Select, {GroupBase, SingleValue, StylesConfig} from "react-select";
 import {genders} from "../helper/Helper.tsx";
+import axios from "axios";
+import {toast} from "react-toastify";
+import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
 interface Props {
     setIsCompleteRegistrationOpen: Dispatch<SetStateAction<boolean>>
     isCompleteRegistrationOpen: boolean
+    githubToken: string
 }
 
 function CompleteRegistration(props: Props) {
 
     const navigate = useNavigate();
-    const location = useLocation()
-    const from = location.state?.from?.pathname || '/home'
-
     const {
         setUser,
+        user,
         setFormErrors,
         formErrors,
         reactSelectStyles,
@@ -32,13 +32,6 @@ function CompleteRegistration(props: Props) {
     const [isLoading, setIsLoading] = useState(true)
     const [signUpBtnLoading, setSignUpBtnLoading] = useState(false)
     const [selectedGender, setSelectedGender] = useState<Gender | null>(null)
-    const [githubRegisterCredentials, setGithubRegisterCredentials] = useState<GithubRegister>({
-        password: '',
-        password_confirmation: '',
-        gender: '',
-        date_birth: '',
-    })
-    const [wrongCredentialsMsg, setWrongCredentialsMsg] = useState("")
     const handleClick = () => {
         props.setIsCompleteRegistrationOpen(false)
     }
@@ -46,14 +39,18 @@ function CompleteRegistration(props: Props) {
     const sendData = () => {
         const formData = new FormData();
 
-        formData.append('password', githubRegisterCredentials.password);
-        formData.append('password_confirmation', githubRegisterCredentials.password_confirmation);
-        formData.append('gender', githubRegisterCredentials.gender);
-        formData.append('date_birth', githubRegisterCredentials.date_birth);
+        formData.append('username', user?.user_info.username as string);
+        formData.append('email', user?.user_info.email as string);
+        formData.append('avatar', user?.user_info.avatar as string);
+        formData.append('password', user?.user_info.password as string);
+        formData.append('password_confirmation', user?.user_info.password_confirmation as string);
+        formData.append('gender', user?.user_info.gender as string);
+        formData.append('birth_date', user?.user_info.birth_date as string);
 
         setSignUpBtnLoading(true)
-
-        ApiClient().post('/login', formData)
+        axios.post('http://api.twitter.test/api/complete-registration', formData, {headers: {
+                Authorization: 'Bearer ' + props.githubToken
+            }})
             .then(res=> {
                 setUser(prevState => ({
                     ...prevState,
@@ -61,11 +58,14 @@ function CompleteRegistration(props: Props) {
                 }))
                 localStorage.setItem('token', res.data.data.token)
                 localStorage.setItem('expires_at', res.data.data.expires_at)
-                navigate(from, { replace: true })
+                navigate('/home')
             })
             .catch((err) => {
-                setFormErrors(err.response.data.errors)
-                setWrongCredentialsMsg(err.response.data.message)
+                if (err.response && err.response.data) {
+                    setFormErrors(err.response.data.errors || { message: 'Registration failed. Please try again.' });
+
+                    toast.error("Can't sign up, this email already exist", toastStyle)
+                }
             })
             .finally(() => setSignUpBtnLoading(false))
     }
@@ -79,9 +79,12 @@ function CompleteRegistration(props: Props) {
 
     // Handle Inputs changes
     const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setGithubRegisterCredentials(prevState => ({
+        setUser(prevState => ({
             ...prevState,
-            [e.target.name]: e.target.value
+            user_info: {
+                ...prevState.user_info,
+                [e.target.name]: e.target.value
+            }
         }))
     }
 
@@ -90,10 +93,10 @@ function CompleteRegistration(props: Props) {
         setIsLoading(false)
     }, 1000 )
 
-    const loginRef = useRef<HTMLDivElement>(null)
+    const completeRegistrationRef = useRef<HTMLDivElement>(null)
     useEffect( () => {
         const handleClickOutside = (e: MouseEvent) => {
-            if(!loginRef.current?.contains(e.target as Node)){
+            if(!completeRegistrationRef.current?.contains(e.target as Node)){
                 props.setIsCompleteRegistrationOpen(false)
             }
         }
@@ -106,15 +109,21 @@ function CompleteRegistration(props: Props) {
     const handleGenderSelectedChange = (selectedOption: SingleValue<Gender>): void => {
         if(selectedOption) {
             setSelectedGender(selectedOption as Gender);
-            setGithubRegisterCredentials(prevState => ({
+            setUser(prevState => ({
                 ...prevState,
-                gender: (selectedOption as Gender).value // Update userCredentials with the selected gender value
+                user_info: {
+                    ...prevState.user_info,
+                    gender: (selectedOption as Gender).value
+                }
             }));
         } else {
             setSelectedGender(null);
-            setGithubRegisterCredentials(prevState => ({
+            setUser(prevState => ({
                 ...prevState,
-                gender: '' // Reset gender value in userCredentials if no option is selected
+                user_info: {
+                    ...prevState.user_info,
+                    gender: ''
+                }
             }));
         }
     }
@@ -165,7 +174,7 @@ function CompleteRegistration(props: Props) {
 
     return (
         <div className={`flex ${props.isCompleteRegistrationOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
-            <div ref={loginRef} className={`bg-black container 2xl:w-2/4 lg:w-3/4 w-full rounded-xl h-fit relative top-1/2 -translate-y-1/2`}>
+            <div ref={completeRegistrationRef} className={`bg-black container 2xl:w-2/4 lg:w-3/4 w-full rounded-xl h-fit relative top-1/2 -translate-y-1/2`}>
 
                 {isLoading &&
                     <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2`}>
@@ -211,34 +220,33 @@ function CompleteRegistration(props: Props) {
                                 <h4 className={`mt-8 font-semibold`}>Password</h4>
                                 <div>
                                     <input
-                                        className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        className={`${formErrors?.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                         name={`password`}
                                         type={'password'}
-                                        value={githubRegisterCredentials?.password}
+                                        value={user?.user_info.password}
                                         onChange={handleInputsChange}
                                         placeholder="Password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {formErrors?.email && <p className={'text-red-500 font-semibold'}>{formErrors.email}</p>}
+                                    {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors.password}</p>}
                                 </div>
 
                                 <div>
                                     <input
                                         maxLength={30}
-                                        className={`${formErrors?.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
+                                        className={`${formErrors?.password_confirmation?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
                                         name={`password_confirmation`}
-                                        value={githubRegisterCredentials?.password_confirmation}
+                                        value={user?.user_info?.password_confirmation}
                                         type="password"
                                         onChange={handleInputsChange}
                                         placeholder="Confirm Password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
-                                    {formErrors?.password && <p className={'text-red-500 font-semibold'}>{formErrors?.password}</p>}
+                                    {formErrors?.password_confirmation && <p className={'text-red-500 font-semibold'}>{formErrors?.password_confirmation}</p>}
                                 </div>
                             </div>
-                            {(!formErrors?.email && !formErrors?.password) && <p className={'text-red-500 font-semibold'}>{wrongCredentialsMsg}</p>}
 
                             <h4 className={`mt-8 font-semibold`}>Gender</h4>
                             <div className={`mt-3`}>
@@ -253,7 +261,7 @@ function CompleteRegistration(props: Props) {
                                     <p className={`text-red-500 font-semibold`}>{formErrors?.gender}</p>}
                             </div>
 
-                            <ReactSelect setIsCompleteRegistrationOpen={props.setIsCompleteRegistrationOpen} isLoading={isLoading} setGithubRegisterCredentials={setGithubRegisterCredentials} selectedGender={selectedGender}/>
+                            <ReactSelect setIsCompleteRegistrationOpen={props.setIsCompleteRegistrationOpen} isLoading={isLoading} selectedGender={selectedGender}/>
 
 
                             <button type={"submit"}

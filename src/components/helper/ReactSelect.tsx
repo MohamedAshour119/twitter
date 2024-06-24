@@ -1,7 +1,7 @@
 import Select, {SingleValue} from "react-select";
 import {Dispatch, SetStateAction, useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import {EditUserProfile, Gender, GithubRegister, RegisterUser} from "../../Interfaces.tsx";
+import {EditUserProfile, Gender, RegisterUser} from "../../Interfaces.tsx";
 
 interface Month {
     value: string
@@ -18,7 +18,6 @@ interface Year extends Day{}
 
 interface Props {
     isLoading?: boolean
-    setGithubRegisterCredentials?: Dispatch<SetStateAction<GithubRegister>>
     setIsCompleteRegistrationOpen?: Dispatch<SetStateAction<boolean>>
     setUserCredentials?: Dispatch<SetStateAction<RegisterUser>>
     selectedGender?: Gender | null
@@ -28,7 +27,7 @@ interface Props {
 }
 function ReactSelect(props: Props) {
 
-    const {formErrors, reactSelectStyles} = useContext(AppContext)
+    const {formErrors, reactSelectStyles, setUser} = useContext(AppContext)
 
     const months: Month[] = [
         {value: "january", label: "January", days: 31},
@@ -88,9 +87,12 @@ function ReactSelect(props: Props) {
                 birth_date: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
             }))
         } else {
-            props.setGithubRegisterCredentials && props.setGithubRegisterCredentials(prevState => ({
+            setUser(prevState => ({
                 ...prevState,
-                date_birth: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
+                user_info: {
+                    ...prevState.user_info,
+                    birth_date: `${selectedYear?.value}-${selectedMonth?.label}-${selectedDay?.value}`
+                }
             }))
         }
 

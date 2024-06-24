@@ -59,6 +59,8 @@ export interface UserInfo {
         followers_number: number | null
         is_followed: boolean
         tweets_count: number | null
+        password?: string
+        password_confirmation?: string
     }
 
     allNotifications: {
@@ -118,7 +120,7 @@ export interface GithubRegister {
     password: string
     password_confirmation: string
     gender: string
-    date_birth: string
+    birth_date: string
 }
 
 export interface EditUserProfile {
@@ -210,6 +212,9 @@ export const UserDefaultValues =
             followers_number: null,
             is_followed: false,
             tweets_count: null,
+            password: '',
+            password_confirmation: '',
+
         },
         allNotifications: {
             notifications_info: [],

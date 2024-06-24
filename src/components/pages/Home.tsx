@@ -12,7 +12,6 @@ import apiClient from "../services/ApiClient.tsx";
 import SpinLoader from "../helper/SpinLoader.tsx";
 import {FaGithub} from "react-icons/fa";
 import CompleteRegistration from "../partials/CompleteRegistration.tsx";
-import Helper from "../helper/Helper.tsx";
 
 interface Props {
     setIsResetPasswordOpen: Dispatch<SetStateAction<boolean>>
@@ -20,12 +19,13 @@ interface Props {
 }
 function Home(props: Props) {
 
-    const {setFormErrors} = useContext(AppContext)
+    const {setFormErrors, setUser} = useContext(AppContext)
 
     const [isRegisterModelOpen, setIsRegisterModelOpen] = useState(false)
     const [isLoginModelOpen, setIsLoginModelOpen] = useState(false)
     const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false)
     const [isCompleteRegistrationOpen, setIsCompleteRegistrationOpen] = useState(false)
+    const [githubToken, setGithubToken] = useState('')
 
     const navigate = useNavigate()
 
@@ -47,7 +47,22 @@ function Home(props: Props) {
             setIsVisible(false)
             apiClient().get(`/auth/callback?code=${codeParam}`)
                 .then(res => {
-                    // localStorage.setItem('token', res.data.token);
+                    console.log(res.data.data)
+                    const userInfo = {
+                        username: res.data.data.nickname,
+                        display_name: res.data.data.name,
+                        email: res.data.data.email,
+                        avatar: res.data.data.avatar
+                    }
+                    setGithubToken(res.data.data.token)
+                    setUser(prevState => ({
+                        ...prevState,
+                        user_info: {
+                            ...prevState.user_info,
+                            ...userInfo
+                        }
+                    }))
+                    // localStorage.setItem('token', res.data.data.token)
                     navigate('/')
                     homeParent.current?.classList.remove('hidden');
                     setIsVisible(true)
@@ -111,6 +126,7 @@ function Home(props: Props) {
                 {/* Complete Registration form modal */}
                 {isCompleteRegistrationOpen && (
                     <CompleteRegistration
+                        githubToken={githubToken}
                         isCompleteRegistrationOpen={isCompleteRegistrationOpen}
                         setIsCompleteRegistrationOpen={setIsCompleteRegistrationOpen}
                     />
