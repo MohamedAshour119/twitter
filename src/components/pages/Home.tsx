@@ -12,6 +12,7 @@ import apiClient from "../services/ApiClient.tsx";
 import SpinLoader from "../helper/SpinLoader.tsx";
 import {FaGithub} from "react-icons/fa";
 import CompleteRegistration from "../partials/CompleteRegistration.tsx";
+import Helper from "../helper/Helper.tsx";
 
 interface Props {
     setIsResetPasswordOpen: Dispatch<SetStateAction<boolean>>
@@ -50,15 +51,13 @@ function Home(props: Props) {
                     navigate('/')
                     homeParent.current?.classList.remove('hidden');
                     setIsVisible(true)
-                    setIsLoginModelOpen(true)
+                    setIsCompleteRegistrationOpen(true)
                 })
                 .catch(error => {
                     console.error('Error logging in with GitHub', error);
                 });
         }
     }, []);
-
-
 
     const client_id = 'Ov23lie2Z2ZEXaL3qWFt'
     const loginWithGithub = () => {

@@ -114,6 +114,13 @@ export interface RegisterUser {
     avatar: string | File | null | undefined
 }
 
+export interface GithubRegister {
+    password: string
+    password_confirmation: string
+    gender: string
+    date_birth: string
+}
+
 export interface EditUserProfile {
     display_name: string
     bio: string

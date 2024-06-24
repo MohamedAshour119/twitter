@@ -6,18 +6,17 @@ import {useNavigate} from "react-router-dom";
 import ApiClient from "../services/ApiClient.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {useLocation} from "react-router";
-
-interface User {
-    email: string
-    password: string
-}
+import ReactSelect from "../helper/ReactSelect.tsx";
+import {Gender, GithubRegister} from "../../Interfaces.tsx";
+import Select, {GroupBase, SingleValue, StylesConfig} from "react-select";
+import {genders} from "../helper/Helper.tsx";
 
 interface Props {
     setIsCompleteRegistrationOpen: Dispatch<SetStateAction<boolean>>
     isCompleteRegistrationOpen: boolean
 }
 
-function Login(props: Props) {
+function CompleteRegistration(props: Props) {
 
     const navigate = useNavigate();
     const location = useLocation()
@@ -27,13 +26,17 @@ function Login(props: Props) {
         setUser,
         setFormErrors,
         formErrors,
+        reactSelectStyles,
     } = useContext(AppContext)
 
     const [isLoading, setIsLoading] = useState(true)
     const [signUpBtnLoading, setSignUpBtnLoading] = useState(false)
-    const [userCredentials, setUserCredentials] = useState<User>({
-        email: '',
+    const [selectedGender, setSelectedGender] = useState<Gender | null>(null)
+    const [githubRegisterCredentials, setGithubRegisterCredentials] = useState<GithubRegister>({
         password: '',
+        password_confirmation: '',
+        gender: '',
+        date_birth: '',
     })
     const [wrongCredentialsMsg, setWrongCredentialsMsg] = useState("")
     const handleClick = () => {
@@ -43,8 +46,10 @@ function Login(props: Props) {
     const sendData = () => {
         const formData = new FormData();
 
-        formData.append('email', userCredentials.email);
-        formData.append('password', userCredentials.password);
+        formData.append('password', githubRegisterCredentials.password);
+        formData.append('password_confirmation', githubRegisterCredentials.password_confirmation);
+        formData.append('gender', githubRegisterCredentials.gender);
+        formData.append('date_birth', githubRegisterCredentials.date_birth);
 
         setSignUpBtnLoading(true)
 
@@ -74,8 +79,8 @@ function Login(props: Props) {
 
     // Handle Inputs changes
     const handleInputsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setUserCredentials(prevUserCredentials => ({
-            ...prevUserCredentials,
+        setGithubRegisterCredentials(prevState => ({
+            ...prevState,
             [e.target.name]: e.target.value
         }))
     }
@@ -97,6 +102,66 @@ function Login(props: Props) {
             document.removeEventListener('mousedown', handleClickOutside)
         }
     },[])
+
+    const handleGenderSelectedChange = (selectedOption: SingleValue<Gender>): void => {
+        if(selectedOption) {
+            setSelectedGender(selectedOption as Gender);
+            setGithubRegisterCredentials(prevState => ({
+                ...prevState,
+                gender: (selectedOption as Gender).value // Update userCredentials with the selected gender value
+            }));
+        } else {
+            setSelectedGender(null);
+            setGithubRegisterCredentials(prevState => ({
+                ...prevState,
+                gender: '' // Reset gender value in userCredentials if no option is selected
+            }));
+        }
+    }
+
+    type OptionType = Gender;
+    const genderControlStyle: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
+        control: (styles, { isFocused, isDisabled }) => ({
+            ...styles,
+            height: '3.5rem',
+            backgroundColor: 'transparent',
+            cursor: 'pointer',
+            transition: 'ease-in-out',
+            boxShadow: 'none',
+            border: '0 solid transparent',
+            outline: (formErrors?.gender?.length === 0 && isFocused) ? '2px solid #006a9d'
+                : (formErrors?.gender?.length > 0 && !isFocused) ? '1px solid red'
+                    : (formErrors?.gender?.length > 0 && isFocused) ? '2px solid red' : '1px solid #52525b',
+
+            '&:hover': {
+                borderColor: isDisabled ? 'transparent' : 'none',
+            },
+        }),
+
+        placeholder: (defaultStyles, {isFocused}) => ({
+            ...defaultStyles,
+            height: '100% !important',
+            fontSize: '14px',
+            color: (formErrors?.gender?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors?.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
+        }),
+
+        dropdownIndicator: (defaultStyles, {isFocused}) => ({
+            ...defaultStyles,
+            color: (formErrors?.gender?.length === 0 && isFocused) ? '#0284c7'
+                : (formErrors?.gender?.length > 0 && isFocused) ? 'red' : '#52525b',
+            '&:hover': {
+                color: isFocused ? '#0284c7' : '#52525b',
+            },
+        }),
+
+    };
+
+    const genderStyles = {
+        ...reactSelectStyles,
+        ...genderControlStyle
+    }
+
 
     return (
         <div className={`flex ${props.isCompleteRegistrationOpen ? 'bg-[#415d757a] overflow-y-hidden' : 'bg-black'} w-screen h-svh absolute top-40 left-1/2 -translate-x-1/2 -translate-y-40 justify-center py-6 px-4 overflow-y-scroll z-50`}>
@@ -132,7 +197,7 @@ function Login(props: Props) {
                     <div className={`${!isLoading ? 'visible ' : 'invisible'} relative `}>
                         <main className={`text-gray-200 md:mt-6`}>
                             <div className={`flex items-center justify-between`}>
-                                <h1 className={`sm:text-3xl text-xl font-semibold`}>Login</h1>
+                                <h1 className={`sm:text-3xl text-xl font-semibold`}>Sign up</h1>
                                 <div
                                     className="flex md:hidden cursor-pointer hover:bg-neutral-600/30 text-2xl justify-center items-center rounded-full h-9 w-9 transition"
                                     onClick={handleClick}
@@ -143,13 +208,15 @@ function Login(props: Props) {
                                 </div>
                             </div>
                             <div className={`mt-5 sm:mt-7 flex flex-col gap-y-2 sm:gap-y-3`}>
+                                <h4 className={`mt-8 font-semibold`}>Password</h4>
                                 <div>
                                     <input
                                         className={`${formErrors?.email?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                        name={`email`}
-                                        value={userCredentials?.email}
+                                        name={`password`}
+                                        type={'password'}
+                                        value={githubRegisterCredentials?.password}
                                         onChange={handleInputsChange}
-                                        placeholder="Email"
+                                        placeholder="Password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
@@ -160,11 +227,11 @@ function Login(props: Props) {
                                     <input
                                         maxLength={30}
                                         className={`${formErrors?.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : 'border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} w-full registerInputs h-14 border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1`}
-                                        name={`password`}
-                                        value={userCredentials?.password}
+                                        name={`password_confirmation`}
+                                        value={githubRegisterCredentials?.password_confirmation}
                                         type="password"
                                         onChange={handleInputsChange}
-                                        placeholder="Password"
+                                        placeholder="Confirm Password"
                                         disabled={isLoading}
                                         autoComplete="one-time-code"
                                     />
@@ -172,6 +239,21 @@ function Login(props: Props) {
                                 </div>
                             </div>
                             {(!formErrors?.email && !formErrors?.password) && <p className={'text-red-500 font-semibold'}>{wrongCredentialsMsg}</p>}
+
+                            <h4 className={`mt-8 font-semibold`}>Gender</h4>
+                            <div className={`mt-3`}>
+                                <Select
+                                    options={genders}
+                                    isDisabled={isLoading}
+                                    placeholder={'Gender'}
+                                    onChange={handleGenderSelectedChange}
+                                    styles={genderStyles}
+                                />
+                                {formErrors?.gender &&
+                                    <p className={`text-red-500 font-semibold`}>{formErrors?.gender}</p>}
+                            </div>
+
+                            <ReactSelect setIsCompleteRegistrationOpen={props.setIsCompleteRegistrationOpen} isLoading={isLoading} setGithubRegisterCredentials={setGithubRegisterCredentials} selectedGender={selectedGender}/>
 
 
                             <button type={"submit"}
@@ -190,4 +272,4 @@ function Login(props: Props) {
     )
 }
 
-export default Login
+export default CompleteRegistration

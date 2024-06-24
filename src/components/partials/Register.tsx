@@ -7,6 +7,7 @@ import {CgSpinnerTwoAlt} from "react-icons/cg";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";
 import {Gender, RegisterUser} from "../../Interfaces.tsx";
+import {genders} from "../helper/Helper.tsx";
 
 interface Props {
     isRegisterModelOpen: boolean
@@ -16,11 +17,6 @@ interface Props {
 function Register(props: Props) {
 
     const {setFormErrors, formErrors, reactSelectStyles} = useContext(AppContext)
-
-    const genders: Gender[] = [
-        {value: "male", label: "Male"},
-        {value: "female", label: "Female"}
-    ]
 
     const [nameCount, setNameCount] = useState(0);
     const [isLoading, setIsLoading] = useState(true)
@@ -147,14 +143,14 @@ function Register(props: Props) {
     const handleGenderSelectedChange = (selectedOption: SingleValue<Gender>): void => {
         if(selectedOption) {
             setSelectedGender(selectedOption as Gender);
-            setUserCredentials(prevUserCredentials => ({
-                ...prevUserCredentials,
+            setUserCredentials(prevState => ({
+                ...prevState,
                 gender: (selectedOption as Gender).value // Update userCredentials with the selected gender value
             }));
         } else {
             setSelectedGender(null);
-            setUserCredentials(prevUserCredentials => ({
-                ...prevUserCredentials,
+            setUserCredentials(prevState => ({
+                ...prevState,
                 gender: '' // Reset gender value in userCredentials if no option is selected
             }));
         }
