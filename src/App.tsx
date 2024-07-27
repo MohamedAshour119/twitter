@@ -42,7 +42,7 @@ function AuthLayout() {
                 <Routes>
                     <Route path={`/home`} element={<UserHomePage />} />
                     <Route path={`/users/:username`} element={<Profile />} />
-                    <Route path={`/tweets/:id`} element={<ShowTweet />} />
+                    <Route path={`/tweets/:slug`} element={<ShowTweet />} />
                     <Route path={`/notifications`} element={<Notifications />} />
                     <Route path={`/:hashtag`} element={<HashtagTweets />} />
                     <Route path={`/explore`} element={<Explore />} />

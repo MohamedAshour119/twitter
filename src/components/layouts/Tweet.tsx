@@ -50,7 +50,7 @@ function Tweet(props: Props) {
     const [isReacted, setIsReacted] = useState(!props.main_tweet ? props.is_reacted : props.main_tweet.is_reacted)
     const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
     const [retweetsCount, setRetweetsCount] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
-    const [reactionsCount, setReactionssCount] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
+    const [reactionsCount, setReactionsCount] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
     const [tweetMenuOpen, setTweetMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
 
@@ -62,7 +62,7 @@ function Tweet(props: Props) {
         ApiClient().post(`/reaction`, {id: tweetId})
             .then((res) => {
                 setIsReacted(res.data.data.is_reacted)
-                setReactionssCount(res.data.data.reactions)
+                setReactionsCount(res.data.data.reactions)
             })
             .catch((err) => {
                 console.log(err)

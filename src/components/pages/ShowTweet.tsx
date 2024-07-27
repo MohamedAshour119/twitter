@@ -24,14 +24,16 @@ function ShowTweet() {
         setComments,
         randomTweets
     } = useContext(TweetContext)
-    const {id} = useParams();
+    const {slug} = useParams();
+
+    console.log(slug)
 
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
     const [pageURL, setPageURL] = useState('')
 
 
     const displayTweetFn = () => {
-        ApiClient().get(`/tweets/${id}`)
+        ApiClient().get(`/tweets/${slug}`)
             .then(res => {
                 setClickedTweet(res.data.data.tweet)
                 setDisplayTweet(res.data.data.tweet)
@@ -45,7 +47,7 @@ function ShowTweet() {
 
     useEffect( () => {
         displayTweetFn()
-    }, [id, randomTweets])
+    }, [slug, randomTweets])
 
     const getComments = (pageURL: string) => {
         ApiClient().get(pageURL)

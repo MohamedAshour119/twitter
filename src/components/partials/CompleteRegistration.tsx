@@ -263,7 +263,6 @@ function CompleteRegistration(props: Props) {
 
                             <ReactSelect setIsCompleteRegistrationOpen={props.setIsCompleteRegistrationOpen} isLoading={isLoading} selectedGender={selectedGender}/>
 
-
                             <button type={"submit"}
                                     className={`${signUpBtnLoading ? 'bg-neutral-200' : 'bg-neutral-100'} sm:translate-x-1/2 sm:w-1/2 w-full relative flex justify-center items-center mt-6 gap-x-2 py-2 rounded-full text-black font-semibold text-lg`}>
                                 <span className={`flex gap-x-2`}>
