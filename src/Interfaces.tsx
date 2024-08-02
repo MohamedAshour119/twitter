@@ -8,6 +8,7 @@ export interface Tweet {
     created_at: string
     is_pinned: boolean
     id: number
+    slug: string
     retweet_to: number | null
     comment_to: number | null
     reactions_count: number

@@ -9,7 +9,6 @@ import {Link, useParams} from "react-router-dom";
 import {TweetInfo, UserInfo} from "../../Interfaces.tsx";
 import TweetTextAreaAndPreview from "./TweetTextAreaAndPreview.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
-import {HiMiniXMark} from "react-icons/hi2";
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {FaRegFaceAngry} from "react-icons/fa6";
 import {MdDelete} from "react-icons/md";
@@ -138,6 +137,7 @@ function Tweet(props: Props) {
             created_at: props.created_at,
             is_pinned: props.is_pinned,
             id: props.id,
+            slug: props.slug,
             retweet_to: props.retweet_to,
             comment_to: props.comment_to,
             reactions_count: props.reactions_count,
@@ -155,6 +155,7 @@ function Tweet(props: Props) {
                 created_at: props.main_tweet?.created_at,
                 is_pinned: props.main_tweet?.is_pinned,
                 id: props.main_tweet?.id,
+                slug: props.main_tweet.slug,
                 retweet_to: props.main_tweet?.retweet_to,
                 comment_to: props.main_tweet?.comment_to,
                 reactions_count: props.main_tweet?.reactions_count,
@@ -298,7 +299,7 @@ function Tweet(props: Props) {
     const updatedTweets = () => {
         const prevPinnedTweetIndex = allProfileUserTweets.findIndex(tweet => tweet.is_pinned);
 
-        const updatedTweetsArr = [...allProfileUserTweets]; // Make a copy of allProfileUserTweets to prevent updating the original state
+        const updatedTweetsArr = [...allProfileUserTweets];
         if (prevPinnedTweetIndex !== -1) { // Check if the pinned tweet exists or not
             updatedTweetsArr[prevPinnedTweetIndex] = {
                 ...updatedTweetsArr[prevPinnedTweetIndex],
@@ -391,7 +392,8 @@ function Tweet(props: Props) {
             </div>
         </div>
 
-
+    // const {slug} = useParams()
+    console.log(props)
     return (
         <>
             <div
@@ -422,17 +424,7 @@ function Tweet(props: Props) {
                         ref={tweetMenuRef}
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
-                        className={`${tweetMenuOpen ? 'animate-fade-in' : ''} shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
-                        <div
-                            onClick={() => {
-                                tweetMenuRef.current?.classList.add('animate-fade-out')
-                                setTimeout(() => {
-                                    setTweetMenuOpen(false)
-                                }, 300)
-                            }}
-                            className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
-                            <HiMiniXMark/>
-                        </div>
+                        className={`${tweetMenuOpen ? 'animate-fade-in' : ''} shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-16 top-4 shadow-[-2px_2px_12px_#4f4e4e]`}>
                         {props.user_id === user?.user_info.id &&
                             <>
                                 <button

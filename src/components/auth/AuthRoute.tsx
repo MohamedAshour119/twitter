@@ -1,12 +1,12 @@
-import { Outlet} from "react-router-dom";
-// import {useLocation} from "react-router";
+import {Navigate, Outlet} from "react-router-dom";
+import {useLocation} from "react-router";
 
 function AuthRoute() {
     const token = localStorage.getItem('token')
-    // const location = useLocation()
+    const location = useLocation()
 
     return (
-        token ? <Outlet/> : '' //<Navigate to={`/`} state={{ from: location }} replace/>
+        token ? <Outlet/> : <Navigate to={`/`} state={{ from: location }} replace/>
     )
 }
 
