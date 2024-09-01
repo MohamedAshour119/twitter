@@ -7,11 +7,12 @@ import {LuUser} from "react-icons/lu";
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {TbLogout} from "react-icons/tb";
 import {UserDefaultValues} from "../../Interfaces.tsx";
 import * as React from "react";
+import Skeleton from "../partials/Skeleton.tsx";
 
 function Sidebar() {
 
@@ -153,25 +154,25 @@ function Sidebar() {
                     {user?.user_info.avatar && <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt="avatar"/>}
                     {!user?.user_info.avatar && <img className={`size-11 object-cover`} src={`/profile-default-svgrepo-com.svg`} alt={`default avatar`}/> }
 
-                    <div className={`hidden xl:flex xl:flex-col gap-y-1`}>
+                    <div className={`hidden xl:flex xl:flex-col ${!user?.user_info.id ? 'gap-y-1' : ''} `}>
                         {user?.user_info.display_name &&
                             <div className={`font-semibold`}>
                                 {user?.user_info?.display_name ? user?.user_info?.display_name : user?.user_info?.username}
                             </div>
                         }
                         {!user?.user_info.display_name &&
-                            <div className="h-[20px] bg-[#2a2d32b3] animate-pulse rounded-full w-40"></div>
-                        }
+                            <Skeleton styles={`h-[20px] w-40`}/>                        }
 
                         <div className={`text-neutral-500`}>{user?.user_info.username && '@'}{user?.user_info?.username}</div>
                         {!user?.user_info.username &&
-                            <div className="h-[20px] bg-[#2a2d32b3] animate-pulse rounded-full w-64"></div>
+                            <Skeleton styles={`h-[20px] w-52`}/>
                         }
                     </div>
                 </div>
 
                 <div className={`hidden xl:block`}>
-                    <HiOutlineDotsHorizontal />
+                    {user?.user_info.username && <HiOutlineDotsHorizontal/>}
+                    {!user?.user_info.username && <Skeleton styles={`h-4 w-10`}/>}
                 </div>
             </div>
         </div>

@@ -7,7 +7,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import Model from "../layouts/Model.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import TweetTextAreaAndPreview from "../layouts/TweetTextAreaAndPreview.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {CgSmileSad} from "react-icons/cg";
 import {Link} from "react-router-dom";
 import SpinLoader from "../helper/SpinLoader.tsx";
@@ -195,7 +195,7 @@ function UserHomePage() {
                             )}
                         </div>
 
-                        {displayNotFoundMsg &&
+                        {displayNotFoundMsg && randomTweets.length === 0 &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
                                 No tweets!, come back later
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>

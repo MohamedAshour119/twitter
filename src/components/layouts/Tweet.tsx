@@ -2,7 +2,7 @@ import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
 import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {toast} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {Link, useParams} from "react-router-dom";

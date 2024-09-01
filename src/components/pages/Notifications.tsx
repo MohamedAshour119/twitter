@@ -4,7 +4,7 @@ import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import NewNotification from "../layouts/NewNotification.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
 
 type NotificationsInfo = {

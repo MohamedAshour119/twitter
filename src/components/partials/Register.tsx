@@ -2,7 +2,7 @@ import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import Select, {GroupBase, SingleValue, StylesConfig} from 'react-select'
 import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";

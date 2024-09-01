@@ -3,7 +3,7 @@ import {IoSettingsOutline} from "react-icons/io5";
 import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {useNavigate, useParams} from "react-router-dom";
 import {TweetInfo} from "../../Interfaces.tsx";
 import * as React from "react";

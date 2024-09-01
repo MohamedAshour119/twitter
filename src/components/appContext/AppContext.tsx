@@ -7,7 +7,7 @@ import {
     Gender, FormErrorsDefaultValues, tweetDefaultValues
 } from "../../Interfaces.tsx";
 import {GroupBase, StylesConfig} from "react-select";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {useNavigate} from "react-router-dom";
 
 interface AppContextType {

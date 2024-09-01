@@ -4,7 +4,7 @@ import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {Link} from "react-router-dom";
 import {HiMiniXMark} from "react-icons/hi2";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {Notification} from "../../Interfaces.tsx";
 
 interface Props extends Notification {

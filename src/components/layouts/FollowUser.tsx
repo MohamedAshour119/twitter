@@ -1,6 +1,6 @@
 import {useContext, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {Link} from "react-router-dom";
 import {UserInfo} from "../../Interfaces.tsx";
 import {toast} from "react-toastify";

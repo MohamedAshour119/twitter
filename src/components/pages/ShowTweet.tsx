@@ -4,7 +4,7 @@ import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {useParams} from "react-router-dom";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {RiArrowLeftLine} from "react-icons/ri";
 import {TweetInfo} from "../../Interfaces.tsx";
 import Tweet from "../layouts/Tweet.tsx";

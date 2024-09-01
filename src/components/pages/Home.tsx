@@ -8,7 +8,7 @@ import {AppContext} from "../appContext/AppContext.tsx";
 import {FormErrorsDefaultValues} from "../../Interfaces.tsx";
 import ResetPasswordLink from "../partials/ResetPasswordLink.tsx";
 import ResetPasswordForm from "../partials/ResetPasswordForm.tsx";
-import apiClient from "../services/ApiClient.tsx";
+import apiClient from "../ApiClient.tsx";
 import SpinLoader from "../helper/SpinLoader.tsx";
 import {FaGithub} from "react-icons/fa";
 import CompleteRegistration from "../partials/CompleteRegistration.tsx";

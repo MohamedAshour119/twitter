@@ -3,7 +3,7 @@ import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";
 import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {useLocation} from "react-router";
 

@@ -1,15 +1,16 @@
 import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
-import TrendingHashtag from "../layouts/TrendingHashtag.tsx";
-import FollowUser from "../layouts/FollowUser.tsx";
+import TrendingHashtag from "./TrendingHashtag.tsx";
+import FollowUser from "./FollowUser.tsx";
 import {ChangeEvent, Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
-import ApiClient from "../services/ApiClient.tsx";
-import SearchResult from "../layouts/SearchResult.tsx";
+import ApiClient from "../ApiClient.tsx";
+import SearchResult from "./SearchResult.tsx";
 import {Hashtag, UserInfo} from "../../Interfaces.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
+import Skeleton from "../partials/Skeleton.tsx";
 
 interface Props {
     setPageUrl?: Dispatch<SetStateAction<string>>
@@ -264,9 +265,9 @@ function TrendingSidebar(props: Props) {
                 <div className={`flex flex-col gap-y-2`}>
                     {suggestedUsersToFollow?.length === 0 &&
                         <div role="status" className="max-w-sm animate-pulse px-4 py-3 flex flex-col gap-y-8">
-                            <div className="h-12 bg-zinc-800 rounded-full w-full"></div>
-                            <div className="h-12 bg-zinc-800 rounded-full w-full"></div>
-                            <div className="h-12 bg-zinc-800 rounded-full w-full"></div>
+                            <Skeleton styles={`h-12 w-full`}/>
+                            <Skeleton styles={`h-12 w-full`}/>
+                            <Skeleton styles={`h-12 w-full`}/>
                         </div>
                     }
 

@@ -1,6 +1,6 @@
 import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {HiMiniXMark} from "react-icons/hi2";
 import {FaXTwitter} from "react-icons/fa6";
 import {CgSpinnerTwoAlt} from "react-icons/cg";

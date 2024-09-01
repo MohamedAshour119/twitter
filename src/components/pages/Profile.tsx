@@ -6,12 +6,13 @@ import {useParams} from "react-router-dom";
 import {CgCalendarDates} from "react-icons/cg";
 import * as React from "react";
 import Tweet from "../layouts/Tweet.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import EditProfileModal from "../layouts/EditProfileModal.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
 import {toast} from "react-toastify";
 import {toastStyle} from "../helper/ToastifyStyle.tsx";
 import SpinLoader from "../helper/SpinLoader.tsx";
+import Skeleton from "../partials/Skeleton.tsx";
 
 
 function Profile() {
@@ -287,14 +288,14 @@ function Profile() {
                     <h1 className={`font-semibold text-xl`}>
                         {!isLoading && (userInfo?.user_info.display_name ? userInfo.user_info.display_name : userInfo?.user_info.username)}
                         {isLoading &&
-                            <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
+                            <Skeleton styles={`h-[25px] w-48`}/>
                         }
                     </h1>
-                    {!isLoading && <div
-                        className={`text-[#71767b] text-sm`}>{userInfo?.user_info.tweets_count && userInfo.user_info.tweets_count <= 1 ? `${userInfo.user_info.tweets_count} post` : `${userInfo?.user_info.tweets_count} posts`}</div>
+                    {!isLoading &&
+                        <div className={`text-[#71767b] text-sm`}>{userInfo?.user_info.tweets_count && userInfo.user_info.tweets_count <= 1 ? `${userInfo.user_info.tweets_count} post` : `${userInfo?.user_info.tweets_count} posts`}</div>
                     }
                     {isLoading &&
-                        <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-28 mt-1"></div>
+                        <Skeleton styles={`h-[16px] w-28 mt-2`}/>
                     }
                 </div>
             </header>
@@ -360,21 +361,21 @@ function Profile() {
                                     </button>
                                 }
                                 {isLoading &&
-                                    <div className="h-[50px] mt-4 bg-[#2a2d32b3] animate-pulse rounded-full w-40"></div>
+                                    <Skeleton styles={`h-[50px] w-40 mt-4`}/>
                                 }
                             </div>
                             <div className={`-translate-y-12`}>
                                 <h1 className={`font-semibold text-xl`}>
                                     {userInfo?.user_info.display_name && !isLoading ? userInfo.user_info.display_name : !isLoading && userInfo?.user_info.username ? userInfo.user_info.username : ''}
                                     {isLoading &&
-                                        <div className="h-[25px] bg-[#2a2d32b3] animate-pulse rounded-full w-48"></div>
+                                        <Skeleton styles={`h-[25px] w-48`}/>
                                     }
                                 </h1>
                                 {!isLoading && <h1 className={`text-[#71767b]`}>@{userInfo?.user_info.username}</h1>}
-                                {isLoading && <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-40 mt-1"></div>}
+                                {isLoading && <Skeleton styles={`h-[16px] w-40 mt-1`}/>}
 
                                 {(!isLoading && userInfo?.user_info.bio) && <div className={`font-semibold mt-3`}>{userInfo.user_info.bio}</div>}
-                                {isLoading && <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-96 mt-4"></div>}
+                                {isLoading && <Skeleton styles={`h-[16px] w-96 mt-4`}/>}
 
                                 {!isLoading && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
                                     <CgCalendarDates/>
@@ -382,7 +383,7 @@ function Profile() {
                                     <div>{userInfo?.user_info.created_at}</div>
                                 </div>}
                                 {isLoading &&
-                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-52 mt-6"></div>
+                                    <Skeleton styles={`h-[16px] w-52 mt-6`}/>
                                 }
 
                                 {!isLoading &&
@@ -398,7 +399,7 @@ function Profile() {
                                     </div>
                                 }
                                 {isLoading &&
-                                    <div className="h-[16px] bg-[#2a2d32b3] animate-pulse rounded-full w-52 mt-6"></div>
+                                    <Skeleton styles={`h-[16px] w-52 mt-6`}/>
                                 }
                             </div>
                         </div>

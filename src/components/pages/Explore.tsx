@@ -2,7 +2,7 @@ import Model from "../layouts/Model.tsx";
 import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {Hashtag, UserInfo} from "../../Interfaces.tsx";
 import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
 import SearchResult from "../layouts/SearchResult.tsx";
@@ -183,7 +183,7 @@ function Explore() {
     })
 
     return (
-        <div className={`${!loadingExplorePage ? 'border' : ''} min-h-svh border-t-0 border-zinc-700/70`}>
+        <div className={`border min-h-svh border-t-0 border-zinc-700/70`}>
             <header className={`fixed z-[200] grid grid-cols-1 mt-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 3xl:max-w-[42.90rem] 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] md:max-w-[37.62rem] sm:max-w-[29.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.74rem] w-full`}>
                 <div
                     ref={exploreSearchRef}

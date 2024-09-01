@@ -13,7 +13,7 @@ import {
 // @ts-expect-error
 import {EmojiData} from "emoji-picker-react";
 import {tweetDefaultValues, TweetInfo, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
 import {useParams} from "react-router-dom";
 

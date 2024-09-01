@@ -3,7 +3,7 @@ import { Route, Routes, useNavigate } from "react-router-dom";
 import Home from './components/pages/Home';
 import PageNotFound from "./components/pages/PageNotFound.tsx";
 import {useContext, useEffect, useState} from "react";
-import ApiClient from "./components/services/ApiClient.tsx";
+import ApiClient from "./components/ApiClient.tsx";
 import { AppContext } from "./components/appContext/AppContext.tsx";
 import AuthRoute from "./components/auth/AuthRoute.tsx";
 import UserHomePage from "./components/pages/UserHomePage.tsx";
@@ -13,13 +13,13 @@ import Notifications from "./components/pages/Notifications.tsx";
 import HashtagTweets from "./components/pages/HashtagTweets.tsx";
 import Explore from "./components/pages/Explore.tsx";
 import NavbarSmScreens from "./components/partials/NavbarSmScreens.tsx";
-import Sidebar from "./components/partials/Sidebar.tsx";
-import TrendingSidebar from "./components/partials/TrendingSidebar.tsx";
+import Sidebar from "./components/layouts/Sidebar.tsx";
+import TrendingSidebar from "./components/layouts/TrendingSidebar.tsx";
 import { LuArrowBigUp } from "react-icons/lu";
 import { animateScroll as scroll } from "react-scroll";
 import {toast, ToastContainer} from "react-toastify";
 import {useLocation} from "react-router";
-import apiClient from "./components/services/ApiClient.tsx";
+import apiClient from "./components/ApiClient.tsx";
 import {toastStyle} from "./components/helper/ToastifyStyle.tsx";
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)

@@ -4,7 +4,7 @@ import {ChangeEvent, Dispatch, SetStateAction, useContext, useEffect, useRef, us
 import {AppContext} from "../appContext/AppContext.tsx";
 import ReactSelect from "../helper/ReactSelect.tsx";
 import {EditUserProfile, FormErrorsDefaultValues, UserInfo} from "../../Interfaces.tsx";
-import ApiClient from "../services/ApiClient.tsx";
+import ApiClient from "../ApiClient.tsx";
 import {toast} from "react-toastify";
 import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
