@@ -126,6 +126,7 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
                     ...res.data.data.followed_users_tweets
                 ]))
                 setPageURL(res.data.data.pagination)
+                res.data.data.followed_users_tweets.length === 0 ? setDisplayNotFoundMsg(true) : ''
             })
             .catch(err => {
                 console.log(err)
@@ -172,9 +173,12 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
                     <button
                         onClick={() => {
                             handleForYouBtnClick()
-                            setTweets([])
                             setPageURL('')
-                            getHomeTweets('home-tweets')
+                            if (!isActive.forYou) {
+                                setTweets([])
+                                getHomeTweets('home-tweets')
+                            }
+
                         }}
                         className={`hover:bg-[#0a0c0e] py-4 w-1/2 transition`}>
                         <span className={`${isActive.forYou && 'border-b-2 px-4 border-sky-500 pb-4'}`}>For you</span>
@@ -182,8 +186,11 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
                     <button
                         onClick={() => {
                             handleFollowingBtnClick()
-                            setTweets([])
-                            followUsersTweets('/followed-users-tweets')
+                            if (!isActive.following) {
+                                setTweets([])
+                                followUsersTweets('/followed-users-tweets')
+                            }
+
                         }}
                         className={`hover:bg-[#0a0c0e] py-4 w-1/2 transition`}>
                         <span className={`${isActive.following && 'border-b-2 px-4 border-sky-500 pb-4'}`}>Following</span>
@@ -207,7 +214,7 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
                     <div className={`${tweets.length > 0 ? 'pb-[4.5rem]' : ''} `}>
                         {displayRandomTweets}
 
-                        {displayNotFoundMsg && tweets.length === 0 &&
+                        {displayNotFoundMsg && tweets.length === 0 && !isLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
                                 No tweets!, come back later
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>
