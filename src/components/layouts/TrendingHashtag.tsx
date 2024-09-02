@@ -61,15 +61,10 @@ function TrendingHashtag(props: Props) {
             {isHashtagMenuOpen &&
                 <div
                     ref={popupMenu}
-                    className={`${isHashtagMenuOpen ? 'animate-fade-in' : ''} bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] bottom-8 right-14 shadow-[-2px_2px_12px_#4f4e4e]`}>
-                    <div
-                        onClick={closeWithAnimation}
-                        className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
-                        <HiMiniXMark/>
-                    </div>
+                    className={`${isHashtagMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 rounded-lg absolute w-[21rem] bottom-8 right-14`}>
                     <button
                         onClick={removeHashtag}
-                        className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                        className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
                         <FaRegFaceAngry className={`size-5`}/>
                         I'm not interested in this!
                     </button>

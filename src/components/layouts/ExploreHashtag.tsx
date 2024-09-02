@@ -3,7 +3,6 @@ import {Link} from "react-router-dom";
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import ApiClient from "../ApiClient.tsx";
 import {Hashtag} from "../../Interfaces.tsx";
-import {HiMiniXMark} from "react-icons/hi2";
 import {FaRegFaceAngry} from "react-icons/fa6";
 
 interface Props {
@@ -64,15 +63,10 @@ function ExploreHashtag(props: Props) {
             {isHashtagMenuOpen &&
                 <div
                     ref={popupMenu}
-                    className={`${isHashtagMenuOpen ? 'animate-fade-in' : ''} bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[19rem] xxs:w-[21rem] -bottom-4 right-14 shadow-[-2px_2px_12px_#4f4e4e]`}>
-                    <div
-                        onClick={closeWithAnimation}
-                        className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
-                        <HiMiniXMark/>
-                    </div>
+                    className={`${isHashtagMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 rounded-lg absolute w-[19rem] xxs:w-[21rem] -bottom-4 right-14`}>
                     <button
                         onClick={removeHashtag}
-                        className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                        className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
                         <FaRegFaceAngry className={`size-5`}/>
                         I'm not interested in this!
                     </button>
@@ -100,7 +94,7 @@ function ExploreHashtag(props: Props) {
                 </div>
             }
 
-            {disableLink ||
+            {!disableLink &&
                 <Link to={`/${hashtagWithoutSymbol}`}
                        className={`flex items-start mt-6 px-4 py-2 justify-between hover:bg-[#141516] transition`}>
                     <div>
