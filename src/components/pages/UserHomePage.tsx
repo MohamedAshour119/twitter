@@ -12,13 +12,13 @@ import {CgSmileSad} from "react-icons/cg";
 import {Link} from "react-router-dom";
 import SpinLoader from "../helper/SpinLoader.tsx";
 
-interface Tweet {
-    title: string
-    image: string | File | null | undefined
-    video: string | File | null | undefined
+interface Props {
+    pageUrl: string
+    notFoundMsg: boolean
+    is_loading: boolean
 }
 
-function UserHomePage() {
+function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
     const {
         user,
         baseUrl,
@@ -27,26 +27,39 @@ function UserHomePage() {
     } = useContext(AppContext);
 
     const {
-        randomTweets,
-        setRandomTweets,
+        tweets,
+        setTweets,
     } = useContext(TweetContext)
 
-    const [pageURL, setPageURL] = useState('')
-    const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
+    const [pageURL, setPageURL] = useState(pageUrl)
+    const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(notFoundMsg);
     const [isActive, setIsActive] = useState({
         forYou: true,
         following: false,
     })
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(is_loading)
+    const [isFetching, setIsFetching] = useState(false);
 
+    useEffect(() => {
+        setDisplayNotFoundMsg(notFoundMsg);
+    }, [notFoundMsg]);
+
+    useEffect(() => {
+        setIsLoading(is_loading)
+    }, [is_loading]);
+
+    useEffect(() => {
+        setPageURL(pageUrl)
+    }, [pageUrl]);
 
     // Fetch random tweets
     const getHomeTweets = (pageURL: string) => {
         setIsLoading(true)
+        setIsFetching(true)
         ApiClient().get(pageURL)
             .then(res => {
                 setPageURL(res.data.data.pagination.next_page_url)
-                setRandomTweets(prevRandomTweets => ([
+                setTweets(prevRandomTweets => ([
                     ...prevRandomTweets,
                     ...res.data.data.tweets,
                 ]))
@@ -55,33 +68,34 @@ function UserHomePage() {
             .catch(err => {
                 console.log(err)
             })
-            .finally(() => setIsLoading(false))
+            .finally(() => {
+                setIsLoading(false)
+                setIsFetching(false)
+            })
     }
 
     useEffect(() => {
-        setRandomTweets([])
-        getHomeTweets('home-tweets')
+        setTweets([])
     }, [])
-
 
     // Detect when scroll to last element
     const lastTweetRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
+        if (!lastTweetRef.current) return;  // Exit if the ref is null
+
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && !isActive.following) {
-                getHomeTweets(pageURL)
+            if (entries[0].isIntersecting && isActive.forYou && !isFetching && tweets.length > 0 && pageURL) {
+                getHomeTweets(pageURL);
             }
             if (entries[0].isIntersecting && isActive.following) {
-                followUsersTweets(pageURL)
+                followUsersTweets(pageURL);
             }
         }, {
             threshold: 0.5 // Trigger when 50% of the last tweet is visible
         });
 
         // Watch the last tweet
-        if (lastTweetRef.current) {
-            observer.observe(lastTweetRef.current)
-        }
+        observer.observe(lastTweetRef.current);
 
         // Cleanup
         return () => {
@@ -89,13 +103,16 @@ function UserHomePage() {
                 observer.unobserve(lastTweetRef.current);
             }
         };
-    }, [pageURL])
+    }, [pageURL, isFetching, isActive.forYou, isActive.following, tweets]);
+
+
 
     // Display random tweets
-    const displayRandomTweets: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
+    const displayRandomTweets: React.ReactNode = tweets?.map((tweetInfo, index) => (
         <Tweet
             key={tweetInfo.id}
             {...tweetInfo}
+            ref={index === tweets.length - 1 ? lastTweetRef : null}
         />
     ));
 
@@ -104,7 +121,7 @@ function UserHomePage() {
         setPageURL('')
         ApiClient().post(pageUrl)
             .then(res => {
-                setRandomTweets(prevFollowedUsersTweets => ([
+                setTweets(prevFollowedUsersTweets => ([
                     ...prevFollowedUsersTweets,
                     ...res.data.data.followed_users_tweets
                 ]))
@@ -155,7 +172,7 @@ function UserHomePage() {
                     <button
                         onClick={() => {
                             handleForYouBtnClick()
-                            setRandomTweets([])
+                            setTweets([])
                             setPageURL('')
                             getHomeTweets('home-tweets')
                         }}
@@ -165,7 +182,7 @@ function UserHomePage() {
                     <button
                         onClick={() => {
                             handleFollowingBtnClick()
-                            setRandomTweets([])
+                            setTweets([])
                             followUsersTweets('/followed-users-tweets')
                         }}
                         className={`hover:bg-[#0a0c0e] py-4 w-1/2 transition`}>
@@ -184,18 +201,13 @@ function UserHomePage() {
                         <SpinLoader/>
                     }
 
-                    {randomTweets.length > 0 && <TweetTextAreaAndPreview/>}
+                    {tweets.length > 0 && <TweetTextAreaAndPreview/>}
 
                     {/*  All Tweets  */}
-                    <div className={`${randomTweets.length > 0 ? 'pb-[4.5rem]' : ''} `}>
+                    <div className={`${tweets.length > 0 ? 'pb-[4.5rem]' : ''} `}>
                         {displayRandomTweets}
-                        <div ref={lastTweetRef}>
-                            {randomTweets.length > 0 && (
-                                <Tweet {...randomTweets[randomTweets.length - 1]} />
-                            )}
-                        </div>
 
-                        {displayNotFoundMsg && randomTweets.length === 0 &&
+                        {displayNotFoundMsg && tweets.length === 0 &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
                                 No tweets!, come back later
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>

@@ -21,8 +21,14 @@ import {toast, ToastContainer} from "react-toastify";
 import {useLocation} from "react-router";
 import apiClient from "./components/ApiClient.tsx";
 import {toastStyle} from "./components/helper/ToastifyStyle.tsx";
+import {TweetContext} from "./components/appContext/TweetContext.tsx";
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
+    const {setTweets} = useContext(TweetContext)
+
+    const [pageUrl, setPageUrl] = useState('');
+    const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
+    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         const bodyEl = document.body;
@@ -33,6 +39,26 @@ function AuthLayout() {
         }
     }, [isModalOpen, isCommentOpen]);
 
+    useEffect(() => {
+        if (location.pathname === '/home') {
+            setIsLoading(true)
+            apiClient().get('/home-tweets')
+                .then(res => {
+                    console.log(res)
+                    setTweets(prevState => ([
+                        ...prevState,
+                        ...res.data.data.tweets
+                    ]))
+                    res.data.data.tweets.length === 0 ? setDisplayNotFoundMsg(true) : null
+                    setPageUrl(res.data.data.pagination.next_page_url)
+                })
+                .catch(() => {
+
+                })
+                .finally(() => setIsLoading(false))
+        }
+    }, [location.pathname]);
+
     return (
         <div className={`flex justify-center ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d]' : 'bg-black'}`}>
             <div className={`container sm:px-4 gap-x-8 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
@@ -40,7 +66,15 @@ function AuthLayout() {
                     <Sidebar />
                 </div>
                 <Routes>
-                    <Route path={`/home`} element={<UserHomePage />} />
+                    <Route
+                        path={`/home`}
+                        element={
+                        <UserHomePage
+                            pageUrl={pageUrl}
+                            notFoundMsg={displayNotFoundMsg}
+                            is_loading={isLoading}
+                        />}
+                    />
                     <Route path={`/users/:username`} element={<Profile />} />
                     <Route path={`/tweets/:slug`} element={<ShowTweet />} />
                     <Route path={`/notifications`} element={<Notifications />} />

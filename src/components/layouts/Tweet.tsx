@@ -1,6 +1,6 @@
 import {FaHeart, FaRegComment, FaRegHeart} from "react-icons/fa";
 import {BsRepeat} from "react-icons/bs";
-import {Dispatch, SetStateAction, useContext, useEffect, useRef, useState} from "react";
+import {Dispatch, forwardRef, SetStateAction, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../ApiClient.tsx";
 import {toast} from "react-toastify";
@@ -22,7 +22,7 @@ interface Props extends  TweetInfo {
     setUserInfo?: Dispatch<SetStateAction<UserInfo | undefined>>
     deleteComment?: () => void
 }
-function Tweet(props: Props) {
+const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
 
     const {
         user,
@@ -35,8 +35,8 @@ function Tweet(props: Props) {
     } = useContext(AppContext);
 
     const {
-        randomTweets ,
-        setRandomTweets,
+        tweets ,
+        setTweets,
         allProfileUserTweets,
         setAllProfileUserTweets,
         comments,
@@ -108,8 +108,8 @@ function Tweet(props: Props) {
     const hideTweet = () => {
         ApiClient().post(`/uninterested-tweet/${tweetId}`)
             .then(() => {
-                const filteredTweets = randomTweets.filter(tweet => (tweet.id || tweet.main_tweet.id) !== tweetId)
-                setRandomTweets(filteredTweets)
+                const filteredTweets = tweets.filter(tweet => (tweet.id || tweet.main_tweet.id) !== tweetId)
+                setTweets(filteredTweets)
             })
             .catch()
             .finally(() => setTweetMenuOpen(false))
@@ -330,7 +330,11 @@ function Tweet(props: Props) {
     const conditionWithoutRetweets = location.pathname !== `/users/${username}`
 
     const tweetCommonContent =
-        <div onClick={addTweetInfo} className={`grid py-3 sm:px-6 px-2 gap-x-2`}>
+        <div
+            onClick={addTweetInfo}
+            className={`grid py-3 sm:px-6 px-2 gap-x-2`}
+            ref={ref}
+        >
             <div className={`flex gap-x-2`}>
                 <Link to={`/users/${conditionWithoutRetweets ? props.user?.user_info.username : props.userInfo?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
                     <img
@@ -392,8 +396,6 @@ function Tweet(props: Props) {
             </div>
         </div>
 
-    // const {slug} = useParams()
-    console.log(props)
     return (
         <>
             <div
@@ -521,6 +523,6 @@ function Tweet(props: Props) {
         </>
 
     )
-}
+})
 
 export default Tweet

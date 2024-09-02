@@ -24,8 +24,8 @@ function Explore() {
     } = useContext(AppContext)
 
     const {
-        randomTweets,
-        setRandomTweets,
+        tweets,
+        setTweets,
     } = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
@@ -125,7 +125,7 @@ function Explore() {
         setExplorePageHashtags([])
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {
-                setRandomTweets( prevResults => ([
+                setTweets( prevResults => ([
                     ...prevResults,
                     ...res.data.data.tweets
                 ]))
@@ -142,7 +142,7 @@ function Explore() {
     }
 
     useEffect(() => {
-        setRandomTweets([])
+        setTweets([])
     }, []);
 
     useEffect(() => {
@@ -150,7 +150,7 @@ function Explore() {
     }, [location.pathname]);
 
 
-    const displayResults: React.ReactNode = randomTweets?.slice(0, randomTweets.length - 1).map(tweetInfo => (
+    const displayResults: React.ReactNode = tweets?.slice(0, tweets.length - 1).map(tweetInfo => (
         <Tweet
             key={tweetInfo.id}
             {...tweetInfo}
@@ -162,7 +162,7 @@ function Explore() {
         setDisplayNotResultsFound(false)
         e.preventDefault()
         setPageURL('')
-        setRandomTweets([])
+        setTweets([])
         searchForKeyword(searchValue)
         setIsOpen(false)
         setSearchValue('')
@@ -207,7 +207,7 @@ function Explore() {
                             {(searchResults && debounceValue) &&
                                 <div
                                     onClick={() => {
-                                        setRandomTweets([])
+                                        setTweets([])
                                         searchForKeyword(debounceValue)
                                         setIsOpen(false)
                                         setSearchValue('')
@@ -245,7 +245,7 @@ function Explore() {
                     className={`text-neutral-200 w-full relative`}>
 
                     <div className={`mt-20`}>
-                        {(showExplorePageHashtags && randomTweets.length == 0 && !loadingExplorePage) &&
+                        {(showExplorePageHashtags && tweets.length == 0 && !loadingExplorePage) &&
                             <div>
                                 {hashtags}
                             </div>
@@ -253,12 +253,12 @@ function Explore() {
                         {!loadingExplorePage && displayResults}
                         {loadingExplorePage && <SpinLoader/>}
                         <div ref={lastResultRef}>
-                            {randomTweets.length > 0 && (
-                                <Tweet {...randomTweets[randomTweets.length - 1]} />
+                            {tweets.length > 0 && (
+                                <Tweet {...tweets[tweets.length - 1]} />
                             )}
                         </div>
 
-                        {displayNotResultsFound && randomTweets.length === 0 &&
+                        {displayNotResultsFound && tweets.length === 0 &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
                                 No {displayNotResultsFound ? 'results found' : 'tweets,'}! {!displayNotResultsFound ? 'come back later' : ''}
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>

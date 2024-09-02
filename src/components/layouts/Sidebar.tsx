@@ -26,7 +26,7 @@ function Sidebar() {
         isShowEditInfoModal,
     } = useContext(AppContext)
 
-    const {setRandomTweets, setTweet} = useContext(TweetContext)
+    const {setTweets, setTweet} = useContext(TweetContext)
 
     const [logoutWindowOpen, setLogoutWindowOpen] = useState(false)
     const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
@@ -44,7 +44,7 @@ function Sidebar() {
                     localStorage.removeItem('token')
                     localStorage.removeItem('expires_at')
                     setUser(UserDefaultValues)
-                    setRandomTweets([])
+                    setTweets([])
                     navigate('/')
                 })
                 .catch(() => {})
@@ -159,13 +159,14 @@ function Sidebar() {
                     {!user?.user_info.avatar && <img className={`size-11 object-cover`} src={`/profile-default-svgrepo-com.svg`} alt={`default avatar`}/> }
 
                     <div className={`hidden xl:flex xl:flex-col ${!user?.user_info.id ? 'gap-y-1' : ''} `}>
-                        {user?.user_info.display_name &&
-                            <div className={`font-semibold`}>
-                                {user?.user_info?.display_name ? user?.user_info?.display_name : user?.user_info?.username}
-                            </div>
+
+                        <div className={`font-semibold`}>
+                            {user?.user_info?.display_name ? user?.user_info?.display_name : user?.user_info?.username}
+                        </div>
+
+                        {!user?.user_info.display_name && !user?.user_info.username &&
+                            <Skeleton styles={`h-[20px] w-40`}/>
                         }
-                        {!user?.user_info.display_name &&
-                            <Skeleton styles={`h-[20px] w-40`}/>                        }
 
                         <div className={`text-neutral-500`}>{user?.user_info.username && '@'}{user?.user_info?.username}</div>
                         {!user?.user_info.username &&

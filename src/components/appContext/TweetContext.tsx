@@ -31,8 +31,8 @@ interface TweetContextType {
     showEmojiElInModel: boolean
     setShowEmojiElInModel: Dispatch<SetStateAction<boolean>>
     handleFileChange: (e: ChangeEvent<HTMLInputElement>, fileType: string, setTweet: (value: Tweet) => void) => void
-    randomTweets: TweetInfo[];
-    setRandomTweets: Dispatch<SetStateAction<TweetInfo[]>>;
+    tweets: TweetInfo[];
+    setTweets: Dispatch<SetStateAction<TweetInfo[]>>;
     sendRequest: () => void
     comments: TweetInfo[]
     setComments: Dispatch<SetStateAction<TweetInfo[]>>
@@ -59,8 +59,8 @@ export const TweetContext = createContext<TweetContextType>({
         video: null
     },
     setTweet: () => null,
-    setRandomTweets: () => null,
-    randomTweets: [tweetDefaultValues],
+    setTweets: () => null,
+    tweets: [tweetDefaultValues],
     videoURL: '',
     setVideoURL: () => null,
     showEmojiEl: false,
@@ -100,7 +100,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiEl, setShowEmojiEl] = useState(false)
     const [showEmojiElInModel, setShowEmojiElInModel] = useState(false)
-    const [randomTweets, setRandomTweets] = useState<TweetInfo[]>([])
+    const [tweets, setTweets] = useState<TweetInfo[]>([])
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo | undefined>(UserDefaultValues)
@@ -205,11 +205,11 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                     }
 
                     const target_tweet_id = res.data.data.main_tweet.id
-                    randomTweets.map((tweet, index) => {
+                    tweets.map((tweet, index) => {
                         if (tweet.id === target_tweet_id) {
-                            setRandomTweets(prevState => ([
+                            setTweets(prevState => ([
                                 ...prevState,
-                                randomTweets[index].comments_count = res.data.data.main_tweet.comments_count
+                                tweets[index].comments_count = res.data.data.main_tweet.comments_count
                             ]))
                         }
                     })
@@ -224,12 +224,12 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                         }
                     })
 
-                    randomTweets.map((tweet, index) => {
+                    tweets.map((tweet, index) => {
                         const i = (tweet.id === res.data.data.main_tweet.id) ? index : null
-                        const filteredTweets = randomTweets.filter(tweet => tweet.id !== res.data.data.main_tweet.id)
+                        const filteredTweets = tweets.filter(tweet => tweet.id !== res.data.data.main_tweet.id)
                         if (i) {
                             filteredTweets.splice(i, 0, res.data.data.main_tweet)
-                            setRandomTweets(filteredTweets)
+                            setTweets(filteredTweets)
                         }
                     })
 
@@ -245,7 +245,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                     setIsModalOpen(false)
 
                     // Concatenate the new tweet with existing tweets and sort them based on created_at
-                    setRandomTweets(prevState => (
+                    setTweets(prevState => (
                         [res.data.data, ...prevState]
                     ));
 
@@ -301,8 +301,8 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 showEmojiElInModel,
                 setShowEmojiElInModel,
                 handleFileChange,
-                randomTweets,
-                setRandomTweets,
+                tweets,
+                setTweets,
                 sendRequest,
                 comments,
                 setComments,

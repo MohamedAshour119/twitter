@@ -22,7 +22,7 @@ interface Props {
 function TrendingSidebar(props: Props) {
 
     const {setDisplayNotResultsFound, isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
-    const {setRandomTweets,} = useContext(TweetContext)
+    const {setTweets,} = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
@@ -170,7 +170,7 @@ function TrendingSidebar(props: Props) {
         ApiClient().get(`/search/${keyword}`)
             .then((res) => {
                 props.setPageUrl && props.setPageUrl(res.data.data.pagination)
-                setRandomTweets( prevState => ([
+                setTweets( prevState => ([
                     ...prevState,
                     ...res.data.data.tweets
                 ]))
@@ -190,7 +190,7 @@ function TrendingSidebar(props: Props) {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         props.setPageUrl && props.setPageUrl('')
-        setRandomTweets([])
+        setTweets([])
         searchForKeyword(searchValue)
         props.setLoadingExplorePage && props.setLoadingExplorePage(true)
         setIsOpen(false)

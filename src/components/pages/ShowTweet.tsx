@@ -22,7 +22,7 @@ function ShowTweet() {
     const {
         comments,
         setComments,
-        randomTweets
+        tweets
     } = useContext(TweetContext)
     const {slug} = useParams();
 
@@ -47,7 +47,7 @@ function ShowTweet() {
 
     useEffect( () => {
         displayTweetFn()
-    }, [slug, randomTweets])
+    }, [slug, tweets])
 
     const getComments = (pageURL: string) => {
         ApiClient().get(pageURL)
