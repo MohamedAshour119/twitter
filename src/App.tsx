@@ -22,6 +22,7 @@ import {useLocation} from "react-router";
 import apiClient from "./components/ApiClient.tsx";
 import {toastStyle} from "./components/helper/ToastifyStyle.tsx";
 import {TweetContext} from "./components/appContext/TweetContext.tsx";
+import {Hashtag} from "./Interfaces.tsx";
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
     const {setTweets} = useContext(TweetContext)
@@ -29,6 +30,8 @@ function AuthLayout() {
     const [pageUrl, setPageUrl] = useState('');
     const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
     const [isLoading, setIsLoading] = useState(true)
+
+    const [app_hashtags, setAppHashtags] = useState<Hashtag[]>([])
 
     useEffect(() => {
         const bodyEl = document.body;
@@ -51,6 +54,8 @@ function AuthLayout() {
                     ]))
                     res.data.data.tweets.length === 0 ? setDisplayNotFoundMsg(true) : null
                     setPageUrl(res.data.data.pagination.next_page_url)
+
+                    setAppHashtags(res.data.data.hashtags)
                 })
                 .catch(() => {
 
@@ -82,7 +87,10 @@ function AuthLayout() {
                     <Route path={`/explore`} element={<Explore />} />
                 </Routes>
                 <div>
-                    <TrendingSidebar />
+                    <TrendingSidebar
+                        app_hashtags={app_hashtags}
+                        is_loading={isLoading}
+                    />
                 </div>
             </div>
         </div>

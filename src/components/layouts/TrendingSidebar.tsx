@@ -17,6 +17,8 @@ interface Props {
     setDisplayNotFoundMsg?: Dispatch<SetStateAction<boolean>>
     loadingExplorePage?: boolean
     setLoadingExplorePage?: Dispatch<SetStateAction<boolean>>
+    app_hashtags: Hashtag[]
+    is_loading: boolean
 }
 
 function TrendingSidebar(props: Props) {
@@ -25,12 +27,24 @@ function TrendingSidebar(props: Props) {
     const {setTweets,} = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
+    const [isLoading, setIsLoading] = useState(props.is_loading);
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
-    const [hashtags, setHashtags] = useState<Hashtag[]>([])
+    const [hashtags, setHashtags] = useState<Hashtag[]>(props.app_hashtags)
     const [pageURL, setPageURL] = useState('')
     const [searchValue, setSearchValue] = useState('')
+    const [isHashtagDeleted, setIsHashtagDeleted] = useState(false);
+
+
     const debounceValue = useDebounce(searchValue)
+
+    useEffect(() => {
+        setHashtags(props.app_hashtags)
+    }, [props.app_hashtags]);
+
+    useEffect(() => {
+        setIsLoading(props.is_loading)
+    }, [props.is_loading]);
 
     const sendRequest = () => {
         if (props.setLoadingExplorePage) {
@@ -62,7 +76,7 @@ function TrendingSidebar(props: Props) {
     const getHashtags = () => {
         ApiClient().get(`/hashtags`)
             .then(res => {
-                setHashtags(res.data.data)
+                setHashtags(res.data.data.hashtags)
             })
             .catch(err => {
                 console.log(err)
@@ -70,7 +84,7 @@ function TrendingSidebar(props: Props) {
     }
 
     useEffect(() => {
-        if(hashtags?.length <= 1) {
+        if(hashtags?.length <= 1 && !isLoading && isHashtagDeleted) {
             getHashtags()
         }
     }, [hashtags?.length]);
@@ -158,6 +172,7 @@ function TrendingSidebar(props: Props) {
                 count={hashtag.count}
                 hashtags={hashtags}
                 setHashtags={setHashtags}
+                setIsHashtagDeleted={setIsHashtagDeleted}
             />
         )
     })
