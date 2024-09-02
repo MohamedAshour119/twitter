@@ -268,10 +268,13 @@ function TrendingSidebar(props: Props) {
 
             </div>
 
-            <div className={`bg-[#121416] rounded-2xl`}>
+            <div className={`bg-[#121416] rounded-2xl ${hashtags.length === 0 ? 'pb-4' : ''}`}>
                 <h1 className={`font-bold text-2xl p-4`}>What's happening</h1>
 
-                <div ref={popupMenu} className={`mt-6 flex flex-col gap-y-2 pb-3`}>{trendingHashtags}</div>
+                {hashtags?.length > 0 && <div ref={popupMenu} className={`mt-6 flex flex-col gap-y-2 pb-3`}>{trendingHashtags}</div>}
+                {hashtags?.length === 0 &&
+                    <div className={`text-center`}>There is no trends right now.</div>
+                }
 
             </div>
 
