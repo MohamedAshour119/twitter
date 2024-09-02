@@ -1,7 +1,6 @@
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import {Link} from "react-router-dom";
-import {HiMiniXMark} from "react-icons/hi2";
 import ApiClient from "../ApiClient.tsx";
 import {FaRegFaceAngry} from "react-icons/fa6";
 import {Hashtag} from "../../Interfaces.tsx";

@@ -59,7 +59,7 @@ function Explore() {
     }
 
     useEffect(() => {
-        if (debounceValue !== '') {
+        if (debounceValue?.length > 0) {
             getSearchResult(debounceValue);
         } else {
             setSearchResults([])
@@ -99,7 +99,7 @@ function Explore() {
     const lastResultRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
+            if (entries[0].isIntersecting && debounceValue?.length > 0) {
                 getSearchResult(pageURL)
             }
         }, {
@@ -184,7 +184,7 @@ function Explore() {
 
     return (
         <div className={`border min-h-svh border-t-0 border-zinc-700/70`}>
-            <header className={`fixed z-[200] grid grid-cols-1 mt-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 3xl:max-w-[42.90rem] 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] md:max-w-[37.62rem] sm:max-w-[29.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.74rem] w-full`}>
+            <header className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 3xl:max-w-[42.90rem] 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] md:max-w-[37.62rem] sm:max-w-[29.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.74rem] w-full`}>
                 <div
                     ref={exploreSearchRef}
                     className={`w-full relative`}>
