@@ -195,7 +195,7 @@ function Register(props: Props) {
                     <form onSubmit={handleSubmitBtn} className={`${isLoading ? 'invisible' : 'visible'} ${successfulRegister ? 'hidden' : 'block'}`}>
                         <header className="flex justify-center relative">
                             <div
-                                className="absolute left-0 top-0 cursor-pointer mx-3 hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
+                                className="absolute left-0 top-0 cursor-pointer mx-3 hover:bg-[#0a0c0e] text-2xl flex justify-center items-center rounded-full h-9 w-9 transition"
                                 onClick={handleClick}
                             >
                                 <div>

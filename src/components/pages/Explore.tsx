@@ -196,7 +196,7 @@ function Explore() {
                             value={searchValue}
                             type="text"
                             placeholder={`Search`}
-                            className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} text-neutral-200 bg-[#2a2d32b3] relative z-20 w-full px-6 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
+                            className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} text-neutral-200 bg-[#24272b] relative z-20 w-full px-6 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
                         />
                     </form>
 

@@ -424,13 +424,13 @@ function Tweet(props: Props) {
                         ref={tweetMenuRef}
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
-                        className={`${tweetMenuOpen ? 'animate-fade-in' : ''} shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-16 top-4 shadow-[-2px_2px_12px_#4f4e4e]`}>
+                        className={`${tweetMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path z-50 bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 absolute w-[21rem] right-16 top-4`}>
                         {props.user_id === user?.user_info.id &&
                             <>
                                 <button
                                     onClick={deleteTweet}
                                     disabled={!tweetMenuOpen}
-                                    className={`flex text-red-700 font-semibold items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                                    className={`flex text-red-700 font-semibold items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
                                     <MdDelete className={`size-5`}/>
                                     Delete
                                 </button>
@@ -438,7 +438,7 @@ function Tweet(props: Props) {
                                     <button
                                     onClick={pinTweet}
                                     disabled={!tweetMenuOpen}
-                                    className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition cursor-pointer`}>
+                                    className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
                                     <TbPinnedFilled className={`size-5`}/>
                                     Pin to your profile
                                     </button>
@@ -450,14 +450,14 @@ function Tweet(props: Props) {
                                 <button
                                     onClick={handleRetweet}
                                     disabled={!tweetMenuOpen}
-                                    className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
                                     <BsRepeat className={`size-5`}/>
                                     Retweet
                                 </button>
                                 <button
                                     onClick={hideTweet}
                                     disabled={!tweetMenuOpen}
-                                    className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
                                     <FaRegFaceAngry className={`size-5`}/>
                                     Not interested in this post
                                 </button>

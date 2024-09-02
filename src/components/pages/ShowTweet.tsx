@@ -105,7 +105,7 @@ function ShowTweet() {
                 </div>
                 {/* Header for the rest of screens */}
                 <div className={`flex items-center gap-x-7 px-4 w-full text-neutral-200 z-[100] cursor-pointer`}>
-                    <div onClick={goBack} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+                    <div onClick={goBack} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
                     </div>
                     <div className={`py-4 text-xl font-semibold`}>Post</div>

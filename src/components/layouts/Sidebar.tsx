@@ -83,13 +83,13 @@ function Sidebar() {
             <ul className={`flex flex-col gap-y-5 justify-self-end 2xl:w-[80%] xl:w-[18rem] mx-4 select-none`}>
                 <li className={`flex items-center`}>
                     <Link to={`/home`}>
-                        <div className={`hover:bg-neutral-600/30 rounded-full p-3 `}>
+                        <div className={`hover:bg-[#0a0c0e] rounded-full p-3 `}>
                             <FaXTwitter className={`size-8`}/>
                         </div>
                     </Link>
                 </li>
                 <li className={``}>
-                    <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
+                    <Link className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                           to={`/home`}>
                         <MdHomeFilled className={`size-8`}/>
                         <span className={`hidden xl:block`}>Home</span>
@@ -97,7 +97,7 @@ function Sidebar() {
                 </li>
                 <li>
                     <Link
-                        className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
+                        className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                         to={`/explore`}>
                         <HiMiniMagnifyingGlass className={`size-8`}/>
                         <span className={`hidden xl:block`}>Explore</span>
@@ -106,7 +106,7 @@ function Sidebar() {
                 <li>
                     <Link
                         to={`/notifications`}
-                        className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}>
+                        className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}>
                         <div className={`relative`}>
                             <BsBell className={`size-8`}/>
                             {(user?.allNotifications?.notifications_count && user.allNotifications.notifications_count > 0) ?
@@ -123,7 +123,7 @@ function Sidebar() {
                     </Link>
                 </li>
                 <li>
-                    <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
+                    <Link className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                           to={`/users/${user?.user_info?.username}`}>
                         <LuUser className={`size-8`}/>
                         <span className={`hidden xl:block`}>Profile</span>
@@ -140,15 +140,19 @@ function Sidebar() {
             </ul>
 
             {/*Logout window*/}
-            <div className={`bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] -right-64 bottom-20 2xl:-right-10 2xl:bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
-                <button disabled={!logoutWindowOpen} onClick={logout} className={`flex items-center gap-x-3 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+            <div className={`sidebar-drop-down-clip-path bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 absolute w-[21rem] -right-64 bottom-20 2xl:-right-10 2xl:bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
+                <button disabled={!logoutWindowOpen} onClick={logout} className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>
                     <TbLogout className={`size-5`}/>
                     Logout @{user?.user_info?.username}
                 </button>
             </div>
 
 
-            <div ref={logoutRef} onClick={handleClick} className={`mx-4 self-end flex justify-between justify-self-end 2xl:w-[80%] xl:w-[18rem] items-center gap-x-9 xl:hover:bg-neutral-600/30 rounded-full px-4 py-2 transition cursor-pointer`}>
+            <div
+                ref={logoutRef}
+                onClick={handleClick}
+                className={`mx-4 self-end flex justify-between justify-self-end 2xl:w-[80%] xl:w-[18rem] items-center gap-x-9 xl:hover:bg-[#0a0c0e] rounded-full px-4 py-2 transition cursor-pointer`}
+            >
                 <div className={`flex items-center gap-x-4`}>
 
                     {user?.user_info.avatar && <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt="avatar"/>}

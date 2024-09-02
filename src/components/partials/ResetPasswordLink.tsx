@@ -110,7 +110,7 @@ function ResetPasswordLink(props: Props) {
                     <header className="hidden md:flex justify-center relative text-neutral-100">
                         <div
                             onClick={handleClick}
-                            className="absolute -left-3 cursor-pointer hover:bg-neutral-600/30 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
+                            className="absolute -left-3 cursor-pointer hover:bg-[#0a0c0e] text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
                             <HiMiniXMark/>
                         </div>
 
@@ -123,7 +123,7 @@ function ResetPasswordLink(props: Props) {
                             <div className={`flex items-center justify-between`}>
                                 <h1 className={`sm:text-3xl text-xl font-semibold`}>Send reset password link</h1>
                                 <div
-                                    className="flex md:hidden cursor-pointer hover:bg-neutral-600/30 text-2xl justify-center items-center rounded-full h-9 w-9 transition"
+                                    className="flex md:hidden cursor-pointer hover:bg-[#0a0c0e] text-2xl justify-center items-center rounded-full h-9 w-9 transition"
                                     onClick={handleClick}
                                 >
                                     <div className={``}>

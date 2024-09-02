@@ -3,13 +3,18 @@
 @tailwind utilities;
 
 @layer components {
-    .appear{
+    .appear {
         opacity: 1;
         transition: opacity 0.2s ease-in-out;
     }
-
-    .disappear{
+    .disappear {
         opacity: 0;
         transition: opacity 0.2s ease-in-out;
+    }
+    .sidebar-drop-down-clip-path {
+        clip-path: polygon(0% 0%, 100% 0%, 100% 90%, 55% 90%, 50% 100%, 45% 90%, 0% 90%);
+    }
+    .tweet-drop-down-clip-path {
+        clip-path: polygon(0% 0%, 35% 0, 100% 0, 94% 12%, 94% 100%, 30% 100%, 0 100%);
     }
 }

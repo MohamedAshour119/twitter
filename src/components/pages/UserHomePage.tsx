@@ -159,7 +159,7 @@ function UserHomePage() {
                             setPageURL('')
                             getHomeTweets('home-tweets')
                         }}
-                        className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
+                        className={`hover:bg-[#0a0c0e] py-4 w-1/2 transition`}>
                         <span className={`${isActive.forYou && 'border-b-2 px-4 border-sky-500 pb-4'}`}>For you</span>
                     </button>
                     <button
@@ -168,7 +168,7 @@ function UserHomePage() {
                             setRandomTweets([])
                             followUsersTweets('/followed-users-tweets')
                         }}
-                        className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>
+                        className={`hover:bg-[#0a0c0e] py-4 w-1/2 transition`}>
                         <span className={`${isActive.following && 'border-b-2 px-4 border-sky-500 pb-4'}`}>Following</span>
                     </button>
                 </div>

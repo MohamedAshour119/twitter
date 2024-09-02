@@ -209,7 +209,7 @@ function TrendingSidebar(props: Props) {
                         value={searchValue}
                         type="text"
                         placeholder={`Search`}
-                        className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#2a2d32b3] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
+                        className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} bg-[#121416] relative z-20 w-full px-12 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
                     />
                 </form>
 
@@ -253,14 +253,14 @@ function TrendingSidebar(props: Props) {
 
             </div>
 
-            <div className={`bg-[#2a2d32b3] rounded-2xl`}>
+            <div className={`bg-[#121416] rounded-2xl`}>
                 <h1 className={`font-bold text-2xl p-4`}>What's happening</h1>
 
                 <div ref={popupMenu} className={`mt-6 flex flex-col gap-y-2 pb-3`}>{trendingHashtags}</div>
 
             </div>
 
-            <div className={`bg-[#2a2d32b3] rounded-2xl`}>
+            <div className={`bg-[#121416] rounded-2xl`}>
                 <h1 className={`font-bold text-2xl p-4`}>Who to follow</h1>
                 <div className={`flex flex-col gap-y-2`}>
                     {suggestedUsersToFollow?.length === 0 &&
@@ -271,8 +271,12 @@ function TrendingSidebar(props: Props) {
                         </div>
                     }
 
-                    {suggestedUsersToFollow?.map(user => (
-                        <FollowUser key={user.user_info.id} suggestedUsersToFollow={user}/>
+                    {suggestedUsersToFollow?.map((user, index) => (
+                        <FollowUser
+                            key={user.user_info.id}
+                            suggestedUsersToFollow={user}
+                            styles={index === suggestedUsersToFollow?.length - 1 ? ' rounded-b-2xl' : ''}
+                        />
                     ))}
                 </div>
             </div>

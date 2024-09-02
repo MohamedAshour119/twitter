@@ -147,7 +147,7 @@ function Notifications() {
 
             <header className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-l-0 backdrop-blur-md w-full fixed z-[500] gap-x-3 text-neutral-200 pt-1 border-zinc-700/70 3xl:max-w-[42.91rem] 2xl:max-w-[38.52rem] xl:max-w-[31.70rem] lg:max-w-[31.62rem] md:max-w-[37.68rem] sm:max-w-[29.95rem] xs:max-w-[31.20rem] xxs:max-w-[27.81rem]`}>
                 <div className={`flex items-center gap-x-3 font-semibold text-xl px-4`}>
-                    <Link to={'/home'} className={`hover:bg-neutral-600/30 flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+                    <Link to={'/home'} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
                     </Link>
                     <div className={`w-full`}>Notifications</div>

@@ -12,7 +12,7 @@ function NavbarSmScreens() {
     return (
         <ul className={`xs:hidden fixed bottom-0 bg-black flex w-full justify-center py-2 gap-x-16 text-neutral-200 border-t border-zinc-700/70 ${isModalOpen || isCommentOpen ? 'opacity-20' : ''}`}>
             <li className={``}>
-                <Link className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
+                <Link className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                       to={`/home`}>
                     <MdHomeFilled className={`size-8`}/>
                     <span className={`hidden xl:block`}>Home</span>
@@ -20,7 +20,7 @@ function NavbarSmScreens() {
             </li>
             <li>
                 <Link
-                    className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}
+                    className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}
                     to={`/explore`}>
                     <HiMiniMagnifyingGlass className={`size-8`}/>
                     <span className={`hidden xl:block`}>Explore</span>
@@ -29,7 +29,7 @@ function NavbarSmScreens() {
             <li>
                 <Link
                     to={`/notifications`}
-                    className={`flex items-end gap-x-4 text-xl hover:bg-neutral-600/30 rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}>
+                    className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3  transition`}>
                     <div className={`relative`}>
                         <BsBell className={`size-8`}/>
                         {(user?.allNotifications?.notifications_count && user.allNotifications.notifications_count > 0) ?

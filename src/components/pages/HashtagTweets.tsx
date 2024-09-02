@@ -55,8 +55,8 @@ function HashtagTweets() {
                 </div>
                 {/* Header for the rest of screens */}
                 <div className={`w-full text-neutral-200`}>
-                    <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>For you</button>
-                    <button className={`hover:bg-neutral-600/30 py-4 w-1/2 transition`}>Following</button>
+                    <button className={`hover:bg-[#0a0c0e] py-4 w-1/2 transition`}>For you</button>
+                    <button className={`hover:bg-[#0a0c0e] py-4 w-1/2 transition`}>Following</button>
                 </div>
             </header>
 

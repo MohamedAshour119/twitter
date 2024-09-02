@@ -8,8 +8,9 @@ import {toastStyle} from "../helper/ToastifyStyle.tsx";
 
 interface Prop {
     suggestedUsersToFollow: UserInfo
+    styles?: string
 }
-function FollowUser({suggestedUsersToFollow}: Prop) {
+function FollowUser({suggestedUsersToFollow, styles}: Prop) {
 
     const {baseUrl} = useContext(AppContext)
 
@@ -51,7 +52,7 @@ function FollowUser({suggestedUsersToFollow}: Prop) {
 
 
     return (
-        <div className={`flex justify-between hover:bg-[#25323f30] px-4 py-3`}>
+        <div className={`flex justify-between hover:bg-[#161a1e] px-4 py-3 ${styles}`}>
             <Link to={`/users/${suggestedUsersToFollow.user_info.username}`} className={`flex gap-x-2 cursor-pointer`}>
 
                 <img className={`size-11 rounded-full object-cover`}
