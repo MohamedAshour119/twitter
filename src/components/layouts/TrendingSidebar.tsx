@@ -24,19 +24,21 @@ interface Props {
 
 function TrendingSidebar(props: Props) {
 
-    const {setDisplayNotResultsFound, isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
+    const {isModalOpen, isCommentOpen, isShowEditInfoModal, setIsSidebarSearched, isSidebarSearched} = useContext(AppContext)
     const {setTweets,} = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(props.is_loading);
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
+    const [searchResultsNextPageUrl, setSearchResultsNextPageUrl] = useState('');
     const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>(props.suggested_users_to_follow)
     const [hashtags, setHashtags] = useState<Hashtag[]>(props.app_hashtags)
-    const [pageURL, setPageURL] = useState('')
     const [searchValue, setSearchValue] = useState('')
     const [isHashtagDeleted, setIsHashtagDeleted] = useState(false);
+    const [isFetching, setIsFetching] = useState(false);
+    const [searchLoading, setSearchLoading] = useState(false);
 
-
+    const navigate = useNavigate()
     const debounceValue = useDebounce(searchValue)
 
     useEffect(() => {
@@ -52,20 +54,25 @@ function TrendingSidebar(props: Props) {
     }, [props.suggested_users_to_follow]);
 
     const sendRequest = () => {
+        setSearchLoading(true)
         if (props.setLoadingExplorePage) {
             props.setLoadingExplorePage(false);
         }
         ApiClient().get(`/search-user/${debounceValue}`)
             .then(res => {
                 setSearchResults(res.data.data.users)
-                const nextPageUrl = res.data.data.pagination.next_page_url
-                nextPageUrl ? setPageURL(nextPageUrl) : null
+                const nextPageUrl = res.data.data.users_next_page_url
+                nextPageUrl ? setSearchResultsNextPageUrl(nextPageUrl) : null
                 setIsOpen(true)
+                localStorage.setItem('tweets_results', JSON.stringify(res.data.data.results))
+                localStorage.setItem('tweets_results_next_page_url', JSON.stringify(res.data.data.results_next_page_url))
             })
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setSearchLoading(false))
     }
+
     const getHashtags = () => {
         ApiClient().get(`/hashtags`)
             .then(res => {
@@ -93,18 +100,20 @@ function TrendingSidebar(props: Props) {
 
 
     const getSearchResult = (pageURL: string) => {
+        setIsFetching(true)
         ApiClient().get(pageURL)
             .then(res => {
                 setSearchResults(prevSearchedResults => [
                     ...prevSearchedResults,
                     ...res.data.data.users
                 ])
-                const nextPageUrl = res.data.data.pagination.next_page_url
-                setPageURL(nextPageUrl ? nextPageUrl : '')
+                const nextPageUrl = res.data.data.users_next_page_url
+                setSearchResultsNextPageUrl(nextPageUrl ? nextPageUrl : '')
             })
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setIsFetching(false))
     }
 
     const handleOpen = () => {
@@ -136,11 +145,12 @@ function TrendingSidebar(props: Props) {
     }, []);
 
     // Detect when scroll to last element
-    const lastResultRef = useRef<HTMLDivElement>(null)
+    const lastResultRef = useRef<HTMLAnchorElement>(null)
     useEffect(() => {
+        console.log('called')
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                getSearchResult(pageURL)
+            if (entries[0].isIntersecting && !isFetching) {
+                getSearchResult(searchResultsNextPageUrl)
             }
         }, {
             threshold: 0.5 // Trigger when 50% of the last tweet is visible
@@ -157,11 +167,17 @@ function TrendingSidebar(props: Props) {
                 observer.unobserve(lastResultRef.current);
             }
         };
-    }, [lastResultRef])
+    }, [lastResultRef, isFetching, searchResultsNextPageUrl])
 
-    const users = searchResults.slice(0, searchResults.length - 1).map(user => {
+    const users = searchResults.map((user, index) => {
         return(
-            <SearchResult {...user} setIsOpen={setIsOpen} isOpen={isOpen}/>
+            <SearchResult
+                key={index}
+                {...user}
+                setIsOpen={setIsOpen}
+                isOpen={isOpen}
+                ref={index === searchResults.length - 1 ? lastResultRef : null}
+            />
         )
     })
 
@@ -181,36 +197,13 @@ function TrendingSidebar(props: Props) {
         )
     })
 
-    const navigate = useNavigate()
-
-    const searchForKeyword = (keyword: string) => {
-        setDisplayNotResultsFound(false)
-        location?.pathname !== '/explore' ? navigate('/explore') : ''
-        ApiClient().get(`/search/${keyword}`)
-            .then((res) => {
-                props.setPageUrl && props.setPageUrl(res.data.data.pagination)
-                setTweets( prevState => ([
-                    ...prevState,
-                    ...res.data.data.tweets
-                ]))
-                setIsOpen(false)
-                if(res.data.data.tweets.length === 0) {
-                    setDisplayNotResultsFound(true)
-                    props.setDisplayNotFoundMsg && props.setDisplayNotFoundMsg(false)
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-            .finally(() => props.setLoadingExplorePage && props.setLoadingExplorePage(false))
-    }
-
     const inputRef = useRef<HTMLInputElement>(null)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         props.setPageUrl && props.setPageUrl('')
+        navigate('/explore')
+        setIsSidebarSearched(!isSidebarSearched)
         setTweets([])
-        searchForKeyword(searchValue)
         props.setLoadingExplorePage && props.setLoadingExplorePage(true)
         setIsOpen(false)
         setSearchValue('')
@@ -247,11 +240,12 @@ function TrendingSidebar(props: Props) {
                     isOpen &&
                     <div
                         className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                        {(searchResults && debounceValue) &&
+                        {(!searchLoading && debounceValue !== '') &&
                             <div
                                 onClick={() => {
                                     props.setPageUrl && props.setPageUrl('')
-                                    searchForKeyword(debounceValue)
+                                    setIsSidebarSearched(!isSidebarSearched)
+                                    navigate('/explore')
                                     setIsOpen(false)
                                     setSearchValue('')
                                 }}
@@ -260,13 +254,7 @@ function TrendingSidebar(props: Props) {
                                 Search for "{debounceValue}"
                             </div>
                         }
-
                         {users}
-                        <div ref={lastResultRef}>
-                            {searchResults.length > 0 && (
-                                <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>
-                            )}
-                        </div>
                     </div>
                 }
 

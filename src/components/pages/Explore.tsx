@@ -21,6 +21,7 @@ function Explore() {
         isCommentOpen,
         displayNotResultsFound,
         setDisplayNotResultsFound,
+        isSidebarSearched,
     } = useContext(AppContext)
 
     const {
@@ -35,6 +36,18 @@ function Explore() {
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const [loadingExplorePage, setLoadingExplorePage] = useState(true);
+    const [results, setResults] = useState([]);
+    const [resultsNextPageUrl, setResultsNextPageUrl] = useState(localStorage.getItem('tweets_results_next_page_url'));
+
+    useEffect(() => {
+        const storedResults = localStorage.getItem('tweets_results');
+        if (storedResults) {
+            setResults(JSON.parse(storedResults));
+        } else {
+            setResults([]);
+        }
+    }, [isSidebarSearched]);
+
     const debounceValue = useDebounce(searchValue)
     const handleOpen = () => {
         setIsOpen(true)
@@ -147,8 +160,7 @@ function Explore() {
         setDisplayNotResultsFound(false)
     }, [location.pathname]);
 
-
-    const displayResults: React.ReactNode = tweets?.map((tweetInfo, index) => (
+    const displayResults: React.ReactNode = results?.map((tweetInfo, index) => (
         <Tweet
             key={tweetInfo.id}
             {...tweetInfo}

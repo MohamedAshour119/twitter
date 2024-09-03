@@ -29,6 +29,8 @@ interface AppContextType {
     goBack: () => void
     isShowEditInfoModal: boolean
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
+    isSidebarSearched: boolean
+    setIsSidebarSearched: Dispatch<SetStateAction<boolean>>
 }
 
 type OptionType = Gender;
@@ -52,6 +54,8 @@ export const AppContext = createContext<AppContextType>({
     goBack: () => null,
     isShowEditInfoModal: false,
     setIsShowEditInfoModal: () => null,
+    isSidebarSearched: true,
+    setIsSidebarSearched: () => null
 });
 
 interface AppProviderProps {
@@ -71,7 +75,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [clickedTweet, setClickedTweet] = useState<TweetInfo>(tweetDefaultValues)
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
-    // const [isLoading, setIsLoading] = useState(true);
+    const [isSidebarSearched, setIsSidebarSearched] = useState(true);
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
     const baseUrl = 'http://api.twitter.test'
 
@@ -222,6 +226,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 goBack,
                 isShowEditInfoModal,
                 setIsShowEditInfoModal,
+                isSidebarSearched,
+                setIsSidebarSearched,
             }}>
             {children}
         </AppContext.Provider>

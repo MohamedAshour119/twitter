@@ -63,6 +63,11 @@ function AuthLayout() {
                 })
                 .finally(() => setIsLoading(false))
         }
+
+        if (location.pathname !== '/explore') {
+            localStorage.removeItem('tweets_results')
+            localStorage.removeItem('tweets_results_next_page_url')
+        }
     }, [location.pathname]);
 
     return (
