@@ -25,7 +25,7 @@ import {TweetContext} from "./components/appContext/TweetContext.tsx";
 import {Hashtag, UserInfo} from "./Interfaces.tsx";
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
-    const {setTweets} = useContext(TweetContext)
+    const {setTweets, tweets} = useContext(TweetContext)
 
     const [pageUrl, setPageUrl] = useState('');
     const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
@@ -43,7 +43,7 @@ function AuthLayout() {
     }, [isModalOpen, isCommentOpen]);
 
     useEffect(() => {
-        if (location.pathname === '/home') {
+        if (tweets.length === 0 && location.pathname === '/home') {
             setIsLoading(true)
             apiClient().get('/home-tweets')
                 .then(res => {

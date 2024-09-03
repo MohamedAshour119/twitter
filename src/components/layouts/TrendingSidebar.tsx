@@ -81,6 +81,17 @@ function TrendingSidebar(props: Props) {
             getHashtags()
         }
     }, [hashtags?.length]);
+
+    useEffect(() => {
+        if (location.pathname !== '/home') {
+            ApiClient().get('suggested-users')
+                .then(res => {
+                    setSuggestedUsersToFollow(res.data.data.suggested_users)
+                })
+        }
+    }, []);
+
+
     const getSearchResult = (pageURL: string) => {
         ApiClient().get(pageURL)
             .then(res => {

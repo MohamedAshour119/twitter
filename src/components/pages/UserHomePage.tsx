@@ -74,10 +74,6 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
             })
     }
 
-    useEffect(() => {
-        setTweets([])
-    }, [])
-
     // Detect when scroll to last element
     const lastTweetRef = useRef<HTMLDivElement>(null)
     useEffect(() => {

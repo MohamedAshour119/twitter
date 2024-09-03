@@ -67,6 +67,8 @@ function Explore() {
     }, [debounceValue]);
 
     useEffect(() => {
+        setTweets([])
+
         setShowExplorePageHashtags(true)
         ApiClient().post('/explore-page-hashtags')
             .then(res => {
@@ -142,18 +144,15 @@ function Explore() {
     }
 
     useEffect(() => {
-        setTweets([])
-    }, []);
-
-    useEffect(() => {
         setDisplayNotResultsFound(false)
     }, [location.pathname]);
 
 
-    const displayResults: React.ReactNode = tweets?.slice(0, tweets.length - 1).map(tweetInfo => (
+    const displayResults: React.ReactNode = tweets?.map((tweetInfo, index) => (
         <Tweet
             key={tweetInfo.id}
             {...tweetInfo}
+            ref={index === tweets.length - 1 ? lastResultRef : null}
         />
     ));
 
@@ -252,11 +251,6 @@ function Explore() {
                         }
                         {!loadingExplorePage && displayResults}
                         {loadingExplorePage && <SpinLoader/>}
-                        <div ref={lastResultRef}>
-                            {tweets.length > 0 && (
-                                <Tweet {...tweets[tweets.length - 1]} />
-                            )}
-                        </div>
 
                         {displayNotResultsFound && tweets.length === 0 &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>

@@ -27,7 +27,6 @@ interface AppContextType {
     displayNotResultsFound: boolean
     setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
     goBack: () => void
-    loading: boolean
     isShowEditInfoModal: boolean
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
 }
@@ -51,7 +50,6 @@ export const AppContext = createContext<AppContextType>({
     displayNotResultsFound: false,
     setDisplayNotResultsFound: () => null,
     goBack: () => null,
-    loading: true,
     isShowEditInfoModal: false,
     setIsShowEditInfoModal: () => null,
 });
@@ -71,11 +69,11 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [user, setUser] = useState<UserInfo>(UserDefaultValues)
     const [clickedTweet, setClickedTweet] = useState<TweetInfo>(tweetDefaultValues)
-    const baseUrl = 'http://api.twitter.test'
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
-    const [loading, setLoading] = useState(true);
+    // const [isLoading, setIsLoading] = useState(true);
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
+    const baseUrl = 'http://api.twitter.test'
 
     // Handle model open state
     const handleModelOpen = () => {
@@ -114,12 +112,9 @@ const AppProvider = ({children}: AppProviderProps) => {
                             originalNotifications: res.data.data.notifications.notifications_info
                         }))
                     }
-
-                    setLoading(false);
                 })
                 .catch(() => {
                     setUser(UserDefaultValues)
-                    setLoading(false);
                 })
         }
     }, [token])
@@ -225,7 +220,6 @@ const AppProvider = ({children}: AppProviderProps) => {
                 displayNotResultsFound,
                 setDisplayNotResultsFound,
                 goBack,
-                loading,
                 isShowEditInfoModal,
                 setIsShowEditInfoModal,
             }}>
