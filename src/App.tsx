@@ -22,7 +22,7 @@ import {useLocation} from "react-router";
 import apiClient from "./components/ApiClient.tsx";
 import {toastStyle} from "./components/helper/ToastifyStyle.tsx";
 import {TweetContext} from "./components/appContext/TweetContext.tsx";
-import {Hashtag} from "./Interfaces.tsx";
+import {Hashtag, UserInfo} from "./Interfaces.tsx";
 function AuthLayout() {
     const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
     const {setTweets} = useContext(TweetContext)
@@ -30,8 +30,8 @@ function AuthLayout() {
     const [pageUrl, setPageUrl] = useState('');
     const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
     const [isLoading, setIsLoading] = useState(true)
-
     const [app_hashtags, setAppHashtags] = useState<Hashtag[]>([])
+    const [suggested_users_to_follow, setSuggested_users_to_follow] = useState<UserInfo[]>([])
 
     useEffect(() => {
         const bodyEl = document.body;
@@ -56,6 +56,7 @@ function AuthLayout() {
                     setPageUrl(res.data.data.pagination.next_page_url)
 
                     setAppHashtags(res.data.data.hashtags)
+                    setSuggested_users_to_follow(res.data.data.suggested_users)
                 })
                 .catch(() => {
 
@@ -90,6 +91,7 @@ function AuthLayout() {
                     <TrendingSidebar
                         app_hashtags={app_hashtags}
                         is_loading={isLoading}
+                        suggested_users_to_follow={suggested_users_to_follow}
                     />
                 </div>
             </div>

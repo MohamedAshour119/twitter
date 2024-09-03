@@ -19,6 +19,7 @@ interface Props {
     setLoadingExplorePage?: Dispatch<SetStateAction<boolean>>
     app_hashtags: Hashtag[]
     is_loading: boolean
+    suggested_users_to_follow: UserInfo[]
 }
 
 function TrendingSidebar(props: Props) {
@@ -29,7 +30,7 @@ function TrendingSidebar(props: Props) {
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(props.is_loading);
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
-    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>([])
+    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>(props.suggested_users_to_follow)
     const [hashtags, setHashtags] = useState<Hashtag[]>(props.app_hashtags)
     const [pageURL, setPageURL] = useState('')
     const [searchValue, setSearchValue] = useState('')
@@ -46,6 +47,10 @@ function TrendingSidebar(props: Props) {
         setIsLoading(props.is_loading)
     }, [props.is_loading]);
 
+    useEffect(() => {
+        setSuggestedUsersToFollow(props.suggested_users_to_follow)
+    }, [props.suggested_users_to_follow]);
+
     const sendRequest = () => {
         if (props.setLoadingExplorePage) {
             props.setLoadingExplorePage(false);
@@ -61,18 +66,6 @@ function TrendingSidebar(props: Props) {
                 console.log(err)
             })
     }
-
-    // Suggested users to follow
-    useEffect( () => {
-        ApiClient().get('/home')
-            .then(res => {
-                setSuggestedUsersToFollow(res.data.data.suggested_users)
-            })
-            .catch(err => {
-                console.log(err)
-            })
-    }, [])
-
     const getHashtags = () => {
         ApiClient().get(`/hashtags`)
             .then(res => {
