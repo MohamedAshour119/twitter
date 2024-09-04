@@ -7,7 +7,6 @@ import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../ApiClient.tsx";
 import SearchResult from "./SearchResult.tsx";
 import {Hashtag, UserInfo} from "../../Interfaces.tsx";
-import {TweetContext} from "../appContext/TweetContext.tsx";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
 import Skeleton from "../partials/Skeleton.tsx";
@@ -26,7 +25,6 @@ interface Props {
 function TrendingSidebar(props: Props) {
 
     const {isModalOpen, isCommentOpen, isShowEditInfoModal, setIsSidebarSearched, isSidebarSearched} = useContext(AppContext)
-    const {setTweets,} = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(props.is_loading);
@@ -64,7 +62,6 @@ function TrendingSidebar(props: Props) {
                 setSearchResults(res.data.data.users)
                 const nextPageUrl = res.data.data.users_next_page_url
                 nextPageUrl ? setSearchResultsNextPageUrl(nextPageUrl) : null
-                setIsOpen(true)
                 localStorage.setItem('tweets_results', JSON.stringify(res.data.data.results))
                 localStorage.setItem('tweets_results_next_page_url', JSON.stringify(res.data.data.results_next_page_url))
             })
@@ -135,7 +132,8 @@ function TrendingSidebar(props: Props) {
         } else {
             setSearchResults([])
         }
-    }, [debounceValue]);
+
+    }, [debounceValue, isOpen]);
 
     // Handle click outside
     const searchRef = useRef<HTMLDivElement>(null);
@@ -202,17 +200,21 @@ function TrendingSidebar(props: Props) {
     })
 
     const inputRef = useRef<HTMLInputElement>(null)
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        props.setPageUrl && props.setPageUrl('')
-        navigate('/explore')
-        setIsSidebarSearched(!isSidebarSearched)
-        setTweets([])
-        props.setLoadingExplorePage && props.setLoadingExplorePage(true)
-        setIsOpen(false)
-        setSearchValue('')
-        inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
-    }
+    const handleSubmit =  (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (debounceValue !== '' && !searchLoading) {
+            setIsSidebarSearched(!isSidebarSearched);
+            props.setLoadingExplorePage && props.setLoadingExplorePage(true);
+            navigate('/explore');
+            setIsOpen(false);
+            setSearchValue('');
+            inputRef.current?.blur(); // Disable auto-focus after the search
+
+            console.log('Search request executed and navigated to /explore');
+        }
+    };
+
 
     return (
         <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} z-[300] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
@@ -244,7 +246,7 @@ function TrendingSidebar(props: Props) {
                     isOpen &&
                     <div
                         className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
-                        {(!searchLoading && debounceValue !== '') &&
+                        {(debounceValue !== '') &&
                             <div
                                 onClick={() => {
                                     props.setPageUrl && props.setPageUrl('')
@@ -264,7 +266,7 @@ function TrendingSidebar(props: Props) {
 
             </div>
 
-            <div className={`bg-[#121416] rounded-2xl ${hashtags.length === 0 ? 'pb-4' : ''}`}>
+            <div className={`bg-[#121416] rounded-2xl pb-4`}>
                 <h1 className={`font-bold text-2xl p-4`}>What's happening</h1>
 
                 {hashtags?.length > 0 && <div ref={popupMenu} className={`mt-6 flex flex-col gap-y-2 pb-3`}>{trendingHashtags}</div>}
@@ -272,7 +274,7 @@ function TrendingSidebar(props: Props) {
                     <div className={`text-center`}>There is no trends right now.</div>
                 }
                 {(isLoading && hashtags?.length === 0) &&
-                    <SpinLoader styles={`translate-y-0 sm:translate-y-0`}/>
+                    <SpinLoader styles={`!translate-y-0 !sm:translate-y-0`}/>
                 }
             </div>
 
