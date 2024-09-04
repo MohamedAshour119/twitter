@@ -11,6 +11,7 @@ import {TweetContext} from "../appContext/TweetContext.tsx";
 import * as React from "react";
 import {useNavigate} from "react-router-dom";
 import Skeleton from "../partials/Skeleton.tsx";
+import SpinLoader from "../helper/SpinLoader.tsx";
 
 interface Props {
     setPageUrl?: Dispatch<SetStateAction<string>>
@@ -74,17 +75,21 @@ function TrendingSidebar(props: Props) {
     }
 
     const getHashtags = () => {
-        ApiClient().get(`/hashtags`)
-            .then(res => {
-                setHashtags(res.data.data.hashtags)
-            })
-            .catch(err => {
-                console.log(err)
-            })
+        setIsLoading(true)
+        if (location.pathname !== '/home') {
+            ApiClient().get(`/hashtags`)
+                .then(res => {
+                    setHashtags(res.data.data.hashtags)
+                })
+                .catch(err => {
+                    console.log(err)
+                })
+                .finally(() => setIsLoading(false))
+        }
     }
 
     useEffect(() => {
-        if(hashtags?.length <= 1 && !isLoading && isHashtagDeleted) {
+        if((hashtags?.length <= 1 && !isLoading) || isHashtagDeleted) {
             getHashtags()
         }
     }, [hashtags?.length]);
@@ -147,7 +152,6 @@ function TrendingSidebar(props: Props) {
     // Detect when scroll to last element
     const lastResultRef = useRef<HTMLAnchorElement>(null)
     useEffect(() => {
-        console.log('called')
         const observer = new IntersectionObserver(entries => {
             if (entries[0].isIntersecting && !isFetching) {
                 getSearchResult(searchResultsNextPageUrl)
@@ -264,10 +268,12 @@ function TrendingSidebar(props: Props) {
                 <h1 className={`font-bold text-2xl p-4`}>What's happening</h1>
 
                 {hashtags?.length > 0 && <div ref={popupMenu} className={`mt-6 flex flex-col gap-y-2 pb-3`}>{trendingHashtags}</div>}
-                {hashtags?.length === 0 &&
+                {hashtags?.length === 0 && !isLoading && suggestedUsersToFollow.length > 0 &&
                     <div className={`text-center`}>There is no trends right now.</div>
                 }
-
+                {(isLoading && hashtags?.length === 0) &&
+                    <SpinLoader styles={`translate-y-0 sm:translate-y-0`}/>
+                }
             </div>
 
             <div className={`bg-[#121416] rounded-2xl`}>

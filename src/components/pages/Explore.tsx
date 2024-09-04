@@ -35,16 +35,19 @@ function Explore() {
     const [pageURL, setPageURL] = useState('')
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
-    const [loadingExplorePage, setLoadingExplorePage] = useState(true);
-    const [results, setResults] = useState<TweetInfo[]>([]);
-    const [resultsNextPageUrl, setResultsNextPageUrl] = useState(localStorage.getItem('tweets_results_next_page_url'));
+    const [loadingExplorePage, setLoadingExplorePage] = useState(true)
+    const [results, setResults] = useState<TweetInfo[]>([])
+    const [resultsNextPageUrl, setResultsNextPageUrl] = useState('')
 
     useEffect(() => {
-        const storedResults = localStorage.getItem('tweets_results');
-        if (storedResults) {
+        const storedResults = localStorage.getItem('tweets_results')
+        const nextPageUrl = localStorage.getItem('tweets_results_next_page_url')
+        if (storedResults && nextPageUrl) {
             setResults(JSON.parse(storedResults));
+            setResultsNextPageUrl(JSON.parse(nextPageUrl))
         } else {
             setResults([]);
+            setResultsNextPageUrl('')
         }
     }, [isSidebarSearched]);
 

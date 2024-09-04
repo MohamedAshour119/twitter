@@ -29,7 +29,7 @@ function AuthLayout() {
 
     const [pageUrl, setPageUrl] = useState('');
     const [displayNotFoundMsg, setDisplayNotFoundMsg] = useState(false);
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
     const [app_hashtags, setAppHashtags] = useState<Hashtag[]>([])
     const [suggested_users_to_follow, setSuggested_users_to_follow] = useState<UserInfo[]>([])
 
