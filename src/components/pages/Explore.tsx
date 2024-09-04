@@ -3,7 +3,7 @@ import {ChangeEvent, useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import useDebounce from "../hooks/UseDebounce.tsx";
 import ApiClient from "../ApiClient.tsx";
-import {Hashtag, UserInfo} from "../../Interfaces.tsx";
+import {Hashtag, TweetInfo, UserInfo} from "../../Interfaces.tsx";
 import {HiMiniMagnifyingGlass, HiMiniXMark} from "react-icons/hi2";
 import SearchResult from "../layouts/SearchResult.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
@@ -36,7 +36,7 @@ function Explore() {
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const [loadingExplorePage, setLoadingExplorePage] = useState(true);
-    const [results, setResults] = useState([]);
+    const [results, setResults] = useState<TweetInfo[]>([]);
     const [resultsNextPageUrl, setResultsNextPageUrl] = useState(localStorage.getItem('tweets_results_next_page_url'));
 
     useEffect(() => {
@@ -47,6 +47,11 @@ function Explore() {
             setResults([]);
         }
     }, [isSidebarSearched]);
+
+    useEffect(() => {
+        localStorage.removeItem('tweets_results');
+        localStorage.removeItem('tweets_results_next_page_url');
+    }, []);
 
     const debounceValue = useDebounce(searchValue)
     const handleOpen = () => {
@@ -256,7 +261,7 @@ function Explore() {
                     className={`text-neutral-200 w-full relative`}>
 
                     <div className={`mt-20`}>
-                        {(showExplorePageHashtags && tweets.length == 0 && !loadingExplorePage) &&
+                        {(showExplorePageHashtags && results.length == 0 && !loadingExplorePage) &&
                             <div>
                                 {hashtags}
                             </div>
