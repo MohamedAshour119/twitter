@@ -19,9 +19,11 @@ function Explore() {
     const {
         isModalOpen,
         isCommentOpen,
+        isSidebarSearched,
         displayNotResultsFound,
         setDisplayNotResultsFound,
-        isSidebarSearched,
+        isSidebarSearchLoading,
+        setIsSidebarSearchLoading,
     } = useContext(AppContext)
 
     const {
@@ -52,6 +54,7 @@ function Explore() {
     }, [isSidebarSearched]);
 
     useEffect(() => {
+        setResults([]);
         localStorage.removeItem('tweets_results');
         localStorage.removeItem('tweets_results_next_page_url');
     }, []);
@@ -101,11 +104,20 @@ function Explore() {
             .finally(() => setLoadingExplorePage(false))
     }, []);
 
+    useEffect(() => {
+        setTimeout(() => {
+            setIsSidebarSearchLoading(false)
+        }, 1000)
+    }, [isSidebarSearched]);
+
 
     const exploreSearchRef = useRef<HTMLDivElement>(null);
+    const specificSearchRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {
-            !exploreSearchRef.current?.contains(e.target as Node) ? setIsOpen(false) : ''
+            if (specificSearchRef.current) {
+                !exploreSearchRef.current?.contains(e.target as Node) && !specificSearchRef.current.contains(e.target as Node) ? setIsOpen(false) : null
+            }
         }
         document.addEventListener('mousedown', handleClick)
         return () => {
@@ -122,7 +134,7 @@ function Explore() {
     const lastResultRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting && debounceValue?.length > 0) {
+            if (entries[0].isIntersecting) {
                 getSearchResult(pageURL)
             }
         }, {
@@ -163,10 +175,6 @@ function Explore() {
             })
             .finally(() => setLoadingExplorePage(false))
     }
-
-    useEffect(() => {
-        setDisplayNotResultsFound(false)
-    }, [location.pathname]);
 
     const displayResults: React.ReactNode = results?.map((tweetInfo, index) => (
         <Tweet
@@ -225,13 +233,17 @@ function Explore() {
                             className={`bg-black absolute w-full text-neutral-200 rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
                             {(searchResults && debounceValue) &&
                                 <div
+                                    ref={specificSearchRef}
                                     onClick={() => {
-                                        setTweets([])
-                                        searchForKeyword(debounceValue)
-                                        setIsOpen(false)
-                                        setSearchValue('')
+                                        if (!isSidebarSearched) {
+                                            console.log('dd')
+                                            setTweets([])
+                                            searchForKeyword(debounceValue)
+                                            setIsOpen(false)
+                                            setSearchValue('')
+                                        }
                                     }}
-                                    className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''}  border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                                    className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''} ${!isSidebarSearched ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
                                 >
                                     Search for "{debounceValue}"
                                 </div>
@@ -264,24 +276,23 @@ function Explore() {
                     className={`text-neutral-200 w-full relative`}>
 
                     <div className={`mt-20`}>
-                        {(showExplorePageHashtags && results.length == 0 && !loadingExplorePage) &&
+                        {(showExplorePageHashtags && results.length === 0 && !loadingExplorePage && !isSidebarSearchLoading && isSidebarSearched && !displayNotResultsFound) &&
                             <div>
                                 {hashtags}
                             </div>
                         }
-                        {!loadingExplorePage && displayResults}
-                        {loadingExplorePage && <SpinLoader/>}
+                        {(!loadingExplorePage && !isSidebarSearchLoading) && displayResults}
+                        {(loadingExplorePage || isSidebarSearchLoading) && <SpinLoader/>}
 
-                        {displayNotResultsFound && tweets.length === 0 &&
+                        {displayNotResultsFound && !loadingExplorePage && !isSidebarSearchLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
-                                No {displayNotResultsFound ? 'results found' : 'tweets,'}! {!displayNotResultsFound ? 'come back later' : ''}
+                                No {results.length === 0 ? 'results found' : 'tweets,'}! {results.length !== 0 ? 'come back later' : ''}
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>
                             </div>
                         }
                     </div>
 
                 </div>
-                {/*<TrendingSidebar setDisplayNotFoundMsg={setDisplayNotFoundMsg} setPageUrl={setPageURL} />*/}
             </div>
             {/* Tweet model  */}
             <Model/>

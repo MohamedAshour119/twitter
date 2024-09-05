@@ -24,7 +24,15 @@ interface Props {
 
 function TrendingSidebar(props: Props) {
 
-    const {isModalOpen, isCommentOpen, isShowEditInfoModal, setIsSidebarSearched, isSidebarSearched} = useContext(AppContext)
+    const {
+        isModalOpen,
+        isCommentOpen,
+        isShowEditInfoModal,
+        setIsSidebarSearched,
+        isSidebarSearched,
+        setDisplayNotResultsFound,
+        setIsSidebarSearchLoading,
+    } = useContext(AppContext)
 
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(props.is_loading);
@@ -36,6 +44,8 @@ function TrendingSidebar(props: Props) {
     const [isHashtagDeleted, setIsHashtagDeleted] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
+    const [isResultsNoyExists, setIsResultsNoyExists] = useState(false);
+
 
     const navigate = useNavigate()
     const debounceValue = useDebounce(searchValue)
@@ -53,6 +63,7 @@ function TrendingSidebar(props: Props) {
     }, [props.suggested_users_to_follow]);
 
     const sendRequest = () => {
+        // setIsSidebarSearchLoading(true) // This to handle results which are fetched from TrendingSidebar.tsx in Explore page
         setSearchLoading(true)
         if (props.setLoadingExplorePage) {
             props.setLoadingExplorePage(false);
@@ -64,11 +75,15 @@ function TrendingSidebar(props: Props) {
                 nextPageUrl ? setSearchResultsNextPageUrl(nextPageUrl) : null
                 localStorage.setItem('tweets_results', JSON.stringify(res.data.data.results))
                 localStorage.setItem('tweets_results_next_page_url', JSON.stringify(res.data.data.results_next_page_url))
+                const results = res.data.data.results
+                results.length === 0 ? setIsResultsNoyExists(true) : setIsResultsNoyExists(false)
             })
             .catch(err => {
                 console.log(err)
             })
-            .finally(() => setSearchLoading(false))
+            .finally(() => {
+                setSearchLoading(false)
+            })
     }
 
     const getHashtags = () => {
@@ -206,15 +221,14 @@ function TrendingSidebar(props: Props) {
         if (debounceValue !== '' && !searchLoading) {
             setIsSidebarSearched(!isSidebarSearched);
             props.setLoadingExplorePage && props.setLoadingExplorePage(true);
+            setDisplayNotResultsFound(isResultsNoyExists);
+            setIsSidebarSearchLoading(true)
             navigate('/explore');
             setIsOpen(false);
             setSearchValue('');
             inputRef.current?.blur(); // Disable auto-focus after the search
-
-            console.log('Search request executed and navigated to /explore');
         }
     };
-
 
     return (
         <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} z-[300] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
@@ -251,11 +265,13 @@ function TrendingSidebar(props: Props) {
                                 onClick={() => {
                                     props.setPageUrl && props.setPageUrl('')
                                     setIsSidebarSearched(!isSidebarSearched)
+                                    setDisplayNotResultsFound(isResultsNoyExists);
+                                    setIsSidebarSearchLoading(true)
                                     navigate('/explore')
                                     setIsOpen(false)
                                     setSearchValue('')
                                 }}
-                                className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''}  border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                                className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''} ${searchLoading ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
                             >
                                 Search for "{debounceValue}"
                             </div>

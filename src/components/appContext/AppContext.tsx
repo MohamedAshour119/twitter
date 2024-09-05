@@ -24,13 +24,15 @@ interface AppContextType {
     formErrors: FormError
     setFormErrors: Dispatch<SetStateAction<FormError>>
     reactSelectStyles: StylesConfig<OptionType, false, GroupBase<OptionType>>
-    displayNotResultsFound: boolean
-    setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
     goBack: () => void
     isShowEditInfoModal: boolean
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
     isSidebarSearched: boolean
     setIsSidebarSearched: Dispatch<SetStateAction<boolean>>
+    displayNotResultsFound: boolean
+    setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
+    isSidebarSearchLoading: boolean
+    setIsSidebarSearchLoading: Dispatch<SetStateAction<boolean>>
 }
 
 type OptionType = Gender;
@@ -49,13 +51,15 @@ export const AppContext = createContext<AppContextType>({
     formErrors: FormErrorsDefaultValues,
     setFormErrors: () => null,
     reactSelectStyles: {},
-    displayNotResultsFound: false,
-    setDisplayNotResultsFound: () => null,
     goBack: () => null,
     isShowEditInfoModal: false,
     setIsShowEditInfoModal: () => null,
     isSidebarSearched: true,
-    setIsSidebarSearched: () => null
+    setIsSidebarSearched: () => null,
+    displayNotResultsFound: false,
+    setDisplayNotResultsFound: () => null,
+    isSidebarSearchLoading: false,
+    setIsSidebarSearchLoading: () => null,
 });
 
 interface AppProviderProps {
@@ -73,10 +77,12 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [isCommentOpen, setIsCommentOpen] = useState(false);
     const [user, setUser] = useState<UserInfo>(UserDefaultValues)
     const [clickedTweet, setClickedTweet] = useState<TweetInfo>(tweetDefaultValues)
-    const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
     const [isSidebarSearched, setIsSidebarSearched] = useState(true);
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
+    const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
+    const [isSidebarSearchLoading, setIsSidebarSearchLoading] = useState(false);
+
     const baseUrl = 'http://api.twitter.test'
 
     // Handle model open state
@@ -221,13 +227,15 @@ const AppProvider = ({children}: AppProviderProps) => {
                 formErrors,
                 setFormErrors,
                 reactSelectStyles,
-                displayNotResultsFound,
-                setDisplayNotResultsFound,
                 goBack,
                 isShowEditInfoModal,
                 setIsShowEditInfoModal,
                 isSidebarSearched,
                 setIsSidebarSearched,
+                displayNotResultsFound,
+                setDisplayNotResultsFound,
+                isSidebarSearchLoading,
+                setIsSidebarSearchLoading,
             }}>
             {children}
         </AppContext.Provider>

@@ -24,7 +24,7 @@ import {toastStyle} from "./components/helper/ToastifyStyle.tsx";
 import {TweetContext} from "./components/appContext/TweetContext.tsx";
 import {Hashtag, UserInfo} from "./Interfaces.tsx";
 function AuthLayout() {
-    const {isModalOpen, isCommentOpen, isShowEditInfoModal} = useContext(AppContext)
+    const {isModalOpen, isCommentOpen, isShowEditInfoModal, setDisplayNotResultsFound} = useContext(AppContext)
     const {setTweets, tweets} = useContext(TweetContext)
 
     const [pageUrl, setPageUrl] = useState('');
@@ -41,6 +41,12 @@ function AuthLayout() {
             bodyEl.style.overflow = 'auto';
         }
     }, [isModalOpen, isCommentOpen]);
+
+    useEffect(() => {
+        if (location.pathname !== '/explore') {
+            setDisplayNotResultsFound(false)
+        }
+    }, [location.pathname]);
 
     useEffect(() => {
         if (tweets.length === 0 && location.pathname === '/home') {
