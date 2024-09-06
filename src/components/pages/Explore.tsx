@@ -187,28 +187,6 @@ function Explore() {
         />
     ));
 
-    // const searchForKeyword = (keyword: string) => {
-    //     setDisplayNotResultsFound(false)
-    //     setLoadingExplorePage(true)
-    //     setExplorePageHashtags([])
-    //     ApiClient().get(`/search/${keyword}`)
-    //         .then((res) => {
-    //             setTweets( prevResults => ([
-    //                 ...prevResults,
-    //                 ...res.data.data.tweets
-    //             ]))
-    //             if(res.data.data.tweets.length === 0) {
-    //                 setDisplayNotResultsFound(true)
-    //             } else {
-    //                 setShowExplorePageHashtags(true)
-    //             }
-    //         })
-    //         .catch((err) => {
-    //             console.log(err)
-    //         })
-    //         .finally(() => setLoadingExplorePage(false))
-    // }
-
     const inputRef = useRef<HTMLInputElement>(null)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         if (debounceValue !== '' && !searchLoading) {
@@ -348,8 +326,8 @@ function Explore() {
                                 {hashtags}
                             </div>
                         }
-                        {results.length > 0 && !isSidebarSearchLoading && !searchLoading && displayResults}
-                        {(loadingExplorePage || isSidebarSearchLoading || (searchLoading && debounceValue.length > 0 &&  !isOpen)) && <SpinLoader/>}
+                        {results.length > 0 && !isSidebarSearchLoading && displayResults}
+                        {(loadingExplorePage || isSidebarSearchLoading || (searchLoading && !showExplorePageHashtags)) && <SpinLoader/>}
 
                         {displayNotResultsFound && !loadingExplorePage && !isSidebarSearchLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>

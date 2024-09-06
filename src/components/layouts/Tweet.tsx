@@ -421,7 +421,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
             {/* Popup windows */}
             {tweetMenuOpen &&
                 <div
-                    // ref={tweetMenuRef}
+                    ref={tweetMenuRef}
                     onMouseEnter={() => setDisableLink(true)}
                     onMouseLeave={() => setDisableLink(false)}
                     className={`${tweetMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path z-50 bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 absolute w-[21rem] right-16 top-4`}>
