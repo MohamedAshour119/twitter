@@ -23,7 +23,6 @@ interface Props extends  TweetInfo {
     deleteComment?: () => void
 }
 const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
-
     const {
         user,
         baseUrl,
@@ -333,7 +332,6 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
         <div
             onClick={addTweetInfo}
             className={`grid py-3 sm:px-6 px-2 gap-x-2`}
-            ref={ref}
         >
             <div className={`flex gap-x-2`}>
                 <Link to={`/users/${conditionWithoutRetweets ? props.user?.user_info.username : props.userInfo?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
@@ -397,130 +395,129 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
         </div>
 
     return (
-        <>
-            <div
-                className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} relative group`}>
+        <div
+            ref={ref}
+            className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} relative group`}>
 
-                {((props.main_tweet && props.main_tweet?.is_pinned) || (!props.main_tweet && props.is_pinned) && location?.pathname === `/users/${username}`) &&
-                    <div className={` group-hover:bg-zinc-800/20 transition`}>
-                        <div className={`text-sm w-fit flex items-center gap-x-1 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
-                            <TbPinnedFilled className={`text-xl`}/>
-                            Pinned
-                        </div>
-                    </div>
-                }
-
-                {((isRetweeted || props.main_tweet) && username !== props.user?.user_info.username && location?.pathname === `/users/${username}` ) &&
-                    <div className={` group-hover:bg-zinc-800/20 transition`}>
-                        <Link to={`/users/${username}`} className={`w-fit flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
-                            <BsRepeat/>
-                            <span
-                                className={`text-sm`}>{(username === user?.user_info.username) ? 'You retweeted' : `"${props.userInfo?.user_info.display_name ? props.userInfo.user_info.display_name : username}" retweeted`}</span>
-                        </Link>
-                    </div>
-                }
-
-                {/* Popup windows */}
-                {tweetMenuOpen &&
-                    <div
-                        ref={tweetMenuRef}
-                        onMouseEnter={() => setDisableLink(true)}
-                        onMouseLeave={() => setDisableLink(false)}
-                        className={`${tweetMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path z-50 bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 absolute w-[21rem] right-16 top-4`}>
-                        {props.user_id === user?.user_info.id &&
-                            <>
-                                <button
-                                    onClick={deleteTweet}
-                                    disabled={!tweetMenuOpen}
-                                    className={`flex text-red-700 font-semibold items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
-                                    <MdDelete className={`size-5`}/>
-                                    Delete
-                                </button>
-                                {!props.comment_to &&
-                                    <button
-                                    onClick={pinTweet}
-                                    disabled={!tweetMenuOpen}
-                                    className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
-                                    <TbPinnedFilled className={`size-5`}/>
-                                    Pin to your profile
-                                    </button>
-                                }
-                            </>
-                        }
-                        {props.user_id !== user?.user_info.id &&
-                            <>
-                                <button
-                                    onClick={handleRetweet}
-                                    disabled={!tweetMenuOpen}
-                                    className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
-                                    <BsRepeat className={`size-5`}/>
-                                    Retweet
-                                </button>
-                                <button
-                                    onClick={hideTweet}
-                                    disabled={!tweetMenuOpen}
-                                    className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
-                                    <FaRegFaceAngry className={`size-5`}/>
-                                    Not interested in this post
-                                </button>
-                            </>
-                        }
-                    </div>
-                }
-
-                <div className={`${!disableLink ? 'group-hover:bg-zinc-800/20' : ''} transition`}>
-                    {!disableLink ? (
-                        <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
-                            {tweetCommonContent}
-                        </Link>
-                    ) : (
-                        <div>
-                            {tweetCommonContent}
-                        </div>
-                    ) }
-                    <div className={`flex sm:mx-20 xs:mx-16 xxs:mx-14 mx-12 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-8 text-zinc-400/70`}>
-                        <div onClick={handleOpenComments} className={`flex items-center cursor-pointer group/icon`}>
-                            <div
-                                className={`text-xl flex justify-center items-center group-hover/icon:text-sky-500 transition group-hover/icon:bg-sky-500/20 rounded-full p-2`}>
-                                <FaRegComment/>
-                            </div>
-                            <span
-                                className={`group-hover/icon:text-sky-500 transition`}>{props.main_tweet ? props.main_tweet.comments_count : props.comments_count}</span>
-                        </div>
-
-                        <div onClick={handleRetweet} className={`flex items-center cursor-pointer group/icon`}>
-                            <div
-                                className={`text-xl flex justify-center items-center group-hover/icon:text-emerald-400 transition group-hover/icon:bg-emerald-400/20 rounded-full p-2`}>
-                                <BsRepeat
-                                    className={`group-hover/icon:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
-                            </div>
-                            <span
-                                className={`group-hover/icon:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetsCount}</span>
-                        </div>
-
-                        <div onClick={handleReaction} className={`flex items-center cursor-pointer group/icon`}>
-                            <div
-                                className={`text-xl flex justify-center items-center group-hover/icon:text-rose-500 transition group-hover/icon:bg-rose-500/20 rounded-full p-2`}>
-                                <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
-                                <FaHeart
-                                    className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
-                            </div>
-                            <span
-                                className={`group-hover/icon:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionsCount}</span>
-                        </div>
+            {((props.main_tweet && props.main_tweet?.is_pinned) || (!props.main_tweet && props.is_pinned) && location?.pathname === `/users/${username}`) &&
+                <div className={` group-hover:bg-zinc-800/20 transition`}>
+                    <div className={`text-sm w-fit flex items-center gap-x-1 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
+                        <TbPinnedFilled className={`text-xl`}/>
+                        Pinned
                     </div>
                 </div>
+            }
 
+            {((isRetweeted || props.main_tweet) && username !== props.user?.user_info.username && location?.pathname === `/users/${username}` ) &&
+                <div className={` group-hover:bg-zinc-800/20 transition`}>
+                    <Link to={`/users/${username}`} className={`w-fit flex items-center gap-x-2 text-zinc-400/70 px-2 sm:px-6 pt-2`}>
+                        <BsRepeat/>
+                        <span
+                            className={`text-sm`}>{(username === user?.user_info.username) ? 'You retweeted' : `"${props.userInfo?.user_info.display_name ? props.userInfo.user_info.display_name : username}" retweeted`}</span>
+                    </Link>
+                </div>
+            }
 
-                {/*  Comments  */}
-                { location?.pathname === `/tweets/${props.id}` &&
-                    <div className={`${location?.pathname === `/tweets/${props.id}` && (isCommentOpen || isModalOpen) ? 'hidden' : ''}`}>
-                        <TweetTextAreaAndPreview/>
+            {/* Popup windows */}
+            {tweetMenuOpen &&
+                <div
+                    // ref={tweetMenuRef}
+                    onMouseEnter={() => setDisableLink(true)}
+                    onMouseLeave={() => setDisableLink(false)}
+                    className={`${tweetMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path z-50 bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 absolute w-[21rem] right-16 top-4`}>
+                    {props.user_id === user?.user_info.id &&
+                        <>
+                            <button
+                                onClick={deleteTweet}
+                                disabled={!tweetMenuOpen}
+                                className={`flex text-red-700 font-semibold items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
+                                <MdDelete className={`size-5`}/>
+                                Delete
+                            </button>
+                            {!props.comment_to &&
+                                <button
+                                onClick={pinTweet}
+                                disabled={!tweetMenuOpen}
+                                className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
+                                <TbPinnedFilled className={`size-5`}/>
+                                Pin to your profile
+                                </button>
+                            }
+                        </>
+                    }
+                    {props.user_id !== user?.user_info.id &&
+                        <>
+                            <button
+                                onClick={handleRetweet}
+                                disabled={!tweetMenuOpen}
+                                className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                <BsRepeat className={`size-5`}/>
+                                Retweet
+                            </button>
+                            <button
+                                onClick={hideTweet}
+                                disabled={!tweetMenuOpen}
+                                className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!tweetMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                                <FaRegFaceAngry className={`size-5`}/>
+                                Not interested in this post
+                            </button>
+                        </>
+                    }
+                </div>
+            }
+
+            <div className={`${!disableLink ? 'group-hover:bg-zinc-800/20' : ''} transition`}>
+                {!disableLink ? (
+                    <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
+                        {tweetCommonContent}
+                    </Link>
+                ) : (
+                    <div>
+                        {tweetCommonContent}
                     </div>
-                }
+                ) }
+                <div className={`flex sm:mx-20 xs:mx-16 xxs:mx-14 mx-12 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-8 text-zinc-400/70`}>
+                    <div onClick={handleOpenComments} className={`flex items-center cursor-pointer group/icon`}>
+                        <div
+                            className={`text-xl flex justify-center items-center group-hover/icon:text-sky-500 transition group-hover/icon:bg-sky-500/20 rounded-full p-2`}>
+                            <FaRegComment/>
+                        </div>
+                        <span
+                            className={`group-hover/icon:text-sky-500 transition`}>{props.main_tweet ? props.main_tweet.comments_count : props.comments_count}</span>
+                    </div>
 
+                    <div onClick={handleRetweet} className={`flex items-center cursor-pointer group/icon`}>
+                        <div
+                            className={`text-xl flex justify-center items-center group-hover/icon:text-emerald-400 transition group-hover/icon:bg-emerald-400/20 rounded-full p-2`}>
+                            <BsRepeat
+                                className={`group-hover/icon:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}/>
+                        </div>
+                        <span
+                            className={`group-hover/icon:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetsCount}</span>
+                    </div>
+
+                    <div onClick={handleReaction} className={`flex items-center cursor-pointer group/icon`}>
+                        <div
+                            className={`text-xl flex justify-center items-center group-hover/icon:text-rose-500 transition group-hover/icon:bg-rose-500/20 rounded-full p-2`}>
+                            <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
+                            <FaHeart
+                                className={`${isReacted ? 'visible text-rose-500' : 'invisible absolute'}`}/>
+                        </div>
+                        <span
+                            className={`group-hover/icon:text-rose-500 transition ${isReacted ? 'text-rose-500' : ''}`}>{reactionsCount}</span>
+                    </div>
+                </div>
             </div>
-        </>
+
+
+            {/*  Comments  */}
+            { location?.pathname === `/tweets/${props.id}` &&
+                <div className={`${location?.pathname === `/tweets/${props.id}` && (isCommentOpen || isModalOpen) ? 'hidden' : ''}`}>
+                    <TweetTextAreaAndPreview/>
+                </div>
+            }
+
+        </div>
 
     )
 })

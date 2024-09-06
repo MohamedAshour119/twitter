@@ -13,7 +13,6 @@ import {CgSmileSad} from "react-icons/cg";
 import ExploreHashtag from "../layouts/ExploreHashtag.tsx";
 import SpinLoader from "../helper/SpinLoader.tsx";
 
-
 function Explore() {
 
     const {
@@ -27,14 +26,12 @@ function Explore() {
     } = useContext(AppContext)
 
     const {
-        tweets,
         setTweets,
     } = useContext(TweetContext)
 
     const [isOpen, setIsOpen] = useState(false)
     const [searchValue, setSearchValue] = useState('')
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
-    const [pageURL, setPageURL] = useState('')
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const [loadingExplorePage, setLoadingExplorePage] = useState(true)
@@ -45,6 +42,7 @@ function Explore() {
         const storedResults = localStorage.getItem('tweets_results')
         const nextPageUrl = localStorage.getItem('tweets_results_next_page_url')
         if (storedResults && nextPageUrl) {
+            console.log('ss')
             setResults(JSON.parse(storedResults));
             setResultsNextPageUrl(JSON.parse(nextPageUrl))
         } else {
@@ -54,7 +52,7 @@ function Explore() {
     }, [isSidebarSearched]);
 
     useEffect(() => {
-        setResults([]);
+        // setResults([]);
         localStorage.removeItem('tweets_results');
         localStorage.removeItem('tweets_results_next_page_url');
     }, []);
@@ -75,7 +73,7 @@ function Explore() {
                     ...res.data.data.users
                 ]))
                 const nextPageUrl = res.data.data.pagination.next_page_url
-                nextPageUrl ? setPageURL(nextPageUrl) : null
+                nextPageUrl ? setResultsNextPageUrl(nextPageUrl) : null
             })
             .catch(err => {
                 console.log(err)
@@ -133,26 +131,36 @@ function Explore() {
 
     const lastResultRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
-        const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                getSearchResult(pageURL)
-            }
-        }, {
-            threshold: 0.5 // Trigger when 50% of the last tweet is visible
-        });
+        if (!results.length && isSidebarSearchLoading) return;
 
-        // Watch the last result
-        if (lastResultRef.current) {
-            observer.observe(lastResultRef.current)
+        if (lastResultRef.current && !isSidebarSearchLoading) {
+            console.log('Setting observer');
+            const observer = new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting && !isSidebarSearchLoading) {
+                    console.log(lastResultRef);
+                    getSearchResult(resultsNextPageUrl);
+                }
+            }, {
+                threshold: 0.5
+            });
+
+            observer.observe(lastResultRef.current);
+
+            return () => {
+                if (lastResultRef.current) {
+                    observer.unobserve(lastResultRef.current);
+                }
+            };
         }
+    }, [resultsNextPageUrl, results, !isSidebarSearchLoading]);  // Ensure this effect runs when results update
 
-        // Cleanup
-        return () => {
-            if (lastResultRef.current) {
-                observer.unobserve(lastResultRef.current);
-            }
-        };
-    }, [pageURL])
+    const displayResults: React.ReactNode = results?.map((tweet, index) => (
+        <Tweet
+            key={index}
+            {...tweet}
+            ref={index === results.length - 1 ? lastResultRef : null}
+        />
+    ));
 
     const searchForKeyword = (keyword: string) => {
         setDisplayNotResultsFound(false)
@@ -176,19 +184,11 @@ function Explore() {
             .finally(() => setLoadingExplorePage(false))
     }
 
-    const displayResults: React.ReactNode = results?.map((tweetInfo, index) => (
-        <Tweet
-            key={tweetInfo.id}
-            {...tweetInfo}
-            ref={index === tweets.length - 1 ? lastResultRef : null}
-        />
-    ));
-
     const inputRef = useRef<HTMLInputElement>(null)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         setDisplayNotResultsFound(false)
         e.preventDefault()
-        setPageURL('')
+        setResultsNextPageUrl('')
         setTweets([])
         searchForKeyword(searchValue)
         setIsOpen(false)
@@ -208,6 +208,8 @@ function Explore() {
             />
         )
     })
+
+
 
     return (
         <div className={`border min-h-svh border-t-0 border-zinc-700/70`}>
@@ -249,11 +251,11 @@ function Explore() {
                                 </div>
                             }
                             {users}
-                            <div ref={lastResultRef}>
-                                {searchResults.length > 0 && (
-                                    <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>
-                                )}
-                            </div>
+                            {/*<div ref={lastResultRef}>*/}
+                            {/*    {searchResults.length > 0 && (*/}
+                            {/*        <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>*/}
+                            {/*    )}*/}
+                            {/*</div>*/}
                         </div>
                     }
 
@@ -281,7 +283,7 @@ function Explore() {
                                 {hashtags}
                             </div>
                         }
-                        {(!loadingExplorePage && !isSidebarSearchLoading) && displayResults}
+                        {results.length > 0 && !isSidebarSearchLoading && displayResults}
                         {(loadingExplorePage || isSidebarSearchLoading) && <SpinLoader/>}
 
                         {displayNotResultsFound && !loadingExplorePage && !isSidebarSearchLoading &&
