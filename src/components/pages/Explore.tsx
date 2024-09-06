@@ -37,6 +37,7 @@ function Explore() {
     const [loadingExplorePage, setLoadingExplorePage] = useState(true)
     const [results, setResults] = useState<TweetInfo[]>([])
     const [resultsNextPageUrl, setResultsNextPageUrl] = useState('')
+    const [isFetching, setIsFetching] = useState(false);
 
     useEffect(() => {
         const storedResults = localStorage.getItem('tweets_results')
@@ -67,18 +68,22 @@ function Explore() {
     }
 
     const getSearchResult = (keyword: string) => {
-        ApiClient().get(`/search-user/${keyword}`)
+        setIsFetching(true)
+        const url = keyword.startsWith("http://api.twitter.test/api") ? keyword : `/search-user/${keyword}`;
+        ApiClient().get(url)
             .then(res => {
-                setSearchResults(() => ([
-                    ...res.data.data.users
+                setResults(prevState => ([
+                    ...prevState,
+                    ...res.data.data.results
                 ]))
-                const nextPageUrl = res.data.data.pagination.next_page_url
-                nextPageUrl ? setResultsNextPageUrl(nextPageUrl) : null
+                setResultsNextPageUrl(res.data.data.results_next_page_url)
             })
             .catch(err => {
-                console.log(err)
+                console.log(err);
             })
-    }
+            .finally(() => setIsFetching(false))
+    };
+
 
     useEffect(() => {
         if (debounceValue?.length > 0) {
@@ -133,8 +138,7 @@ function Explore() {
     useEffect(() => {
         if (!results.length && isSidebarSearchLoading) return;
 
-        if (lastResultRef.current && !isSidebarSearchLoading) {
-            console.log('Setting observer');
+        if (lastResultRef.current && !isSidebarSearchLoading && !isFetching) {
             const observer = new IntersectionObserver(entries => {
                 if (entries[0].isIntersecting && !isSidebarSearchLoading) {
                     console.log(lastResultRef);
@@ -152,7 +156,7 @@ function Explore() {
                 }
             };
         }
-    }, [resultsNextPageUrl, results, !isSidebarSearchLoading]);  // Ensure this effect runs when results update
+    }, [resultsNextPageUrl, results, !isSidebarSearchLoading, isFetching]);  // Ensure this effect runs when results update
 
     const displayResults: React.ReactNode = results?.map((tweet, index) => (
         <Tweet
