@@ -27,8 +27,8 @@ interface AppContextType {
     goBack: () => void
     isShowEditInfoModal: boolean
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
-    isSidebarSearched: boolean
-    setIsSidebarSearched: Dispatch<SetStateAction<boolean>>
+    isSidebarSearched: boolean | null
+    setIsSidebarSearched: Dispatch<SetStateAction<boolean | null>>
     displayNotResultsFound: boolean
     setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
     isSidebarSearchLoading: boolean
@@ -78,7 +78,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [user, setUser] = useState<UserInfo>(UserDefaultValues)
     const [clickedTweet, setClickedTweet] = useState<TweetInfo>(tweetDefaultValues)
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
-    const [isSidebarSearched, setIsSidebarSearched] = useState(true);
+    const [isSidebarSearched, setIsSidebarSearched] = useState<boolean | null>(null);
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [isSidebarSearchLoading, setIsSidebarSearchLoading] = useState(false);

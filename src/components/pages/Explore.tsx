@@ -43,18 +43,18 @@ function Explore() {
     useEffect(() => {
         const storedResults = localStorage.getItem('tweets_results')
         const nextPageUrl = localStorage.getItem('tweets_results_next_page_url')
-        if (storedResults && nextPageUrl) {
+        if (storedResults && nextPageUrl && isSidebarSearched !== null) {
             console.log('ss')
             setResults(JSON.parse(storedResults));
             setResultsNextPageUrl(JSON.parse(nextPageUrl))
         } else {
+            console.log('dd')
             setResults([]);
             setResultsNextPageUrl('')
         }
     }, [isSidebarSearched]);
 
     useEffect(() => {
-        // setResults([]);
         localStorage.removeItem('tweets_results');
         localStorage.removeItem('tweets_results_next_page_url');
     }, []);
@@ -139,7 +139,7 @@ function Explore() {
     useEffect(() => {
         if (!results.length && isSidebarSearchLoading) return;
 
-        if (lastResultRef.current && !isSidebarSearchLoading && !isFetching) {
+        if (lastResultRef.current && !isSidebarSearchLoading && !isFetching && resultsNextPageUrl) {
             const observer = new IntersectionObserver(entries => {
                 if (entries[0].isIntersecting && !isSidebarSearchLoading) {
                     console.log(lastResultRef);
@@ -239,8 +239,6 @@ function Explore() {
         })
     }, [results, isSidebarSearched]);
 
-
-
     return (
         <div
             className={`border min-h-svh border-t-0 border-zinc-700/70`}>
@@ -310,7 +308,7 @@ function Explore() {
                     className={`text-neutral-200 w-full relative`}>
 
                     <div className={`mt-20`}>
-                        {(showExplorePageHashtags && results.length === 0 && !loadingExplorePage && !isSidebarSearchLoading && isSidebarSearched && !displayNotResultsFound) &&
+                        {(showExplorePageHashtags && results.length === 0 && !loadingExplorePage && !isSidebarSearchLoading && !displayNotResultsFound) &&
                             <div>
                                 {hashtags}
                             </div>
