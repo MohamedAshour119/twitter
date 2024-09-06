@@ -38,6 +38,7 @@ function Explore() {
     const [results, setResults] = useState<TweetInfo[]>([])
     const [resultsNextPageUrl, setResultsNextPageUrl] = useState('')
     const [isFetching, setIsFetching] = useState(false);
+    const [hasScrollbar, setHasScrollbar] = useState(false);
 
     useEffect(() => {
         const storedResults = localStorage.getItem('tweets_results')
@@ -69,7 +70,7 @@ function Explore() {
 
     const getSearchResult = (keyword: string) => {
         setIsFetching(true)
-        const url = keyword.startsWith("http://api.twitter.test/api") ? keyword : `/search-user/${keyword}`;
+        const url = keyword?.startsWith("http://api.twitter.test/api") ? keyword : `/search-user/${keyword}`;
         ApiClient().get(url)
             .then(res => {
                 setResults(prevState => ([
@@ -156,7 +157,7 @@ function Explore() {
                 }
             };
         }
-    }, [resultsNextPageUrl, results, !isSidebarSearchLoading, isFetching]);  // Ensure this effect runs when results update
+    }, [resultsNextPageUrl, results, !isSidebarSearchLoading, isFetching]);
 
     const displayResults: React.ReactNode = results?.map((tweet, index) => (
         <Tweet
@@ -213,11 +214,37 @@ function Explore() {
         )
     })
 
+    const scrollableDivRef = useRef<HTMLDivElement>(null);
+    const checkForScrollbar = () => {
+        const element = scrollableDivRef.current;
+        if (element) {
+            // Delay the check to ensure the content is fully rendered
+            requestAnimationFrame(() => {
+                const hasVerticalScroll = element.scrollHeight > element.clientHeight;
+                setHasScrollbar(hasVerticalScroll);
+                console.log(
+                    "scrollHeight:", element.scrollHeight,
+                    "clientHeight:", element.clientHeight,
+                    "Has vertical scrollbar:", hasVerticalScroll
+                );
+            });
+        }
+    };
+
+    useEffect(() => {
+        requestAnimationFrame(() => {
+            if (results.length > 0) {
+                checkForScrollbar();
+            }
+        })
+    }, [results, isSidebarSearched]);
+
 
 
     return (
-        <div className={`border min-h-svh border-t-0 border-zinc-700/70`}>
-            <header className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 3xl:max-w-[42.90rem] 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] md:max-w-[37.62rem] sm:max-w-[29.2rem] xs:max-w-[31.15rem] xxs:max-w-[27.74rem] w-full`}>
+        <div
+            className={`border min-h-svh border-t-0 border-zinc-700/70`}>
+            <header className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 ${hasScrollbar ? '3xl:max-w-[42.80rem] md:max-w-[37.58rem] sm:max-w-[29.9rem] xs:max-w-[31.15rem] xxs:max-w-[27.7rem]' : '3xl:max-w-[42.90rem] md:max-w-[37.58rem] sm:max-w-[29.85rem] xs:max-w-[31.15rem] xxs:max-w-[27.70rem] w-full'} 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] w-[99.5%]`}>
                 <div
                     ref={exploreSearchRef}
                     className={`w-full relative`}>
@@ -276,6 +303,7 @@ function Explore() {
                 </div>
             </header>
             <div
+                ref={scrollableDivRef}
                 className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} `}>
                 {/* Middle content */}
                 <div
