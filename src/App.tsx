@@ -22,9 +22,9 @@ import {useLocation} from "react-router";
 import apiClient from "./components/ApiClient.tsx";
 import {toastStyle} from "./components/helper/ToastifyStyle.tsx";
 import {TweetContext} from "./components/appContext/TweetContext.tsx";
-import {Hashtag, UserInfo} from "./Interfaces.tsx";
+import {Hashtag, UserDefaultValues, UserInfo} from "./Interfaces.tsx";
 function AuthLayout() {
-    const {isModalOpen, isCommentOpen, isShowEditInfoModal, setDisplayNotResultsFound} = useContext(AppContext)
+    const {isModalOpen, isCommentOpen, isShowEditInfoModal, setDisplayNotResultsFound, setUser} = useContext(AppContext)
     const {setTweets, tweets} = useContext(TweetContext)
 
     const [pageUrl, setPageUrl] = useState('');
@@ -75,6 +75,31 @@ function AuthLayout() {
             localStorage.removeItem('tweets_results_next_page_url')
         }
     }, [location.pathname]);
+
+    const token = localStorage.getItem('token')
+
+    // Check if user still logged in or not
+    useEffect( ()=> {
+        if (token) {
+            ApiClient().get('/info')
+                .then(res => {
+                    setUser(prevState => ({
+                        ...prevState,
+                        user_info: res.data.data.user_info
+                    }))
+                    if (res.data.data.notifications) {
+                        setUser((prevState) : UserInfo => ({
+                            ...prevState,
+                            allNotifications: res.data.data.notifications,
+                            originalNotifications: res.data.data.notifications.notifications_info
+                        }))
+                    }
+                })
+                .catch(() => {
+                    setUser(UserDefaultValues)
+                })
+        }
+    }, [token])
 
     return (
         <div className={`flex justify-center ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d]' : 'bg-black'}`}>

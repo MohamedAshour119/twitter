@@ -18,11 +18,12 @@ function Explore() {
     const {
         isModalOpen,
         isCommentOpen,
-        isSidebarSearched,
+        isSearched,
         displayNotResultsFound,
         setDisplayNotResultsFound,
         isSidebarSearchLoading,
         setIsSidebarSearchLoading,
+        setIsSearched,
     } = useContext(AppContext)
 
     const {
@@ -32,6 +33,7 @@ function Explore() {
     const [isOpen, setIsOpen] = useState(false)
     const [searchValue, setSearchValue] = useState('')
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
+    const [exploreResultsNextPageUrl, setExploreResultsNextPageUrl] = useState('')
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const [loadingExplorePage, setLoadingExplorePage] = useState(true)
@@ -39,20 +41,22 @@ function Explore() {
     const [resultsNextPageUrl, setResultsNextPageUrl] = useState('')
     const [isFetching, setIsFetching] = useState(false);
     const [hasScrollbar, setHasScrollbar] = useState(false);
+    const [isSearchForSpecificKeywordClicked, setIsSearchForSpecificKeywordClicked] = useState(false);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     useEffect(() => {
         const storedResults = localStorage.getItem('tweets_results')
         const nextPageUrl = localStorage.getItem('tweets_results_next_page_url')
-        if (storedResults && nextPageUrl && isSidebarSearched !== null) {
-            console.log('ss')
+        if (storedResults && nextPageUrl && isSearched !== null) {
             setResults(JSON.parse(storedResults));
             setResultsNextPageUrl(JSON.parse(nextPageUrl))
         } else {
-            console.log('dd')
             setResults([]);
             setResultsNextPageUrl('')
         }
-    }, [isSidebarSearched]);
+    }, [isSearched]);
 
     useEffect(() => {
         localStorage.removeItem('tweets_results');
@@ -70,19 +74,27 @@ function Explore() {
 
     const getSearchResult = (keyword: string) => {
         setIsFetching(true)
+        setSearchLoading(true)
         const url = keyword?.startsWith("http://api.twitter.test/api") ? keyword : `/search-user/${keyword}`;
         ApiClient().get(url)
             .then(res => {
-                setResults(prevState => ([
-                    ...prevState,
-                    ...res.data.data.results
-                ]))
-                setResultsNextPageUrl(res.data.data.results_next_page_url)
+                if (isSearchForSpecificKeywordClicked) {
+                    setResults(prevState => ([
+                        ...prevState,
+                        ...res.data.data.results
+                    ]))
+                    setResultsNextPageUrl(res.data.data.results_next_page_url)
+                }
+                setSearchResults(res.data.data.users)
+                setExploreResultsNextPageUrl(res.data.data.users_next_page_url)
             })
             .catch(err => {
                 console.log(err);
             })
-            .finally(() => setIsFetching(false))
+            .finally(() => {
+                setIsFetching(false)
+                setSearchLoading(false)
+            })
     };
 
 
@@ -92,7 +104,8 @@ function Explore() {
         } else {
             setSearchResults([])
         }
-    }, [debounceValue]);
+    }, [debounceValue, isSearchForSpecificKeywordClicked]);
+
 
     useEffect(() => {
         setTweets([])
@@ -112,7 +125,7 @@ function Explore() {
         setTimeout(() => {
             setIsSidebarSearchLoading(false)
         }, 1000)
-    }, [isSidebarSearched]);
+    }, [isSearched]);
 
 
     const exploreSearchRef = useRef<HTMLDivElement>(null);
@@ -129,9 +142,16 @@ function Explore() {
         }
     }, []);
 
-    const users = searchResults.slice(0, searchResults.length - 1).map(user => {
+    const lastExploreResultRef = useRef(null)
+    const users = searchResults.map((user, index) => {
         return(
-            <SearchResult {...user} setIsOpen={setIsOpen} isOpen={isOpen}/>
+            <SearchResult
+                key={index}
+                {...user}
+                setIsOpen={setIsOpen}
+                isOpen={isOpen}
+                ref={index === searchResults.length -1 ? lastExploreResultRef : null}
+            />
         )
     })
 
@@ -167,43 +187,47 @@ function Explore() {
         />
     ));
 
-    const searchForKeyword = (keyword: string) => {
-        setDisplayNotResultsFound(false)
-        setLoadingExplorePage(true)
-        setExplorePageHashtags([])
-        ApiClient().get(`/search/${keyword}`)
-            .then((res) => {
-                setTweets( prevResults => ([
-                    ...prevResults,
-                    ...res.data.data.tweets
-                ]))
-                if(res.data.data.tweets.length === 0) {
-                    setDisplayNotResultsFound(true)
-                } else {
-                    setShowExplorePageHashtags(true)
-                }
-            })
-            .catch((err) => {
-                console.log(err)
-            })
-            .finally(() => setLoadingExplorePage(false))
-    }
+    // const searchForKeyword = (keyword: string) => {
+    //     setDisplayNotResultsFound(false)
+    //     setLoadingExplorePage(true)
+    //     setExplorePageHashtags([])
+    //     ApiClient().get(`/search/${keyword}`)
+    //         .then((res) => {
+    //             setTweets( prevResults => ([
+    //                 ...prevResults,
+    //                 ...res.data.data.tweets
+    //             ]))
+    //             if(res.data.data.tweets.length === 0) {
+    //                 setDisplayNotResultsFound(true)
+    //             } else {
+    //                 setShowExplorePageHashtags(true)
+    //             }
+    //         })
+    //         .catch((err) => {
+    //             console.log(err)
+    //         })
+    //         .finally(() => setLoadingExplorePage(false))
+    // }
 
     const inputRef = useRef<HTMLInputElement>(null)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        setDisplayNotResultsFound(false)
-        e.preventDefault()
-        setResultsNextPageUrl('')
-        setTweets([])
-        searchForKeyword(searchValue)
-        setIsOpen(false)
-        setSearchValue('')
-        inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
+        if (debounceValue !== '' && !searchLoading) {
+            // setIsSearched(!isSearched);
+            setShowExplorePageHashtags(false)
+            setDisplayNotResultsFound(false)
+            e.preventDefault()
+            setResultsNextPageUrl('')
+            getSearchResult(debounceValue)
+            setIsOpen(false)
+            setSearchValue('')
+            inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
+        }
     }
+
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
-            if (!inputRef.current?.contains(e.target as Node)) {
+            if (!exploreSearchRef.current?.contains(e.target as Node)) {
                 setIsOpen(false)
             }
         }
@@ -236,11 +260,6 @@ function Explore() {
             requestAnimationFrame(() => {
                 const hasVerticalScroll = element.scrollHeight > element.clientHeight;
                 setHasScrollbar(hasVerticalScroll);
-                console.log(
-                    "scrollHeight:", element.scrollHeight,
-                    "clientHeight:", element.clientHeight,
-                    "Has vertical scrollbar:", hasVerticalScroll
-                );
             });
         }
     };
@@ -251,7 +270,8 @@ function Explore() {
                 checkForScrollbar();
             }
         })
-    }, [results, isSidebarSearched]);
+    }, [results, isSearched]);
+
 
     return (
         <div
@@ -268,46 +288,47 @@ function Explore() {
                             value={searchValue}
                             type="text"
                             placeholder={`Search`}
-                            className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} text-neutral-200 bg-[#24272b] relative z-20 w-full px-6 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
+                            className={`${isOpen ? 'bg-transparent ring-2 ring-sky-500' : ''} text-neutral-200 bg-[#121416] relative z-20 w-full px-6 py-3 rounded-full font-light focus:outline-0 placeholder:text-[#71767b] ${isOpen ? 'placeholder:text-sky-500' : ''}`}
                         />
                     </form>
 
                     {
-                        isOpen &&
+                        (isOpen && debounceValue.length > 0) &&
                         <div
-                            className={`bg-black absolute w-full text-neutral-200 rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
+                            className={`bg-black absolute w-full text-neutral-200 rounded-lg max-h-[40rem] ${searchResults.length >= 7 ? 'overflow-y-scroll' : ''} mt-2 z-[100] flex flex-col gap-y-2 border-2 border-[#121416]`}>
                             {(searchResults && debounceValue) &&
                                 <div
                                     ref={specificSearchRef}
                                     onClick={() => {
-                                        if (!isSidebarSearched) {
-                                            console.log('dd')
-                                            setTweets([])
-                                            searchForKeyword(debounceValue)
+                                        console.log(isSearched)
+                                        if (!isSearched) {
+                                            setShowExplorePageHashtags(false)
+                                            setIsSearchForSpecificKeywordClicked(!isSearchForSpecificKeywordClicked)
+                                            getSearchResult(debounceValue)
                                             setIsOpen(false)
                                             setSearchValue('')
                                         }
                                     }}
-                                    className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''} ${!isSidebarSearched ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                                    className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''} ${searchLoading ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
                                 >
                                     Search for "{debounceValue}"
                                 </div>
                             }
                             {users}
-                            {/*<div ref={lastResultRef}>*/}
-                            {/*    {searchResults.length > 0 && (*/}
-                            {/*        <SearchResult {...searchResults[searchResults.length - 1]} isOpen={isOpen} setIsOpen={setIsOpen}/>*/}
-                            {/*    )}*/}
-                            {/*</div>*/}
                         </div>
                     }
 
-                    {searchValue || <HiMiniMagnifyingGlass
-                        className={`absolute top-1/2 right-6 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>}
-                    {(isOpen && searchValue !== '') &&
+                    {!debounceValue &&
+                        <HiMiniMagnifyingGlass
+                        className={`absolute top-1/2 right-6 -translate-y-1/2 size-5 z-10 ${isOpen ? 'text-sky-500' : 'text-white'}`}/>
+                    }
+                    {(isOpen && debounceValue !== '') &&
                         <div
-                            onClick={() => setSearchValue('')}
-                            className={`absolute bg-sky-500 hover:bg-sky-600 transition top-[35%] right-6 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
+                            onClick={() => {
+                                setIsOpen(false)
+                                setSearchValue('')
+                            }}
+                            className={`absolute bg-sky-500 hover:bg-sky-600 transition top-1/2 right-6 -translate-y-1/2 z-30 text-black rounded-full p-[2px] cursor-pointer`}>
                             <HiMiniXMark
                                 className={`size-5`}/>
                         </div>
@@ -327,8 +348,8 @@ function Explore() {
                                 {hashtags}
                             </div>
                         }
-                        {results.length > 0 && !isSidebarSearchLoading && displayResults}
-                        {(loadingExplorePage || isSidebarSearchLoading) && <SpinLoader/>}
+                        {results.length > 0 && !isSidebarSearchLoading && !searchLoading && displayResults}
+                        {(loadingExplorePage || isSidebarSearchLoading || (searchLoading && debounceValue.length > 0 &&  !isOpen)) && <SpinLoader/>}
 
                         {displayNotResultsFound && !loadingExplorePage && !isSidebarSearchLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>

@@ -28,8 +28,8 @@ function TrendingSidebar(props: Props) {
         isModalOpen,
         isCommentOpen,
         isShowEditInfoModal,
-        setIsSidebarSearched,
-        isSidebarSearched,
+        setIsSearched,
+        isSearched,
         setDisplayNotResultsFound,
         setIsSidebarSearchLoading,
     } = useContext(AppContext)
@@ -38,13 +38,13 @@ function TrendingSidebar(props: Props) {
     const [isLoading, setIsLoading] = useState(props.is_loading);
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
     const [searchResultsNextPageUrl, setSearchResultsNextPageUrl] = useState('');
-    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>(props.suggested_users_to_follow)
+    const [suggestedUsersToFollow, setSuggestedUsersToFollow] = useState<UserInfo[]>(props.suggested_users_to_follow || [])
     const [hashtags, setHashtags] = useState<Hashtag[]>(props.app_hashtags)
     const [searchValue, setSearchValue] = useState('')
     const [isHashtagDeleted, setIsHashtagDeleted] = useState(false);
     const [isFetching, setIsFetching] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
-    const [isResultsNoyExists, setIsResultsNoyExists] = useState(false);
+    const [isResultsNotExists, setIsResultsNotExists] = useState(false);
 
 
     const navigate = useNavigate()
@@ -76,7 +76,7 @@ function TrendingSidebar(props: Props) {
                 localStorage.setItem('tweets_results', JSON.stringify(res.data.data.results))
                 localStorage.setItem('tweets_results_next_page_url', JSON.stringify(res.data.data.results_next_page_url))
                 const results = res.data.data.results
-                results.length === 0 ? setIsResultsNoyExists(true) : setIsResultsNoyExists(false)
+                results.length === 0 ? setIsResultsNotExists(true) : setIsResultsNotExists(false)
             })
             .catch(err => {
                 console.log(err)
@@ -92,6 +92,7 @@ function TrendingSidebar(props: Props) {
             ApiClient().get(`/hashtags`)
                 .then(res => {
                     setHashtags(res.data.data.hashtags)
+                    setSuggestedUsersToFollow(res.data.data.suggested_users)
                 })
                 .catch(err => {
                     console.log(err)
@@ -107,7 +108,7 @@ function TrendingSidebar(props: Props) {
     }, [hashtags?.length]);
 
     useEffect(() => {
-        if (location.pathname !== '/home') {
+        if (location.pathname !== '/home' && isHashtagDeleted) {
             ApiClient().get('suggested-users')
                 .then(res => {
                     setSuggestedUsersToFollow(res.data.data.suggested_users)
@@ -219,9 +220,9 @@ function TrendingSidebar(props: Props) {
         e.preventDefault();
 
         if (debounceValue !== '' && !searchLoading) {
-            setIsSidebarSearched(!isSidebarSearched);
+            setIsSearched(!isSearched);
             props.setLoadingExplorePage && props.setLoadingExplorePage(true);
-            setDisplayNotResultsFound(isResultsNoyExists);
+            setDisplayNotResultsFound(isResultsNotExists);
             setIsSidebarSearchLoading(true)
             navigate('/explore');
             setIsOpen(false);
@@ -257,15 +258,15 @@ function TrendingSidebar(props: Props) {
 
             {/*  Search result  */}
                 {
-                    isOpen &&
+                    isOpen && debounceValue.length > 0 &&
                     <div
-                        className={`bg-black absolute w-full rounded-lg shadow-[0px_0px_7px_-2px_white] max-h-[40rem] overflow-y-scroll mt-2 z-[100] flex flex-col gap-y-2`}>
+                        className={`bg-black absolute w-full rounded-lg border-2 border-[#121416] max-h-[40rem] ${searchResults.length >= 7 ? 'overflow-y-scroll' : ''} mt-2 z-[100] flex flex-col gap-y-2`}>
                         {(debounceValue !== '') &&
                             <div
                                 onClick={() => {
                                     props.setPageUrl && props.setPageUrl('')
-                                    setIsSidebarSearched(!isSidebarSearched)
-                                    setDisplayNotResultsFound(isResultsNoyExists);
+                                    setIsSearched(!isSearched)
+                                    setDisplayNotResultsFound(isResultsNotExists);
                                     setIsSidebarSearchLoading(true)
                                     navigate('/explore')
                                     setIsOpen(false)
@@ -305,7 +306,7 @@ function TrendingSidebar(props: Props) {
                         </div>
                     }
 
-                    {suggestedUsersToFollow?.map((user, index) => (
+                    {suggestedUsersToFollow.length > 0 && suggestedUsersToFollow?.map((user, index) => (
                         <FollowUser
                             key={user.user_info.id}
                             suggestedUsersToFollow={user}

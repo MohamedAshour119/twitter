@@ -7,7 +7,6 @@ import {
     Gender, FormErrorsDefaultValues, tweetDefaultValues
 } from "../../Interfaces.tsx";
 import {GroupBase, StylesConfig} from "react-select";
-import ApiClient from "../ApiClient.tsx";
 import {useNavigate} from "react-router-dom";
 
 interface AppContextType {
@@ -27,8 +26,8 @@ interface AppContextType {
     goBack: () => void
     isShowEditInfoModal: boolean
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
-    isSidebarSearched: boolean | null
-    setIsSidebarSearched: Dispatch<SetStateAction<boolean | null>>
+    isSearched: boolean | null
+    setIsSearched: Dispatch<SetStateAction<boolean | null>>
     displayNotResultsFound: boolean
     setDisplayNotResultsFound: Dispatch<SetStateAction<boolean>>
     isSidebarSearchLoading: boolean
@@ -54,8 +53,8 @@ export const AppContext = createContext<AppContextType>({
     goBack: () => null,
     isShowEditInfoModal: false,
     setIsShowEditInfoModal: () => null,
-    isSidebarSearched: true,
-    setIsSidebarSearched: () => null,
+    isSearched: true,
+    setIsSearched: () => null,
     displayNotResultsFound: false,
     setDisplayNotResultsFound: () => null,
     isSidebarSearchLoading: false,
@@ -78,7 +77,7 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [user, setUser] = useState<UserInfo>(UserDefaultValues)
     const [clickedTweet, setClickedTweet] = useState<TweetInfo>(tweetDefaultValues)
     const [formErrors, setFormErrors] = useState<FormError>(FormErrorsDefaultValues)
-    const [isSidebarSearched, setIsSidebarSearched] = useState<boolean | null>(null);
+    const [isSearched, setIsSearched] = useState<boolean | null>(null);
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [isSidebarSearchLoading, setIsSidebarSearchLoading] = useState(false);
@@ -106,28 +105,7 @@ const AppProvider = ({children}: AppProviderProps) => {
         }
     }, [token])
 
-    // Check if user still logged in or not
-    useEffect( ()=> {
-        if (token) {
-            ApiClient().get('/info')
-                .then(res => {
-                    setUser(prevState => ({
-                        ...prevState,
-                        user_info: res.data.data.user_info
-                    }))
-                    if (res.data.data.notifications) {
-                        setUser((prevState) : UserInfo => ({
-                            ...prevState,
-                            allNotifications: res.data.data.notifications,
-                            originalNotifications: res.data.data.notifications.notifications_info
-                        }))
-                    }
-                })
-                .catch(() => {
-                    setUser(UserDefaultValues)
-                })
-        }
-    }, [token])
+
 
 
     const reactSelectStyles: StylesConfig<OptionType, false, GroupBase<OptionType>> = {
@@ -230,8 +208,8 @@ const AppProvider = ({children}: AppProviderProps) => {
                 goBack,
                 isShowEditInfoModal,
                 setIsShowEditInfoModal,
-                isSidebarSearched,
-                setIsSidebarSearched,
+                isSearched,
+                setIsSearched,
                 displayNotResultsFound,
                 setDisplayNotResultsFound,
                 isSidebarSearchLoading,
