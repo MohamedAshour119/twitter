@@ -201,6 +201,20 @@ function Explore() {
         inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
     }
 
+    useEffect(() => {
+        const handleClickOutside = (e: MouseEvent) => {
+            if (!inputRef.current?.contains(e.target as Node)) {
+                setIsOpen(false)
+            }
+        }
+
+        document.addEventListener('mousedown', handleClickOutside)
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside)
+        }
+    }, []);
+
+
     const hashtags = explorePageHashtags.map(hashtag => {
         return (
             <ExploreHashtag
