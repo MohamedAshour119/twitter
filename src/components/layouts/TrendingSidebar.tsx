@@ -73,6 +73,12 @@ function TrendingSidebar(props: Props) {
                 setSearchResults(res.data.data.users)
                 const nextPageUrl = res.data.data.users_next_page_url
                 nextPageUrl ? setSearchResultsNextPageUrl(nextPageUrl) : null
+                const storedResults = localStorage.getItem('tweets_results')
+                const storedNextPageUrl = localStorage.getItem('tweets_results_next_page_url')
+                if (storedResults || storedNextPageUrl) {
+                    localStorage.removeItem('tweets_results');
+                    localStorage.removeItem('tweets_results_next_page_url');
+                }
                 localStorage.setItem('tweets_results', JSON.stringify(res.data.data.results))
                 localStorage.setItem('tweets_results_next_page_url', JSON.stringify(res.data.data.results_next_page_url))
                 const results = res.data.data.results
@@ -149,7 +155,7 @@ function TrendingSidebar(props: Props) {
             setSearchResults([])
         }
 
-    }, [debounceValue, isOpen]);
+    }, [debounceValue]);
 
     // Handle click outside
     const searchRef = useRef<HTMLDivElement>(null);
