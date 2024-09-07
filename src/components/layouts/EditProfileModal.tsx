@@ -15,7 +15,7 @@ interface Props {
 }
 function EditProfileModal(props: Props) {
 
-    const { user, setUser, baseUrl, formErrors, setFormErrors } = useContext(AppContext)
+    const { user, setUser, baseUrl, formErrors, setFormErrors, setIsShowEditInfoModal } = useContext(AppContext)
 
     const [userInfo, setUserInfo] = useState<EditUserProfile>({
         display_name: user?.user_info.display_name ? user.user_info.display_name : '',
@@ -113,6 +113,15 @@ function EditProfileModal(props: Props) {
         setFormErrors(FormErrorsDefaultValues)
     }, [props.isShowEditInfoModal]);
 
+    const checkIfAnyChangesHappened = userInfo.display_name !== '' || userInfo.bio !== '' || userInfo.birth_date !== 'undefined-undefined-undefined' || userInfo.avatar !== '' || userInfo.cover !== '' || userInfo.password !== '' || userInfo.password_confirmation !== ''
+
+    const handleSubmit = () => {
+        console.log(userInfo)
+        if (checkIfAnyChangesHappened) {
+            saveRequest()
+        }
+        addAnimation()
+    }
 
     return (
         <>
@@ -131,7 +140,7 @@ function EditProfileModal(props: Props) {
                     </div>
                     <button
                         type={'submit'}
-                        onClick={saveRequest}
+                        onClick={handleSubmit}
                         className={`mx-2 bg-white hover:bg-zinc-200 transition text-black px-5 py-2 rounded-full`}>Save</button>
                 </div>
 
