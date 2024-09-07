@@ -36,23 +36,20 @@ function Profile() {
 
     const [isFollowed, setIsFollowed] = useState(false)
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
-    const [pageURL, setPageURL] = useState('')
+    const [pageURL, setPageURL] = useState(null)
     const [isActive, setIsActive] = useState({
         posts: true,
         replies: false,
         likes: false,
     })
     const [isLoading, setIsLoading] = useState(true)
+    const [navigateSectionsLoading, setNavigateSectionsLoading] = useState(false);
+
     const [scroll, setScroll] = useState(0)
 
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
     }
-
-    // // Reset allProfileUserTweets state when username changes
-    // useEffect(() => {
-    //     setAllProfileUserTweets([]);
-    // }, [location.pathname]);
     
     // Get all user tweets
     const getAllUserTweets = (pageURL: string) => {
@@ -72,9 +69,9 @@ function Profile() {
     }
 
     useEffect(() => {
-            setPageURL('');
+            setPageURL(null);
             getAllUserTweets(`users/${username}`)
-    }, [username]);
+    }, []);
 
     useEffect(() => {
         const updateUserTweets = allProfileUserTweets
@@ -88,7 +85,8 @@ function Profile() {
 
     // Get the tweets which is suitable to the button which is clicked
     const getSuitableTweets = (pageURL: string) => {
-        setPageURL('')
+        setNavigateSectionsLoading(true)
+        setPageURL(null)
         ApiClient().get(pageURL)
             .then(res => {
                 setAllProfileUserTweets(prevState => ([
@@ -100,19 +98,22 @@ function Profile() {
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setNavigateSectionsLoading(false))
     }
 
+    const lastTweetRef = useRef<HTMLDivElement>(null)
     // All User Tweets
-    const tweets: React.ReactNode = allProfileUserTweets?.map(tweetInfo => {
+    const tweets: React.ReactNode = allProfileUserTweets?.map((tweetInfo, index) => {
         if (!(tweetInfo.retweet_to && !tweetInfo.main_tweet)) {
             return (
                 <Tweet
-                    key={tweetInfo.id}
+                    key={index}
                     allProfileUserTweets={allProfileUserTweets}
                     setAllProfileUserTweets={setAllProfileUserTweets}
                     {...tweetInfo}
                     userInfo={userInfo}
                     setUserInfo={setUserInfo}
+                    ref={index === allProfileUserTweets.length - 1 ? lastTweetRef : null}
                 />
             )
         }
@@ -156,7 +157,7 @@ function Profile() {
             document.removeEventListener('mousedown', handleClick)
         }
 
-    }, [location?.pathname])
+    }, [])
 
 
     // Reset posts category active when the slug change
@@ -210,12 +211,11 @@ function Profile() {
     }, [userInfo] )
 
     // Detect when scroll to last element
-    const lastTweetRef = useRef<HTMLDivElement>(null)
     useEffect( () => {
         const observer = new IntersectionObserver(entries => {
-            if(entries[0].isIntersecting && isActive.posts) {
+            if(entries[0].isIntersecting && isActive.posts && pageURL) {
                 getAllUserTweets(pageURL)
-            } else if (entries[0].isIntersecting && (isActive.likes || isActive.replies)) {
+            } else if (entries[0].isIntersecting && (isActive.likes || isActive.replies) && pageURL) {
                 getSuitableTweets(pageURL)
             }
         }, {
@@ -441,17 +441,8 @@ function Profile() {
                     </div>
 
                     {/* All user tweets */}
-                    {isLoading && <SpinLoader/>}
+                    {(isLoading || navigateSectionsLoading) && <SpinLoader styles={`translate-y-20`}/>}
                     {!isLoading && tweets}
-                    <div className={`invisible opacity-0 pointer-events-none`} ref={lastTweetRef}>
-                        {allProfileUserTweets.length > 0 && (
-                            <Tweet
-                                {...allProfileUserTweets[allProfileUserTweets.length]}
-                                setAllProfileUserTweets={setAllProfileUserTweets}
-                                allProfileUserTweets={allProfileUserTweets}
-                            />
-                        )}
-                    </div>
 
                 </div>
 
