@@ -308,7 +308,7 @@ function Explore() {
 
     return (
         <div className={`border border-t-0 border-zinc-700/70 min-h-svh `}>
-            <header className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 ${hasScrollbar ? '3xl:max-w-[42.80rem] md:max-w-[37.58rem] sm:max-w-[29.9rem] xs:max-w-[31.15rem] xxs:max-w-[27.7rem]' : '3xl:max-w-[42.90rem] md:max-w-[37.58rem] sm:max-w-[29.85rem] xs:max-w-[31.15rem] xxs:max-w-[27.70rem] w-full'} 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] w-[99.5%]`}>
+            <header className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 ${hasScrollbar ? '3xl:max-w-[42.80rem] md:max-w-[37.58rem] sm:max-w-[29.9rem] xs:max-w-[31.15rem] xxs:max-w-[27.7rem]' : '3xl:max-w-[42.90rem] md:max-w-[37.58rem] sm:max-w-[29.85rem] xs:max-w-[31.15rem] xxs:max-w-[27.70rem]'} 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] w-[99.5%]`}>
                 <div
                     ref={exploreSearchRef}
                     className={`w-full relative`}>
