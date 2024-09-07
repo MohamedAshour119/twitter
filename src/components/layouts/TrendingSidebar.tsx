@@ -292,7 +292,7 @@ function TrendingSidebar(props: Props) {
                     <div className={`text-center`}>There is no trends right now.</div>
                 }
                 {(isLoading && hashtags?.length === 0) &&
-                    <SpinLoader styles={`!translate-y-0 !sm:translate-y-0`}/>
+                    <SpinLoader/>
                 }
             </div>
 

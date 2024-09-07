@@ -201,7 +201,7 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
                     className={`text-neutral-200 w-full relative`}>
 
                     {isLoading &&
-                        <SpinLoader/>
+                        <SpinLoader styles={`translate-y-40 sm:translate-y-32`}/>
                     }
 
                     {tweets.length > 0 && <TweetTextAreaAndPreview/>}

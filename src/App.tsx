@@ -53,7 +53,6 @@ function AuthLayout() {
             setIsLoading(true)
             apiClient().get('/home-tweets')
                 .then(res => {
-                    console.log(res)
                     setTweets(prevState => ([
                         ...prevState,
                         ...res.data.data.tweets
@@ -219,6 +218,7 @@ function App() {
             navigate('/home');
         }
     }, [location.pathname, navigate, token]);
+
 
     return (
         <>

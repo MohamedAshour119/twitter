@@ -290,6 +290,8 @@ function Explore() {
             // Delay the check to ensure the content is fully rendered
             requestAnimationFrame(() => {
                 const hasVerticalScroll = element.scrollHeight > element.clientHeight;
+                console.log(element.scrollHeight)
+                console.log(element.clientHeight)
                 setHasScrollbar(hasVerticalScroll);
             });
         }
@@ -301,12 +303,11 @@ function Explore() {
                 checkForScrollbar();
             }
         })
-    }, [results, isSearched]);
+    }, [results, isSearchForSpecificKeywordClicked]);
 
 
     return (
-        <div
-            className={`border min-h-svh border-t-0 border-zinc-700/70`}>
+        <div className={`border border-t-0 border-zinc-700/70 min-h-svh `}>
             <header className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 ${hasScrollbar ? '3xl:max-w-[42.80rem] md:max-w-[37.58rem] sm:max-w-[29.9rem] xs:max-w-[31.15rem] xxs:max-w-[27.7rem]' : '3xl:max-w-[42.90rem] md:max-w-[37.58rem] sm:max-w-[29.85rem] xs:max-w-[31.15rem] xxs:max-w-[27.70rem] w-full'} 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] w-[99.5%]`}>
                 <div
                     ref={exploreSearchRef}
@@ -331,22 +332,19 @@ function Explore() {
                                 <div
                                     ref={specificSearchRef}
                                     onClick={() => {
-                                        console.log(isSearched)
-                                        if (!isSearched) {
-                                            setShowExplorePageHashtags(false)
-                                            setIsSearchForSpecificKeywordClicked(!isSearchForSpecificKeywordClicked)
-                                            setResults([])
-                                            handleClickOnSearchKeyword()
-                                            setIsOpen(false)
-                                            setSearchValue('')
-                                        }
+                                        setShowExplorePageHashtags(false)
+                                        setIsSearchForSpecificKeywordClicked(!isSearchForSpecificKeywordClicked)
+                                        setResults([])
+                                        handleClickOnSearchKeyword()
+                                        setIsOpen(false)
+                                        setSearchValue('')
                                     }}
                                         className={`p-4 ${searchResults.length > 0 || searchLoading ? 'border-b' : ''} ${searchLoading ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
                                 >
                                     Search for "{debounceValue}"
                                 </div>
                             }
-                            {searchLoading && <SpinLoader styles={`translate-y-0 sm:translate-y-0 mt-2`}/>}
+                            {searchLoading && <SpinLoader styles={`mt-2`}/>}
                             {!searchLoading && users}
                         </div>
                     }
@@ -372,9 +370,7 @@ function Explore() {
                 ref={scrollableDivRef}
                 className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} `}>
                 {/* Middle content */}
-                <div
-                    className={`text-neutral-200 w-full relative`}>
-
+                <div className={`text-neutral-200 w-full relative`}>
                     <div className={`mt-20`}>
                         {(showExplorePageHashtags && results.length === 0 && !loadingExplorePage && !isSidebarSearchLoading && !displayNotResultsFound) &&
                             <div>
@@ -382,7 +378,7 @@ function Explore() {
                             </div>
                         }
                         {results.length > 0 && !isSidebarSearchLoading && displayResults}
-                        {(loadingExplorePage || isSidebarSearchLoading || (searchLoading && !showExplorePageHashtags && isSearchForSpecificKeywordClicked)) && <SpinLoader/>}
+                        {(loadingExplorePage || isSidebarSearchLoading || (searchLoading && !showExplorePageHashtags && isSearchForSpecificKeywordClicked)) && <SpinLoader styles={`translate-y-40 sm:translate-y-20`}/>}
 
                         {displayNotResultsFound && !loadingExplorePage && !isSidebarSearchLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
