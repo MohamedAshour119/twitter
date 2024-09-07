@@ -23,7 +23,6 @@ function Explore() {
         setDisplayNotResultsFound,
         isSidebarSearchLoading,
         setIsSidebarSearchLoading,
-        setIsSearched,
     } = useContext(AppContext)
 
     const {
@@ -33,7 +32,7 @@ function Explore() {
     const [isOpen, setIsOpen] = useState(false)
     const [searchValue, setSearchValue] = useState('')
     const [searchResults, setSearchResults] = useState<UserInfo[]>([])
-    const [exploreResultsNextPageUrl, setExploreResultsNextPageUrl] = useState('')
+    const [searchResultsNextPageUrl, setSearchResultsNextPageUrl] = useState('')
     const [explorePageHashtags, setExplorePageHashtags] = useState<Hashtag[]>([])
     const [showExplorePageHashtags, setShowExplorePageHashtags] = useState(true)
     const [loadingExplorePage, setLoadingExplorePage] = useState(true)
@@ -43,8 +42,6 @@ function Explore() {
     const [hasScrollbar, setHasScrollbar] = useState(false);
     const [isSearchForSpecificKeywordClicked, setIsSearchForSpecificKeywordClicked] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-
 
     useEffect(() => {
         const storedResults = localStorage.getItem('tweets_results')
@@ -72,21 +69,57 @@ function Explore() {
         setSearchValue(e.target.value)
     }
 
-    const getSearchResult = (keyword: string) => {
+    const getSearchingResults = (keyword: string) => {
         setIsFetching(true)
         setSearchLoading(true)
-        const url = keyword?.startsWith("http://api.twitter.test/api") ? keyword : `/search-user/${keyword}`;
-        ApiClient().get(url)
+
+        ApiClient().get(`/search-user/${keyword}`)
             .then(res => {
-                if (isSearchForSpecificKeywordClicked) {
+                setSearchResults(res.data.data.users)
+                setSearchResultsNextPageUrl(res.data.data.users_next_page_url)
+                const storedResults = localStorage.getItem('tweets_results')
+                const nextPageUrl = localStorage.getItem('tweets_results_next_page_url')
+                if (storedResults || nextPageUrl) {
+                    localStorage.removeItem('tweets_results');
+                    localStorage.removeItem('tweets_results_next_page_url');
+                }
+                localStorage.setItem('tweets_results', JSON.stringify(res.data.data.results))
+                localStorage.setItem('tweets_results_next_page_url', JSON.stringify(res.data.data.results_next_page_url))
+            })
+            .finally(() => {
+                setIsFetching(false)
+                setSearchLoading(false)
+            })
+    }
+
+    const handleClickOnSearchKeyword = () => {
+        setSearchLoading(true)
+        setIsSearchForSpecificKeywordClicked(true)
+        const storedResults: string | null = localStorage.getItem('tweets_results')
+        const nextPageUrl: string | null = localStorage.getItem('tweets_results_next_page_url')
+        if (storedResults || nextPageUrl) {
+            setTimeout(() => {
+                setResults(JSON.parse(storedResults || ''))
+                setResultsNextPageUrl(JSON.parse(nextPageUrl || ''))
+                setSearchLoading(false)
+                setIsSearchForSpecificKeywordClicked(false)
+            }, 500)
+        }
+    }
+
+
+    const resultsPagination = (pagUrl: string) => {
+        setIsFetching(true)
+        setSearchLoading(true)
+
+        ApiClient().get(pagUrl)
+            .then(res => {
                     setResults(prevState => ([
                         ...prevState,
                         ...res.data.data.results
                     ]))
                     setResultsNextPageUrl(res.data.data.results_next_page_url)
-                }
-                setSearchResults(res.data.data.users)
-                setExploreResultsNextPageUrl(res.data.data.users_next_page_url)
+                    setIsSearchForSpecificKeywordClicked(false)
             })
             .catch(err => {
                 console.log(err);
@@ -100,11 +133,11 @@ function Explore() {
 
     useEffect(() => {
         if (debounceValue?.length > 0) {
-            getSearchResult(debounceValue);
+            getSearchingResults(debounceValue);
         } else {
             setSearchResults([])
         }
-    }, [debounceValue, isSearchForSpecificKeywordClicked]);
+    }, [debounceValue]);
 
 
     useEffect(() => {
@@ -155,6 +188,26 @@ function Explore() {
         )
     })
 
+    useEffect(() => {
+        if (lastExploreResultRef.current && !isFetching && searchResultsNextPageUrl) {
+            const observer = new IntersectionObserver(entries => {
+                if (entries[0].isIntersecting && !isSidebarSearchLoading) {
+                    getSearchingResults(searchResultsNextPageUrl);
+                }
+            }, {
+                threshold: 0.5
+            });
+
+            observer.observe(lastExploreResultRef.current);
+
+            return () => {
+                if (lastExploreResultRef.current) {
+                    observer.unobserve(lastExploreResultRef.current);
+                }
+            };
+        }
+    }, [lastExploreResultRef, isFetching]);
+
     const lastResultRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
         if (!results.length && isSidebarSearchLoading) return;
@@ -163,7 +216,7 @@ function Explore() {
             const observer = new IntersectionObserver(entries => {
                 if (entries[0].isIntersecting && !isSidebarSearchLoading) {
                     console.log(lastResultRef);
-                    getSearchResult(resultsNextPageUrl);
+                    resultsPagination(resultsNextPageUrl);
                 }
             }, {
                 threshold: 0.5
@@ -190,12 +243,12 @@ function Explore() {
     const inputRef = useRef<HTMLInputElement>(null)
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         if (debounceValue !== '' && !searchLoading) {
-            // setIsSearched(!isSearched);
             setShowExplorePageHashtags(false)
             setDisplayNotResultsFound(false)
             e.preventDefault()
             setResultsNextPageUrl('')
-            getSearchResult(debounceValue)
+            setResults([])
+            handleClickOnSearchKeyword()
             setIsOpen(false)
             setSearchValue('')
             inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
@@ -273,7 +326,7 @@ function Explore() {
                     {
                         (isOpen && debounceValue.length > 0) &&
                         <div
-                            className={`bg-black absolute w-full text-neutral-200 rounded-lg max-h-[40rem] ${searchResults.length >= 7 ? 'overflow-y-scroll' : ''} mt-2 z-[100] flex flex-col gap-y-2 border-2 border-[#121416]`}>
+                            className={`${searchLoading ? 'pb-4' : ''} bg-black absolute w-full text-neutral-200 rounded-lg max-h-[40rem] ${searchResults.length >= 7 ? 'overflow-y-scroll' : ''} mt-2 z-[100] flex flex-col gap-y-2 border-2 border-[#121416]`}>
                             {(searchResults && debounceValue) &&
                                 <div
                                     ref={specificSearchRef}
@@ -282,17 +335,19 @@ function Explore() {
                                         if (!isSearched) {
                                             setShowExplorePageHashtags(false)
                                             setIsSearchForSpecificKeywordClicked(!isSearchForSpecificKeywordClicked)
-                                            getSearchResult(debounceValue)
+                                            setResults([])
+                                            handleClickOnSearchKeyword()
                                             setIsOpen(false)
                                             setSearchValue('')
                                         }
                                     }}
-                                    className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''} ${searchLoading ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                                        className={`p-4 ${searchResults.length > 0 || searchLoading ? 'border-b' : ''} ${searchLoading ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
                                 >
                                     Search for "{debounceValue}"
                                 </div>
                             }
-                            {users}
+                            {searchLoading && <SpinLoader styles={`translate-y-0 sm:translate-y-0 mt-2`}/>}
+                            {!searchLoading && users}
                         </div>
                     }
 
@@ -327,7 +382,7 @@ function Explore() {
                             </div>
                         }
                         {results.length > 0 && !isSidebarSearchLoading && displayResults}
-                        {(loadingExplorePage || isSidebarSearchLoading || (searchLoading && !showExplorePageHashtags)) && <SpinLoader/>}
+                        {(loadingExplorePage || isSidebarSearchLoading || (searchLoading && !showExplorePageHashtags && isSearchForSpecificKeywordClicked)) && <SpinLoader/>}
 
                         {displayNotResultsFound && !loadingExplorePage && !isSidebarSearchLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>

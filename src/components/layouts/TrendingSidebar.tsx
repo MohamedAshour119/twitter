@@ -260,7 +260,7 @@ function TrendingSidebar(props: Props) {
                 {
                     isOpen && debounceValue.length > 0 &&
                     <div
-                        className={`bg-black absolute w-full rounded-lg border-2 border-[#121416] max-h-[40rem] ${searchResults.length >= 7 ? 'overflow-y-scroll' : ''} mt-2 z-[100] flex flex-col gap-y-2`}>
+                        className={`${searchLoading ? 'pb-4' : ''} bg-black absolute w-full rounded-lg border-2 border-[#121416] max-h-[40rem] ${searchResults.length >= 7 ? 'overflow-y-scroll' : ''} mt-2 z-[100] flex flex-col gap-y-2`}>
                         {(debounceValue !== '') &&
                             <div
                                 onClick={() => {
@@ -272,12 +272,13 @@ function TrendingSidebar(props: Props) {
                                     setIsOpen(false)
                                     setSearchValue('')
                                 }}
-                                className={`p-4 ${searchResults.length > 0 ? 'border-b' : ''} ${searchLoading ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
+                                className={`p-4 ${searchResults.length > 0 || searchLoading ? 'border-b' : ''} ${searchLoading ? 'pointer-events-none' : ''} border-zinc-700/70 cursor-pointer hover:bg-[#1c1e2182] transition`}
                             >
                                 Search for "{debounceValue}"
                             </div>
                         }
-                        {users}
+                        {searchLoading && <SpinLoader styles={`translate-y-0 sm:translate-y-0 mt-2`}/>}
+                        {!searchLoading && users}
                     </div>
                 }
 
