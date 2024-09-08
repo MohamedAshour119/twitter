@@ -62,7 +62,7 @@ function TrendingHashtag(props: Props) {
             {isHashtagMenuOpen &&
                 <div
                     ref={popupMenu}
-                    className={`${isHashtagMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 rounded-lg absolute w-[21rem] right-14 top-6`}>
+                    className={`${isHashtagMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 rounded-lg absolute w-[21rem] right-16 top-6`}>
                     <button
                         onClick={removeHashtag}
                         className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>

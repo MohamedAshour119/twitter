@@ -85,6 +85,11 @@ function TweetTextAreaAndPreview() {
         }
     }, []);
 
+    useEffect(() => {
+        if (textAreaRef.current) {
+            textAreaRef.current.classList.add('!h-auto')
+        }
+    }, [isModalOpen, isCommentOpen]);
 
     return (
         <div className={`${location?.pathname !== `/home` && !isModalOpen && !isCommentOpen ? 'border-t border-zinc-700/70' : ''} `}>
@@ -101,7 +106,7 @@ function TweetTextAreaAndPreview() {
                                     placeholder={ (isModalOpen || !isCommentOpen) && location?.pathname === '/home' || isModalOpen ? 'What is happening?!' : 'Post your reply'}
                                     name={`title`}
                                     value={tweet.title}
-                                    className={`${isModalOpen || isCommentOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image || !tweet.video ? 'border-b pb-3' : 'min-h-0'}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
+                                    className={`${isModalOpen || isCommentOpen ? 'min-h-32' : ''} bg-transparent overflow-x-auto resize-none ${!tweet.image || !tweet.video ? 'border-b pb-3' : ''}  border-zinc-700/70 text-xl w-full pt-1 placeholder:font-light placeholder:text-neutral-500 focus:outline-0`}
                                 />
 
                         {/* Preview uploaded image */}

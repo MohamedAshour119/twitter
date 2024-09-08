@@ -140,7 +140,7 @@ function Sidebar() {
             </ul>
 
             {/*Logout window*/}
-            <div className={`sidebar-drop-down-clip-path bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 absolute w-[21rem] -right-64 bottom-20 2xl:-right-10 2xl:bottom-24 shadow-[-2px_2px_12px_#4f4e4e] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
+            <div className={`xl:sidebar-drop-down-clip-path lg:sidebar-drop-down-clip-path-lg-screens md:sidebar-drop-down-clip-path sidebar-drop-down-clip-path-lg-screens bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 absolute w-[21rem] -right-72 2xl:-right-10 xl:-right-28 lg:-right-80 md:-right-28 2xl:bottom-24 bottom-[5.5rem] ${logoutWindowOpen ? 'appear' : 'disappear'}`}>
                 <button disabled={!logoutWindowOpen} onClick={logout} className={`flex items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition ${!logoutWindowOpen ? 'cursor-default' : 'cursor-pointer'}`}>
                     <TbLogout className={`size-5`}/>
                     Logout @{user?.user_info?.username}
@@ -165,19 +165,19 @@ function Sidebar() {
                         </div>
 
                         {!user?.user_info.display_name && !user?.user_info.username &&
-                            <Skeleton styles={`h-[20px] w-40`}/>
+                            <Skeleton styles={`h-[20px] w-12`}/>
                         }
 
                         <div className={`text-neutral-500`}>{user?.user_info.username && '@'}{user?.user_info?.username}</div>
                         {!user?.user_info.username &&
-                            <Skeleton styles={`h-[20px] w-52`}/>
+                            <Skeleton styles={`h-[20px] w-16`}/>
                         }
                     </div>
                 </div>
 
                 <div className={`hidden md:block lg:hidden xl:block`}>
                     {user?.user_info.username && <HiOutlineDotsHorizontal/>}
-                    {!user?.user_info.username && <Skeleton styles={`h-4 w-10`}/>}
+                    {!user?.user_info.username && <Skeleton styles={`h-4 w-8`}/>}
                 </div>
             </div>
         </div>
