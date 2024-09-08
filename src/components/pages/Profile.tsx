@@ -72,7 +72,7 @@ function Profile() {
     useEffect(() => {
             setPageURL(null);
             getAllUserTweets(`users/${username}`)
-    }, []);
+    }, [username]);
 
     useEffect(() => {
         const updateUserTweets = allProfileUserTweets

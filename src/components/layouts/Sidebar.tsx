@@ -79,7 +79,7 @@ function Sidebar() {
     }
 
     return (
-        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} text-neutral-100 lg:px-0 px-2 pb-5 pt-1 h-svh grid justify-center container fixed xl:max-w-[15.65rem] lg:max-w-[1rem] md:max-w-[15rem] sm:max-w-[4.2rem] z-[300]`}>
+        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} text-neutral-100 lg:px-0 px-2 pb-5 pt-1 h-svh grid justify-center container fixed xl:max-w-[17.65rem] lg:max-w-[1rem] md:max-w-[18rem] sm:max-w-[4.2rem] z-[300]`}>
             <ul className={`flex flex-col gap-y-5 justify-self-end w-full select-none`}>
                 <li className={`flex items-center`}>
                     <Link to={`/home`}>
@@ -153,7 +153,7 @@ function Sidebar() {
                 onClick={handleClick}
                 className={`self-end flex justify-center md:justify-between lg:justify-center justify-self-end w-full items-center gap-x-9 xl:hover:bg-[#0a0c0e] rounded-full sm:px-0 px-4 py-2 transition cursor-pointer`}
             >
-                <div className={`flex items-center gap-x-4`}>
+                <div className={`flex items-center gap-x-2 xl:pl-3`}>
 
                     {user?.user_info.avatar && <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt="avatar"/>}
                     {!user?.user_info.avatar && <img className={`size-11 object-cover`} src={`/profile-default-svgrepo-com.svg`} alt={`default avatar`}/> }
@@ -175,7 +175,7 @@ function Sidebar() {
                     </div>
                 </div>
 
-                <div className={`hidden md:block lg:hidden xl:block`}>
+                <div className={`hidden md:block lg:hidden xl:block xl:pr-3`}>
                     {user?.user_info.username && <HiOutlineDotsHorizontal/>}
                     {!user?.user_info.username && <Skeleton styles={`h-4 w-8`}/>}
                 </div>
