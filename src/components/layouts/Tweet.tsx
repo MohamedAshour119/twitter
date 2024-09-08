@@ -154,7 +154,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
                 created_at: props.main_tweet?.created_at,
                 is_pinned: props.main_tweet?.is_pinned,
                 id: props.main_tweet?.id,
-                slug: props.main_tweet.slug,
+                slug: props.main_tweet?.slug,
                 retweet_to: props.main_tweet?.retweet_to,
                 comment_to: props.main_tweet?.comment_to,
                 reactions_count: props.main_tweet?.reactions_count,
@@ -179,8 +179,10 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
 
     // Handle click open comments
     const handleOpenComments = () => {
+        console.log('clicked')
         addTweetInfo()
         setIsCommentOpen(!isCommentOpen)
+        console.log('after')
     }
 
     // Handle click outside the Tweet menu window

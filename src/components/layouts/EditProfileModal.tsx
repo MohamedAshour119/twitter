@@ -15,7 +15,7 @@ interface Props {
 }
 function EditProfileModal(props: Props) {
 
-    const { user, setUser, baseUrl, formErrors, setFormErrors, setIsShowEditInfoModal } = useContext(AppContext)
+    const { user, setUser, baseUrl, formErrors, setFormErrors } = useContext(AppContext)
 
     const [userInfo, setUserInfo] = useState<EditUserProfile>({
         display_name: user?.user_info.display_name ? user.user_info.display_name : '',

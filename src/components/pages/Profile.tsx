@@ -280,8 +280,8 @@ function Profile() {
 
             }
 
-            <header className={`flex border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} ${scroll >= 23 ? 'backdrop-blur-md border-r' : 'backdrop-blur-none border-r-0'} w-full fixed z-[500] py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
-                <div onClick={goBack} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-4 rounded-full transition cursor-pointer`}>
+            <header className={`flex items-center border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} ${scroll >= 23 ? 'backdrop-blur-md border-r' : 'backdrop-blur-none border-r-0'} w-full fixed z-[500] py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+                <div onClick={goBack} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                     <RiArrowLeftLine className={`size-5`}/>
                 </div>
                 <div className={`w-full`}>
@@ -305,7 +305,7 @@ function Profile() {
                 {/* Middle section */}
                 <div className={`text-neutral-200 min-h-svh border-r border-l border-zinc-700/70 ${isLoading ? 'max-h-[35.95rem]' : ''} `}>
                     {/* Cover image */}
-                    <div className={`h-[70px]`}></div>
+                    <div className={`h-[66px]`}></div>
                     <div className={`h-[14rem] w-full relative `}>
                         {
                             (!isLoading && userInfo?.user_info.cover) &&
