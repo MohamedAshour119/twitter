@@ -44,8 +44,9 @@ function Profile() {
     })
     const [isLoading, setIsLoading] = useState(true)
     const [navigateSectionsLoading, setNavigateSectionsLoading] = useState(false);
-
     const [scroll, setScroll] = useState(0)
+    const profilePageRef = useRef<HTMLDivElement>(null)
+    const [headerWidth, setHeaderWidth] = useState(profilePageRef.current?.getBoundingClientRect().width);
 
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
@@ -267,8 +268,25 @@ function Profile() {
         }
     }, []);
 
+    useEffect(() => {
+        const updateWidth = () => {
+            if (profilePageRef.current) {
+                const newWidth = profilePageRef.current.getBoundingClientRect().width;
+                setHeaderWidth(newWidth)
+            }
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+        };
+    }, []);
+
+
     return (
-        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? '' : 'bg-black'} text-neutral-200`}>
+        <div
+            ref={profilePageRef}
+            className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? '' : 'bg-black'} text-neutral-200`}>
 
             {/* Edit user info model */}
             {isShowEditInfoModal &&
@@ -280,7 +298,9 @@ function Profile() {
 
             }
 
-            <header className={`flex items-center border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} ${scroll >= 23 ? 'backdrop-blur-md border-r' : 'backdrop-blur-none border-r-0'} w-full fixed z-[500] py-2 gap-x-3 px-4 border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+            <header
+                style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
+                className={`flex items-center border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} ${scroll >= 23 ? 'backdrop-blur-md border-r' : 'backdrop-blur-none border-r-0'} w-full fixed z-[500] py-2 gap-x-3 px-4 border-zinc-700/70`}>
                 <div onClick={goBack} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                     <RiArrowLeftLine className={`size-5`}/>
                 </div>

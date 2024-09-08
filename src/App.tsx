@@ -102,7 +102,7 @@ function AuthLayout() {
 
     return (
         <div className={`flex justify-center ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'bg-[#1d252d]' : 'bg-black'}`}>
-            <div className={`container sm:px-4 gap-x-8 grid xl:grid-cols-[2fr,3fr,2fr] lg:grid-cols-[0.5fr,3fr,2fr] md:grid-cols-[0.5fr,3fr] sm:grid-cols-[1fr,5fr] grid-cols-1`}>
+            <div className={`container max-w-screen-xl sm:px-2 md:px-4 md:gap-x-8 grid xl:grid-cols-[0.75fr,2fr,1.2fr] lg:grid-cols-[0.1fr,2fr,1.3fr] md:grid-cols-[1.3fr,3fr] sm:grid-cols-[0.5fr,5fr] grid-cols-1`}>
                 <div className={`sm:flex justify-end hidden`}>
                     <Sidebar />
                 </div>

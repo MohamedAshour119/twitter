@@ -41,6 +41,8 @@ function Explore() {
     const [isFetching, setIsFetching] = useState(false);
     const [isSearchForSpecificKeywordClicked, setIsSearchForSpecificKeywordClicked] = useState(false);
     const [searchLoading, setSearchLoading] = useState(false);
+    const explorePageRef = useRef<HTMLDivElement>(null)
+    const [headerWidth, setHeaderWidth] = useState(explorePageRef.current?.getBoundingClientRect().width);
 
     useEffect(() => {
         const storedResults = localStorage.getItem('tweets_results')
@@ -282,9 +284,28 @@ function Explore() {
         )
     })
 
+    useEffect(() => {
+        const updateWidth = () => {
+            if (explorePageRef.current) {
+                const newWidth = explorePageRef.current.getBoundingClientRect().width;
+                setHeaderWidth(newWidth)
+            }
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+        };
+    }, []);
+
+
     return (
-        <div className={`border border-t-0 border-zinc-700/70 min-h-svh `}>
-            <header className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6 3xl:max-w-[42.90rem] md:max-w-[37.58rem] sm:max-w-[29.85rem] xs:max-w-[31.15rem] xxs:max-w-[27.70rem] 2xl:max-w-[38.50rem] xl:max-w-[31.60rem] lg:max-w-[31.52rem] w-[99.5%]`}>
+        <div
+            ref={explorePageRef}
+            className={`border border-t-0 border-zinc-700/70 min-h-svh `}>
+            <header
+                style={{ width: `${headerWidth && headerWidth - 2.1 }px` }}
+                className={`border-b border-zinc-700/70 fixed z-[200] grid grid-cols-1 py-2 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'}  px-6`}>
                 <div
                     ref={exploreSearchRef}
                     className={`w-full relative`}>

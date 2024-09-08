@@ -25,12 +25,12 @@ function Notifications() {
     const [notificationsInfo, setNotificationsInfo] = useState<NotificationsInfo>({
         'users_id': [],
     })
+    const notificationsPageRef = useRef<HTMLDivElement>(null)
+    const [headerWidth, setHeaderWidth] = useState(notificationsPageRef.current?.getBoundingClientRect().width);
 
     // Handle active buttons
     const allNotificationsRef = useRef<HTMLLIElement>(null);
     const followNotificationsRef = useRef<HTMLLIElement>(null);
-
-
 
     useEffect( () => {
         const handleClick = (e: MouseEvent) => {
@@ -142,10 +142,28 @@ function Notifications() {
         isActive.all ? allNotificationsReset() : filteredVerifiedNotifications()
     }, [isActive]);
 
-    return (
-        <div className={`border-r border-l border-zinc-700/70 min-h-svh`}>
+    useEffect(() => {
+        const updateWidth = () => {
+            if (notificationsPageRef.current) {
+                const newWidth = notificationsPageRef.current.getBoundingClientRect().width;
+                setHeaderWidth(newWidth)
+            }
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+        };
+    }, []);
 
-            <header className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-l-0 backdrop-blur-md w-full fixed z-[500] gap-x-3 text-neutral-200 pt-1 border-zinc-700/70 3xl:max-w-[42.91rem] 2xl:max-w-[38.52rem] xl:max-w-[31.70rem] lg:max-w-[31.62rem] md:max-w-[37.68rem] sm:max-w-[29.95rem] xs:max-w-[31.20rem] xxs:max-w-[27.81rem]`}>
+
+    return (
+        <div
+            ref={notificationsPageRef}
+            className={`border-r border-l border-zinc-700/70 min-h-svh`}>
+            <header
+                style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
+                className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-x-0 backdrop-blur-md w-full fixed z-[500] gap-x-3 text-neutral-200 pt-1 border-zinc-700/70`}>
                 <div className={`flex items-center gap-x-3 font-semibold text-xl px-4`}>
                     <Link to={'/home'} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>

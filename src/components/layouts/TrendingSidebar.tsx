@@ -238,7 +238,7 @@ function TrendingSidebar(props: Props) {
     };
 
     return (
-        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} z-[300] text-neutral-100 flex-col gap-y-8 h-dvh max-w-[25rem] 2xl:min-w-[23rem] xl:min-w-[21rem] lg:min-w-[21rem] hidden lg:flex justify-self-end fixed`}>
+        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} z-[300] text-neutral-100 flex-col gap-y-8 h-svh w-[22.5rem] hidden lg:flex justify-self-end fixed`}>
             <div ref={searchRef} className={`mt-2 relative`}>
                 <form onSubmit={handleSubmit}>
                     <input

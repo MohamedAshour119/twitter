@@ -79,8 +79,8 @@ function Sidebar() {
     }
 
     return (
-        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} text-neutral-100 lg:px-0 px-4 pb-5 pt-1 h-dvh grid grid-cols-1 justify-center container fixed min-w-fit max-w-[24rem] 3xl:max-w-[22%] z-[300]`}>
-            <ul className={`flex flex-col gap-y-5 justify-self-end 2xl:w-[80%] xl:w-[18rem] mx-4 select-none`}>
+        <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} text-neutral-100 lg:px-0 px-2 pb-5 pt-1 h-svh grid justify-center container fixed xl:max-w-[15.65rem] lg:max-w-[1rem] md:max-w-[15rem] sm:max-w-[4.2rem] z-[300]`}>
+            <ul className={`flex flex-col gap-y-5 justify-self-end w-full select-none`}>
                 <li className={`flex items-center`}>
                     <Link to={`/home`}>
                         <div className={`hover:bg-[#0a0c0e] rounded-full p-3 `}>
@@ -92,7 +92,7 @@ function Sidebar() {
                     <Link className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                           to={`/home`}>
                         <MdHomeFilled className={`size-8`}/>
-                        <span className={`hidden xl:block`}>Home</span>
+                        <span className={`hidden md:block lg:hidden xl:block`}>Home</span>
                     </Link>
                 </li>
                 <li>
@@ -100,7 +100,7 @@ function Sidebar() {
                         className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                         to={`/explore`}>
                         <HiMiniMagnifyingGlass className={`size-8`}/>
-                        <span className={`hidden xl:block`}>Explore</span>
+                        <span className={`hidden md:block lg:hidden xl:block`}>Explore</span>
                     </Link>
                 </li>
                 <li>
@@ -119,21 +119,21 @@ function Sidebar() {
 
                             }
                         </div>
-                        <span className={`hidden xl:block`}>Notifications</span>
+                        <span className={`hidden md:block lg:hidden xl:block`}>Notifications</span>
                     </Link>
                 </li>
                 <li>
                     <Link className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                           to={`/users/${user?.user_info?.username}`}>
                         <LuUser className={`size-8`}/>
-                        <span className={`hidden xl:block`}>Profile</span>
+                        <span className={`hidden md:block lg:hidden xl:block`}>Profile</span>
                     </Link>
                 </li>
                 <li>
                     <div onClick={() => {
                         openTweetModel()
-                    }} className={`w-fit xl:w-auto 2xl:max-w-[85%] flex items-end justify-center cursor-pointer px-4 py-4 xl:py-3 xl:px-0 rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
-                        <span className={`hidden xl:block`}>Post</span>
+                    }} className={`w-full flex items-end justify-center cursor-pointer px-4 py-4 xl:py-3 xl:px-0 rounded-full gap-x-4 font-semibold bg-sky-500 text-xl hover:bg-sky-600 transition`}>
+                        <span className={`hidden md:block lg:hidden xl:block`}>Post</span>
                         <FaFeatherPointed className={`block xl:hidden`}/>
                     </div>
                 </li>
@@ -151,14 +151,14 @@ function Sidebar() {
             <div
                 ref={logoutRef}
                 onClick={handleClick}
-                className={`mx-4 self-end flex justify-between justify-self-end 2xl:w-[80%] xl:w-[18rem] items-center gap-x-9 xl:hover:bg-[#0a0c0e] rounded-full px-4 py-2 transition cursor-pointer`}
+                className={`self-end flex justify-center md:justify-between lg:justify-center justify-self-end w-full items-center gap-x-9 xl:hover:bg-[#0a0c0e] rounded-full sm:px-0 px-4 py-2 transition cursor-pointer`}
             >
                 <div className={`flex items-center gap-x-4`}>
 
                     {user?.user_info.avatar && <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt="avatar"/>}
                     {!user?.user_info.avatar && <img className={`size-11 object-cover`} src={`/profile-default-svgrepo-com.svg`} alt={`default avatar`}/> }
 
-                    <div className={`hidden xl:flex xl:flex-col ${!user?.user_info.id ? 'gap-y-1' : ''} `}>
+                    <div className={`hidden md:flex lg:hidden xl:flex xl:flex-col md:flex-col lg:flex-row ${!user?.user_info.id ? 'gap-y-1' : ''} `}>
 
                         <div className={`font-semibold`}>
                             {user?.user_info?.display_name ? user?.user_info?.display_name : user?.user_info?.username}
@@ -175,7 +175,7 @@ function Sidebar() {
                     </div>
                 </div>
 
-                <div className={`hidden xl:block`}>
+                <div className={`hidden md:block lg:hidden xl:block`}>
                     {user?.user_info.username && <HiOutlineDotsHorizontal/>}
                     {!user?.user_info.username && <Skeleton styles={`h-4 w-10`}/>}
                 </div>

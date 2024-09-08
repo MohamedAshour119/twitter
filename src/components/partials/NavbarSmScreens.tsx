@@ -10,7 +10,7 @@ function NavbarSmScreens() {
     const {isModalOpen, isCommentOpen, user} = useContext(AppContext)
 
     return (
-        <ul className={`xs:hidden fixed bottom-0 bg-black flex w-full justify-center py-2 gap-x-16 text-neutral-200 border-t border-zinc-700/70 z-[500] ${isModalOpen || isCommentOpen ? 'opacity-20' : ''}`}>
+        <ul className={`sm:hidden fixed bottom-0 bg-black flex w-full justify-center py-2 gap-x-16 text-neutral-200 border-t border-zinc-700/70 z-[500] ${isModalOpen || isCommentOpen ? 'opacity-20' : ''}`}>
             <li className={``}>
                 <Link className={`flex items-end gap-x-4 text-xl hover:bg-[#0a0c0e] rounded-full w-fit xl:pr-7 xl:pl-3 xl:py-3 p-3 transition`}
                       to={`/home`}>

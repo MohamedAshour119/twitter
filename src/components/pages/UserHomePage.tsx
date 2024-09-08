@@ -37,8 +37,12 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
         forYou: true,
         following: false,
     })
+
+    const userHomePageRef = useRef<HTMLDivElement>(null)
     const [isLoading, setIsLoading] = useState(is_loading)
     const [isFetching, setIsFetching] = useState(false);
+    const [headerWidth, setHeaderWidth] = useState(userHomePageRef.current?.getBoundingClientRect().width);
+
 
     useEffect(() => {
         setDisplayNotFoundMsg(notFoundMsg);
@@ -150,9 +154,26 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
         document.body.style.backgroundColor = 'black'
     }
 
+    useEffect(() => {
+        const updateWidth = () => {
+            if (userHomePageRef.current) {
+                const newWidth = userHomePageRef.current.getBoundingClientRect().width;
+                setHeaderWidth(newWidth)
+            }
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+        };
+    }, []);
+
+
     return (
-        <div className={`border border-t-0 border-zinc-700/70 min-h-svh`}>
-         <header className={`fixed z-[200] grid grid-cols-1 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border border-x-0 border-zinc-700/70 3xl:max-w-[42.9rem] 2xl:max-w-[38.50rem] xl:max-w-[31.65rem] lg:max-w-[31.58rem] md:max-w-[37.59rem] sm:max-w-[29.90rem] xs:max-w-[31.10rem] xxs:max-w-[27.70rem] w-[99.5%]`}>
+        <div ref={userHomePageRef} className={`border border-t-0 border-zinc-700/70 min-h-svh`}>
+         <header
+             style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
+             className={`fixed z-[200] grid grid-cols-1 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border border-x-0 border-zinc-700/70`}>
                 {/* Header but only on small screens */}
                 <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                     <Link to={`/users/${user?.user_info?.username}`}>

@@ -30,7 +30,8 @@ function ShowTweet() {
 
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
     const [pageURL, setPageURL] = useState('')
-
+    const showTweetPageRef = useRef<HTMLDivElement>(null)
+    const [headerWidth, setHeaderWidth] = useState(showTweetPageRef.current?.getBoundingClientRect().width);
 
     const displayTweetFn = () => {
         ApiClient().get(`/tweets/${slug}`)
@@ -91,11 +92,28 @@ function ShowTweet() {
         )
     })
 
-    return (
-        <div className={`min-h-svh border border-y-0 border-zinc-700/70 ${isCommentOpen || isModalOpen ? 'overflow-y-hidden' : ''} `}>
+    useEffect(() => {
+        const updateWidth = () => {
+            if (showTweetPageRef.current) {
+                const newWidth = showTweetPageRef.current.getBoundingClientRect().width;
+                setHeaderWidth(newWidth)
+            }
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+        };
+    }, []);
 
+
+    return (
+        <div
+            ref={showTweetPageRef}
+            className={`min-h-svh border border-y-0 border-zinc-700/70 ${isCommentOpen || isModalOpen ? 'overflow-y-hidden' : ''} `}>
             <header
-                className={`w-full grid grid-cols-1 ${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 px-4 border border-zinc-700/70 3xl:max-w-[42.98rem] 2xl:max-w-[38.58rem] xl:max-w-[31.75rem] lg:max-w-[31.68rem] md:max-w-[37.74rem] sm:max-w-[30rem] xs:max-w-[31.26rem] xxs:max-w-[27.87rem]`}>
+                style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
+                className={`w-full grid grid-cols-1 ${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 px-4 border border-zinc-700/70`}>
                 {/* Header but only on small screens */}
                 <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
                     <img className={`size-11 rounded-full object-cover`}

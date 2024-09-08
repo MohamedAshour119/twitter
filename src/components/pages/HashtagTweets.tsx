@@ -1,7 +1,7 @@
 import {FaXTwitter} from "react-icons/fa6";
 import {IoSettingsOutline} from "react-icons/io5";
 import Model from "../layouts/Model.tsx";
-import {useContext, useEffect, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import ApiClient from "../ApiClient.tsx";
 import {useNavigate, useParams} from "react-router-dom";
@@ -20,7 +20,9 @@ function HashtagTweets() {
     const navigate = useNavigate()
     const { hashtag } = useParams()
 
+    const hashtagTWeetsPageRef = useRef<HTMLDivElement>(null)
     const [hashtagsTweets, setHashtagsTweets] = useState<TweetInfo[]>([])
+    const [headerWidth, setHeaderWidth] = useState(hashtagTWeetsPageRef.current?.getBoundingClientRect().width);
 
     useEffect(() => {
         ApiClient().get(`/${hashtag}`)
@@ -40,12 +42,28 @@ function HashtagTweets() {
         />
     ));
 
+    useEffect(() => {
+        const updateWidth = () => {
+            if (hashtagTWeetsPageRef.current) {
+                const newWidth = hashtagTWeetsPageRef.current.getBoundingClientRect().width;
+                setHeaderWidth(newWidth)
+            }
+        };
+        updateWidth();
+        window.addEventListener('resize', updateWidth);
+        return () => {
+            window.removeEventListener('resize', updateWidth);
+        };
+    }, []);
+
+
     return (
         <div
+            ref={hashtagTWeetsPageRef}
             className={`border border-t-0 border-zinc-700/70 min-h-svh`}>
-
             <header
-                className={`w-full grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70 3xl:max-w-[42.9rem] 2xl:max-w-[38.54rem] xl:max-w-[31.65rem] lg:max-w-[31.58rem] md:max-w-[37.64rem] sm:max-w-[29.95rem] xs:max-w-[31.16rem] xxs:max-w-[27.77rem]`}>
+                style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
+                className={`w-full grid grid-cols-1 border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-zinc-700/70`}>
                 {/* Header but only on small screens */}
                 <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                     <img className={`size-11 rounded-full object-cover`}
