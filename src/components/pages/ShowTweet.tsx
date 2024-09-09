@@ -22,20 +22,22 @@ function ShowTweet() {
     const {
         comments,
         setComments,
-        tweets
+        tweets,
+        setShowTweet,
     } = useContext(TweetContext)
     const {slug} = useParams();
 
-    console.log(slug)
-
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
     const [pageURL, setPageURL] = useState('')
+    const [isFetching, setIsFetching] = useState(false);
+
     const showTweetPageRef = useRef<HTMLDivElement>(null)
     const [headerWidth, setHeaderWidth] = useState(showTweetPageRef.current?.getBoundingClientRect().width);
 
-    const displayTweetFn = () => {
+    const getTweet = () => {
         ApiClient().get(`/tweets/${slug}`)
             .then(res => {
+                setShowTweet(res.data.data.tweet)
                 setClickedTweet(res.data.data.tweet)
                 setDisplayTweet(res.data.data.tweet)
                 setComments(res.data.data.pagination.data)
@@ -47,10 +49,11 @@ function ShowTweet() {
     }
 
     useEffect( () => {
-        displayTweetFn()
+        getTweet()
     }, [slug, tweets])
 
     const getComments = (pageURL: string) => {
+        setIsFetching(true)
         ApiClient().get(pageURL)
             .then(res => {
                 setComments(prevComments => ([
@@ -59,13 +62,14 @@ function ShowTweet() {
                 ]))
                 setPageURL(res.data.data.pagination.next_page_url)
             })
+            .finally(() => setIsFetching(false))
     }
 
     // Detect when scroll to last element
     const lastCommentRef = useRef<HTMLDivElement>(null)
     useEffect(() => {
         const observer = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
+            if (entries[0].isIntersecting && !isFetching && pageURL) {
                 getComments(pageURL)
             }
         }, {
@@ -83,12 +87,16 @@ function ShowTweet() {
                 observer.unobserve(lastCommentRef.current);
             }
         };
-    }, [pageURL])
+    }, [pageURL, isFetching])
 
     // Delete comment
-    const displayComments = comments?.slice(0, comments.length - 1).map(comment => {
+    const displayComments = comments?.map((comment, index) => {
         return (
-            <Tweet {...comment}/>
+            <Tweet
+                key={index}
+                {...comment}
+                ref={index === comments.length - 1 ? lastCommentRef : null}
+            />
         )
     })
 
@@ -113,7 +121,7 @@ function ShowTweet() {
             className={`min-h-svh border border-y-0 border-zinc-700/70 ${isCommentOpen || isModalOpen ? 'overflow-y-hidden' : ''} `}>
             <header
                 style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
-                className={`w-full grid grid-cols-1 ${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 px-4 border border-zinc-700/70`}>
+                className={`w-full grid grid-cols-1 ${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 px-4 border border-x-0 border-zinc-700/70`}>
                 {/* Header but only on small screens */}
                 <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
                     <img className={`size-11 rounded-full object-cover`}
@@ -136,11 +144,6 @@ function ShowTweet() {
                         <Tweet {...displayTweet!}/>
                     }
                     {displayComments}
-                    <div ref={lastCommentRef}>
-                        {comments.length > 0 && (
-                            <Tweet {...comments[comments.length - 1]} />
-                        )}
-                    </div>
                 </div>
 
             {/* Tweet model  */}

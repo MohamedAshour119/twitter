@@ -40,6 +40,8 @@ interface TweetContextType {
     setAllProfileUserTweets: Dispatch<SetStateAction<TweetInfo[]>>
     userInfo: UserInfo | undefined
     setUserInfo: Dispatch<SetStateAction<UserInfo | undefined>>
+    showTweet: TweetInfo
+    setShowTweet: Dispatch<SetStateAction<TweetInfo>>
 }
 
 interface Tweet {
@@ -79,7 +81,8 @@ export const TweetContext = createContext<TweetContextType>({
     setAllProfileUserTweets: () => null,
     userInfo: UserDefaultValues,
     setUserInfo: () => null,
-
+    showTweet: tweetDefaultValues,
+    setShowTweet: () => null,
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
@@ -100,6 +103,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [videoURL, setVideoURL] = useState("");
     const [showEmojiEl, setShowEmojiEl] = useState(false)
     const [showEmojiElInModel, setShowEmojiElInModel] = useState(false)
+    const [showTweet, setShowTweet] = useState<TweetInfo>(tweetDefaultValues)
     const [tweets, setTweets] = useState<TweetInfo[]>([])
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
@@ -193,7 +197,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             formData.append('video', tweet.video as Blob)
         }
 
-        if(location.pathname == `/tweets/${clickedTweet.id}` || isCommentOpen){
+        if(location.pathname == `/tweets/${clickedTweet.slug}` || isCommentOpen){
             ApiClient().post(`/addComment`, formData)
                 .then(res => {
                     makeInputEmpty()
@@ -310,6 +314,8 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 setAllProfileUserTweets,
                 userInfo,
                 setUserInfo,
+                showTweet,
+                setShowTweet,
             }}
         >
             {children}

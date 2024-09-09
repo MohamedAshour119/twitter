@@ -40,6 +40,8 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
         setAllProfileUserTweets,
         comments,
         setComments,
+        showTweet,
+        setShowTweet,
     } = useContext(TweetContext)
 
 
@@ -49,10 +51,20 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
     const [isRetweeted, setIsRetweeted] = useState(!props.main_tweet ? props.is_retweeted : props.main_tweet.is_retweeted)
     const [retweetsCount, setRetweetsCount] = useState(!props.main_tweet ? props.retweets_count : props.main_tweet.retweets_count)
     const [reactionsCount, setReactionsCount] = useState(!props.main_tweet ? props.reactions_count : props.main_tweet.reactions_count)
+    const [commentsCount, setCommentsCount] = useState(!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)
     const [tweetMenuOpen, setTweetMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
 
     const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
+
+    useEffect(() => {
+        console.log(showTweet.slug)
+        if (props.slug === showTweet.slug) {
+            setCommentsCount(showTweet.comments_count)
+        } else {
+            setCommentsCount(!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)
+        }
+    }, [showTweet.comments_count]);
 
 
     // Handle tweet reaction
@@ -208,7 +220,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
 
         const hashtags = tweetText?.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
         if(!props.comment_to) {
-            ApiClient().post(`/delete-tweet/${props.id}`, hashtags)
+            ApiClient().post(`/delete-tweet/${props.id}/true`, hashtags)
                 .then(() => {
                     if (props.setUserInfo) {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -229,10 +241,15 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
                 })
                 .finally(() => setTweetMenuOpen(false))
         } else {
-            ApiClient().post(`/delete-tweet/${clickedTweet.id}`, hashtags)
-                .then(() => {
+            ApiClient().post(`/delete-tweet/${clickedTweet.id}/true`, hashtags)
+                .then((res) => {
                     const filteredTweetComments = comments?.filter(comment => comment.id !== clickedTweet.id)
                     setComments(filteredTweetComments)
+                    console.log(res.data.data.comments_count)
+                    setShowTweet(prevState => ({
+                        ...prevState,
+                        comments_count: res.data.data.comments_count
+                    }))
                     toast.success(`Comment deleted successfully`, toastStyle)
 
                 })
@@ -358,9 +375,9 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
                     <div
                         onTouchStart={() => setDisableLink(true)}
                         onTouchEnd={() => setDisableLink(true)}
-                        onClick={() => setTweetMenuOpen(!tweetMenuOpen)}
                         onMouseEnter={() => setDisableLink(true)}
                         onMouseLeave={() => setDisableLink(false)}
+                        onClick={() => setTweetMenuOpen(!tweetMenuOpen)}
                         className={`font-light text-[#71767b] text-2xl p-1 cursor-pointer hover:bg-sky-500/20 hover:text-sky-300 rounded-full flex justify-center items-center transition`}>
                         <HiOutlineDotsHorizontal/>
                     </div>
@@ -470,7 +487,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
 
             <div className={`${!disableLink ? 'group-hover:bg-zinc-800/20' : ''} transition`}>
                 {!disableLink ? (
-                    <Link to={`/tweets/${props.main_tweet ? props.main_tweet.id : props.id}`}>
+                    <Link to={`/tweets/${props.main_tweet ? props.main_tweet.slug : props.slug}`}>
                         {tweetCommonContent}
                     </Link>
                 ) : (
@@ -479,16 +496,26 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
                     </div>
                 ) }
                 <div className={`flex sm:mx-20 xs:mx-16 xxs:mx-14 mx-12 pb-2 xxs:gap-x-10 xs:gap-x-14 sm:gap-x-6 md:gap-x-16 gap-x-8 text-zinc-400/70`}>
-                    <div onClick={handleOpenComments} className={`flex items-center cursor-pointer group/icon`}>
+                    <div
+                        onTouchStart={() => setDisableLink(true)}
+                        onTouchEnd={() => setDisableLink(true)}
+                        onMouseEnter={() => setDisableLink(true)}
+                        onMouseLeave={() => setDisableLink(false)}
+                        onClick={handleOpenComments} className={`flex items-center cursor-pointer group/icon`}>
                         <div
                             className={`text-xl flex justify-center items-center group-hover/icon:text-sky-500 transition group-hover/icon:bg-sky-500/20 rounded-full p-2`}>
                             <FaRegComment/>
                         </div>
                         <span
-                            className={`group-hover/icon:text-sky-500 transition`}>{props.main_tweet ? props.main_tweet.comments_count : props.comments_count}</span>
+                            className={`group-hover/icon:text-sky-500 transition`}>{commentsCount}</span>
                     </div>
 
-                    <div onClick={handleRetweet} className={`flex items-center cursor-pointer group/icon`}>
+                    <div
+                        onTouchStart={() => setDisableLink(true)}
+                        onTouchEnd={() => setDisableLink(true)}
+                        onMouseEnter={() => setDisableLink(true)}
+                        onMouseLeave={() => setDisableLink(false)}
+                        onClick={handleRetweet} className={`flex items-center cursor-pointer group/icon`}>
                         <div
                             className={`text-xl flex justify-center items-center group-hover/icon:text-emerald-400 transition group-hover/icon:bg-emerald-400/20 rounded-full p-2`}>
                             <BsRepeat
@@ -498,7 +525,12 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
                             className={`group-hover/icon:text-emerald-400 transition ${isRetweeted ? 'text-emerald-400' : 'text-zinc-400/70'}`}>{retweetsCount}</span>
                     </div>
 
-                    <div onClick={handleReaction} className={`flex items-center cursor-pointer group/icon`}>
+                    <div
+                        onTouchStart={() => setDisableLink(true)}
+                        onTouchEnd={() => setDisableLink(true)}
+                        onMouseEnter={() => setDisableLink(true)}
+                        onMouseLeave={() => setDisableLink(false)}
+                        onClick={handleReaction} className={`flex items-center cursor-pointer group/icon`}>
                         <div
                             className={`text-xl flex justify-center items-center group-hover/icon:text-rose-500 transition group-hover/icon:bg-rose-500/20 rounded-full p-2`}>
                             <FaRegHeart className={`${isReacted ? 'invisible absolute' : 'visible'}`}/>
@@ -513,8 +545,8 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
 
 
             {/*  Comments  */}
-            { location?.pathname === `/tweets/${props.id}` &&
-                <div className={`${location?.pathname === `/tweets/${props.id}` && (isCommentOpen || isModalOpen) ? 'hidden' : ''}`}>
+            { location?.pathname === `/tweets/${props.slug}` &&
+                <div className={`${location?.pathname === `/tweets/${props.slug}` && (isCommentOpen || isModalOpen) ? 'hidden' : ''}`}>
                     <TweetTextAreaAndPreview/>
                 </div>
             }
