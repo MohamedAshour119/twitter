@@ -66,7 +66,6 @@ interface AppProviderProps {
 }
 
 const AppProvider = ({children}: AppProviderProps) => {
-
     const navigate = useNavigate()
     const goBack = () => {
         navigate(-1)

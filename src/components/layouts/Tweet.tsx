@@ -58,14 +58,12 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
     const tweetId: number = props.retweet_to ? props.retweet_to : props.id;
 
     useEffect(() => {
-        console.log(showTweet.slug)
         if (props.slug === showTweet.slug) {
             setCommentsCount(showTweet.comments_count)
         } else {
             setCommentsCount(!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)
         }
     }, [showTweet.comments_count]);
-
 
     // Handle tweet reaction
     const handleReaction = () => {

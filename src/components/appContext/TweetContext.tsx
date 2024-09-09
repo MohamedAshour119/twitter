@@ -15,7 +15,6 @@ import {EmojiData} from "emoji-picker-react";
 import {tweetDefaultValues, TweetInfo, UserDefaultValues, UserInfo} from "../../Interfaces.tsx";
 import ApiClient from "../ApiClient.tsx";
 import {AppContext} from "./AppContext.tsx";
-import {useParams} from "react-router-dom";
 
 interface TweetContextType {
     tweet: Tweet
@@ -42,6 +41,7 @@ interface TweetContextType {
     setUserInfo: Dispatch<SetStateAction<UserInfo | undefined>>
     showTweet: TweetInfo
     setShowTweet: Dispatch<SetStateAction<TweetInfo>>
+    setSlug: Dispatch<SetStateAction<string>>
 }
 
 interface Tweet {
@@ -83,10 +83,10 @@ export const TweetContext = createContext<TweetContextType>({
     setUserInfo: () => null,
     showTweet: tweetDefaultValues,
     setShowTweet: () => null,
+    setSlug: () => null,
 });
 
 const TweetProvider = ({children}: TweetProviderProps) => {
-    const { id } = useParams()
     const {
         setIsModalOpen,
         setIsCommentOpen,
@@ -108,6 +108,8 @@ const TweetProvider = ({children}: TweetProviderProps) => {
     const [allProfileUserTweets, setAllProfileUserTweets] = useState<TweetInfo[]>([])
     const [comments, setComments] = useState<TweetInfo[]>([])
     const [userInfo, setUserInfo] = useState<UserInfo | undefined>(UserDefaultValues)
+    const [slug, setSlug] = useState('');
+
     const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const {name, value} = e.target;
         setTweet(prevTweet => ({
@@ -172,7 +174,6 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         }))
     }
 
-
     const inputElement = document.getElementById('uploadInput') as HTMLInputElement;
 
     // Send Request with data
@@ -197,11 +198,14 @@ const TweetProvider = ({children}: TweetProviderProps) => {
             formData.append('video', tweet.video as Blob)
         }
 
-        if(location.pathname == `/tweets/${clickedTweet.slug}` || isCommentOpen){
+        if(location.pathname === `/tweets/${showTweet.slug}` || isCommentOpen){
+            console.log(slug)
+            console.log(showTweet.slug)
             ApiClient().post(`/addComment`, formData)
                 .then(res => {
                     makeInputEmpty()
-                    if (clickedTweet.id === Number(id)) {
+                    if (showTweet.slug === slug) {
+                        console.log('caled')
                         setComments(prevComments => ([
                             res.data.data.tweet,
                             ...prevComments,
@@ -316,6 +320,7 @@ const TweetProvider = ({children}: TweetProviderProps) => {
                 setUserInfo,
                 showTweet,
                 setShowTweet,
+                setSlug,
             }}
         >
             {children}

@@ -24,8 +24,9 @@ function ShowTweet() {
         setComments,
         tweets,
         setShowTweet,
+        setSlug,
     } = useContext(TweetContext)
-    const {slug} = useParams();
+    const {slug} = useParams()
 
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
     const [pageURL, setPageURL] = useState('')
@@ -51,6 +52,12 @@ function ShowTweet() {
     useEffect( () => {
         getTweet()
     }, [slug, tweets])
+
+    useEffect(() => {
+        if (slug) {
+            setSlug(slug)
+        }
+    }, [slug]);
 
     const getComments = (pageURL: string) => {
         setIsFetching(true)
