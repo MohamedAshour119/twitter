@@ -12,7 +12,7 @@ interface Props extends Notification {
 }
 function NewNotification(props: Props) {
 
-    const {baseUrl, setUser} = useContext(AppContext)
+    const {setUser} = useContext(AppContext)
 
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
     const [disableLink, setDisableLink] = useState(false)
@@ -65,7 +65,7 @@ function NewNotification(props: Props) {
         <div className={`flex gap-x-4 ${props.id === props.allNotifications[0].id && props.allNotifications.length == 1 ? 'border-t-0' : 'mt-4 border-t'} items-center justify-between ${!disableLink ? 'hover:bg-sky-300/20' : ''} ${!props.is_read ? 'bg-sky-300/10' : ''} p-4 px-1 xxs:px-4 border-y border-zinc-700 relative transition`}>
             <div className={`flex items-center gap-x-3 w-[75%] xxs:w-auto`}>
                 <img
-                    src={`${baseUrl}/storage/${props.user?.avatar}`}
+                    src={props.user?.avatar}
                     alt="avatar"
                     className={`size-12 object-cover rounded-full`}
                 />

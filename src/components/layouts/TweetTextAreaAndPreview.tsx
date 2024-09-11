@@ -10,7 +10,6 @@ function TweetTextAreaAndPreview() {
 
     const {
         user,
-        baseUrl,
         isModalOpen,
         isCommentOpen,
     } = useContext(AppContext)
@@ -96,7 +95,10 @@ function TweetTextAreaAndPreview() {
             <div className={`flex flex-col relative py-3 sm:px-6 px-2 ${location?.pathname !== `/home` || isModalOpen || isCommentOpen ? 'mt-0' : 'sm:mt-14 mt-[7.9rem] border-b'} border-zinc-700/70 z-10`}>
                 <div className={`absolute sm:right-6 right-2 top-1 text-xs ${tweet.title.length === 1200 ? 'text-red-600' : 'text-sky-500'}`}>{tweet.title.length}/1200</div>
                 <div className={`flex gap-x-3`}>
-                        <img className={`h-11 w-12 object-cover rounded-full`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt=""/>
+                        <img className={`size-11 object-cover rounded-full`}
+                             src={user?.user_info?.avatar}
+                             alt="avatar"
+                        />
 
                     <div className={`flex flex-wrap w-full ${!tweet.image || !tweet.video ? 'gap-y-3' : ''}`}>
                                 <textarea

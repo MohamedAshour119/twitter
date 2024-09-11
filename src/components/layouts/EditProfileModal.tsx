@@ -15,7 +15,7 @@ interface Props {
 }
 function EditProfileModal(props: Props) {
 
-    const { user, setUser, baseUrl, formErrors, setFormErrors } = useContext(AppContext)
+    const { user, setUser, formErrors, setFormErrors } = useContext(AppContext)
 
     const [userInfo, setUserInfo] = useState<EditUserProfile>({
         display_name: user?.user_info.display_name ? user.user_info.display_name : '',
@@ -152,7 +152,7 @@ function EditProfileModal(props: Props) {
                             {
                                 user?.user_info.cover && !userInfo.cover &&
                                 <img
-                                    src={`${baseUrl}/storage/${user.user_info.cover}`}
+                                    src={user.user_info.cover}
                                     alt="cover"
                                     className={`w-full object-cover h-48 brightness-75`}
                                 />
@@ -185,37 +185,45 @@ function EditProfileModal(props: Props) {
                             </label>
                         </div>
                         {/*  Avatar  */}
-                        {
-                            user?.user_info.avatar &&
-                                <div className={`absolute top-2/3 left-2 border-4 border-black rounded-full`}>
-                                    {user.user_info.avatar && !userInfo.avatar &&
-                                        <img src={`${baseUrl}/storage/${user?.user_info.avatar}`}
-                                             alt="avatar"
-                                             className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}/>
-                                    }
 
-                                    {userInfo.avatar &&
-                                        <img className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}
-                                             src={userInfo.avatar ? URL.createObjectURL(userInfo.avatar as File) : ''}
-                                             alt="cover"/>
-                                    }
-                                    <label htmlFor={`upload_avatar`}
-                                           className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
-                                        <TbCameraPlus/>
-                                        <input
-                                            id={`upload_avatar`}
-                                            type="file"
-                                            className={`hidden`}
-                                            name={'avatar'}
-                                            value={userInfo.avatar ? '' : undefined}
-                                            onChange={handleInputChange}
-                                        />
-                                    </label>
-
-                                    {formErrors?.avatar &&
-                                        <p className={'text-red-500 font-semibold absolute w-[30rem]'}>{formErrors?.avatar}</p>}
-                                </div>
+                        <div className={`absolute top-2/3 left-2 border-4 border-black rounded-full`}>
+                            {user?.user_info.avatar && !userInfo.avatar &&
+                                <img src={user?.user_info.avatar}
+                                     alt="avatar"
+                                     className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}
+                                />
                             }
+
+                            {userInfo.avatar &&
+                                <img className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}
+                                     src={userInfo.avatar ? URL.createObjectURL(userInfo.avatar as File) : ''}
+                                     alt="cover"
+                                />
+                            }
+
+                            {(!user?.user_info.avatar && !userInfo.avatar) &&
+                                <img src={`/profile-default-svgrepo-com.svg`}
+                                     alt="default-avatar"
+                                     className={`object-cover w-32 h-32 rounded-full brightness-75 bg-[#121416] ${!user ? 'invisible' : ''}`}
+                                />
+                            }
+                            <label htmlFor={`upload_avatar`}
+                                   className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-neutral-950 cursor-pointer hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition`}>
+                                <TbCameraPlus/>
+                                <input
+                                    id={`upload_avatar`}
+                                    type="file"
+                                    className={`hidden`}
+                                    name={'avatar'}
+                                    value={userInfo.avatar ? '' : undefined}
+                                    onChange={handleInputChange}
+                                />
+                            </label>
+
+                            {formErrors?.avatar &&
+                                <p className={'text-red-500 font-semibold absolute w-[30rem]'}>{formErrors?.avatar}</p>}
+                        </div>
+
                     </div>
                     {/*  More info  */}
                     <div className={`mt-32 flex flex-col gap-y-1`}>

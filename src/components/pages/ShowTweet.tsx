@@ -13,7 +13,6 @@ import {TweetContext} from "../appContext/TweetContext.tsx";
 function ShowTweet() {
     const {
         isModalOpen,
-        baseUrl,
         user,
         isCommentOpen,
         goBack,
@@ -132,7 +131,9 @@ function ShowTweet() {
                 {/* Header but only on small screens */}
                 <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
                     <img className={`size-11 rounded-full object-cover`}
-                         src={`${baseUrl}/storage/${user?.user_info.avatar}`} alt=""/>
+                         src={user?.user_info.avatar}
+                         alt="avatar"
+                    />
                     <FaXTwitter className={`size-9`}/>
                     <IoSettingsOutline className={`size-9`}/>
                 </div>

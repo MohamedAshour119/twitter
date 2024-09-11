@@ -12,7 +12,6 @@ import {useNavigate} from "react-router-dom";
 interface AppContextType {
     user: UserInfo | null
     setUser: Dispatch<SetStateAction<UserInfo>>
-    baseUrl: string
     handleModalOpen: () => void
     isModalOpen: boolean
     setIsModalOpen: Dispatch<SetStateAction<boolean>>
@@ -44,7 +43,6 @@ export const AppContext = createContext<AppContextType>({
     setIsModalOpen: () => null,
     isCommentOpen: false,
     setIsCommentOpen: () => null,
-    baseUrl: '',
     clickedTweet: tweetDefaultValues,
     setClickedTweet: () => null,
     formErrors: FormErrorsDefaultValues,
@@ -80,8 +78,6 @@ const AppProvider = ({children}: AppProviderProps) => {
     const [isShowEditInfoModal, setIsShowEditInfoModal] = useState(false)
     const [displayNotResultsFound, setDisplayNotResultsFound] = useState(false);
     const [isSidebarSearchLoading, setIsSidebarSearchLoading] = useState(false);
-
-    const baseUrl = 'http://api.twitter.test'
 
     // Handle model open state
     const handleModelOpen = () => {
@@ -191,7 +187,6 @@ const AppProvider = ({children}: AppProviderProps) => {
     return (
         <AppContext.Provider
             value={{
-                baseUrl,
                 user,
                 setUser,
                 handleModalOpen: handleModelOpen,

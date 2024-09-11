@@ -25,7 +25,6 @@ interface Props extends  TweetInfo {
 const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
     const {
         user,
-        baseUrl,
         isCommentOpen,
         isModalOpen,
         setIsCommentOpen,
@@ -354,7 +353,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
                 <Link to={`/users/${conditionWithoutRetweets ? props.user?.user_info.username : props.userInfo?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
                     <img
                         className={`size-11 object-cover rounded-full select-none`}
-                        src={`${baseUrl}/storage/${conditionWithRetweets ? props.main_tweet.user.user_info.avatar : conditionWithoutRetweets ? props.user?.user_info.avatar : props.userInfo?.user_info.avatar}`}
+                        src={conditionWithRetweets ? props.main_tweet.user.user_info.avatar : conditionWithoutRetweets ? props.user?.user_info.avatar : props.userInfo?.user_info.avatar}
                         alt=""
                     />
                 </Link>
@@ -389,16 +388,18 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
                         {(props.image || props.main_tweet?.image) &&
                             <img
                                 className={`rounded-2xl max-h-[40rem] w-full ${props.image || props.main_tweet?.image ? 'mt-4' : ''}`}
-                                src={`${baseUrl}/storage/${!props.main_tweet ? props.image : props.main_tweet?.image}`}
+                                src={(!props.main_tweet ? props.image : props.main_tweet?.image) || undefined}
                                 alt="post_image"
-                            />}
+                            />
+                        }
 
                         {(props.video || props.main_tweet?.video) &&
                             <video
                                 className={`max-h-[40rem] w-full rounded-2xl ${props.video || props.main_tweet?.video ? 'mt-4' : ''}`}
                                 controls
-                                src={`${baseUrl}/storage/${!props.main_tweet ? props.video : props.main_tweet?.video}`}
-                            />}
+                                src={(!props.main_tweet ? props.video : props.main_tweet?.video) || undefined}
+                            />
+                        }
 
                         {(location?.pathname !== `/home` && props.comment_to) &&
                             <div className={`font-light text-[#71767b] cursor-pointer mt-3`}>

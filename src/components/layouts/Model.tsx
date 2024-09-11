@@ -10,7 +10,6 @@ import EmojiPicker, {Categories, EmojiStyle, SuggestionMode, Theme} from "emoji-
 function Model() {
 
     const {
-        baseUrl,
         isModalOpen,
         setIsModalOpen,
         handleModalOpen,
@@ -93,8 +92,10 @@ function Model() {
             { isCommentOpen &&
                 <>
                     <div className={`flex gap-x-3 border-zinc-700/70 text-neutral-200`}>
-                        <img className={`size-11 object-cover rounded-full`} src={`${baseUrl}/storage/${clickedTweet.user.user_info.avatar}`}
-                             alt=""/>
+                        <img className={`size-11 object-cover rounded-full`}
+                             src={clickedTweet.user.user_info.avatar}
+                             alt="avatar"
+                        />
                         <div className={``}>
                             <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
                                 <Link to={`/users/${clickedTweet.user.user_info.username}`} className={`xs:flex gap-x-2`}>

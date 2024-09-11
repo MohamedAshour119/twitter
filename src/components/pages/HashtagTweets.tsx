@@ -14,7 +14,6 @@ function HashtagTweets() {
     const {
         isModalOpen,
         isCommentOpen,
-        baseUrl,
         user,
     } = useContext(AppContext)
     const navigate = useNavigate()
@@ -67,7 +66,9 @@ function HashtagTweets() {
                 {/* Header but only on small screens */}
                 <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
                     <img className={`size-11 rounded-full object-cover`}
-                         src={`${baseUrl}/storage/${user?.user_info.avatar}`} alt=""/>
+                         src={user?.user_info.avatar}
+                         alt="avatar"
+                    />
                     <FaXTwitter className={`size-9`}/>
                     <IoSettingsOutline className={`size-9`}/>
                 </div>

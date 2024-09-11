@@ -19,7 +19,6 @@ function Sidebar() {
     const {
         user,
         setUser,
-        baseUrl,
         setIsModalOpen,
         isModalOpen,
         isCommentOpen,
@@ -155,8 +154,18 @@ function Sidebar() {
             >
                 <div className={`flex items-center gap-x-2 xl:pl-3`}>
 
-                    {user?.user_info.avatar && <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt="avatar"/>}
-                    {!user?.user_info.avatar && <img className={`size-11 object-cover`} src={`/profile-default-svgrepo-com.svg`} alt={`default avatar`}/> }
+                    {user?.user_info.avatar &&
+                        <img className={`size-11 rounded-full object-cover`}
+                             src={user?.user_info?.avatar}
+                             alt="avatar"
+                        />
+                    }
+                    {!user?.user_info.avatar &&
+                        <img className={`size-11 object-cover bg-[#121416] rounded-full`}
+                             src={`/profile-default-svgrepo-com.svg`}
+                             alt={`default avatar`}
+                        />
+                    }
 
                     <div className={`hidden md:flex lg:hidden xl:flex xl:flex-col md:flex-col lg:flex-row ${!user?.user_info.id ? 'gap-y-1' : ''} `}>
 

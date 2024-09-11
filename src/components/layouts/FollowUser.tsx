@@ -1,5 +1,4 @@
-import {useContext, useState} from "react";
-import {AppContext} from "../appContext/AppContext.tsx";
+import {useState} from "react";
 import ApiClient from "../ApiClient.tsx";
 import {Link} from "react-router-dom";
 import {UserInfo} from "../../Interfaces.tsx";
@@ -11,8 +10,6 @@ interface Prop {
     styles?: string
 }
 function FollowUser({suggestedUsersToFollow, styles}: Prop) {
-
-    const {baseUrl} = useContext(AppContext)
 
     const [isFollowed, setIsFollowed] = useState(false)
     const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(suggestedUsersToFollow.user_info.is_followed)
@@ -55,9 +52,20 @@ function FollowUser({suggestedUsersToFollow, styles}: Prop) {
         <div className={`flex justify-between hover:bg-[#161a1e] px-4 py-3 ${styles}`}>
             <Link to={`/users/${suggestedUsersToFollow.user_info.username}`} className={`flex gap-x-2 cursor-pointer`}>
 
-                <img className={`size-11 rounded-full object-cover`}
-                     src={`${baseUrl}/storage/${suggestedUsersToFollow?.user_info.avatar}`} alt=""
-                />
+                {suggestedUsersToFollow.user_info.avatar &&
+                    <img
+                        className={`size-11 rounded-full object-cover`}
+                        src={suggestedUsersToFollow?.user_info.avatar}
+                        alt="avatar"
+                    />
+                }
+                {!suggestedUsersToFollow.user_info.avatar &&
+                    <img
+                        className={`size-11 rounded-full object-cover`}
+                        src={`/profile-default-svgrepo-com.svg`}
+                        alt="avatar"
+                    />
+                }
 
                 <div className={`flex flex-col`}>
                     <span>{checkDisplayName}</span>

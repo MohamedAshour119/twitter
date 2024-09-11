@@ -21,7 +21,6 @@ interface Props {
 function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
     const {
         user,
-        baseUrl,
         isModalOpen,
         isCommentOpen,
     } = useContext(AppContext);
@@ -175,9 +174,12 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
              style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
              className={`fixed z-[200] grid grid-cols-1 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border border-x-0 border-zinc-700/70`}>
                 {/* Header but only on small screens */}
-                <div className={`flex sm:hidden justify-between px-6 py-5 pb-1 text-neutral-200`}>
+                <div className={`flex sm:hidden justify-between px-2 py-5 pb-1 text-neutral-200`}>
                     <Link to={`/users/${user?.user_info?.username}`}>
-                        <img className={`size-11 rounded-full object-cover`} src={`${baseUrl}/storage/${user?.user_info?.avatar}`} alt=""/>
+                        <img className={`size-11 rounded-full object-cover`}
+                             src={user?.user_info?.avatar}
+                             alt="avatar"
+                        />
                     </Link>
                     <Link to={`/home`}>
                         <FaXTwitter className={`size-9`}/>
@@ -225,7 +227,7 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
                         <SpinLoader styles={`translate-y-40 sm:translate-y-32`}/>
                     }
 
-                    {tweets.length > 0 && <TweetTextAreaAndPreview/>}
+                    {!isLoading && <TweetTextAreaAndPreview/>}
 
                     {/*  All Tweets  */}
                     <div className={`${tweets.length > 0 ? 'pb-[4.5rem]' : ''} `}>
