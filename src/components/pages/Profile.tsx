@@ -41,9 +41,12 @@ function Profile() {
         replies: false,
         likes: false,
     })
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(false)
+    const [isFirstRenderLoading, setIsFirstRenderLoading] = useState(true); // New state for first render loading
+    const [userInfoLoading, setUserInfoLoading] = useState(false);
     const [navigateSectionsLoading, setNavigateSectionsLoading] = useState(false);
     const [scroll, setScroll] = useState(0)
+    const [isFetching, setIsFetching] = useState(false);
     const profilePageRef = useRef<HTMLDivElement>(null)
     const [headerWidth, setHeaderWidth] = useState(profilePageRef.current?.getBoundingClientRect().width);
 
@@ -52,27 +55,38 @@ function Profile() {
     }
 
     // Get all user tweets
-    const getAllUserTweets = (pageURL: string) => {
-        setIsLoading(true)
-        ApiClient().get(pageURL)
-            .then(res => {
-                setUserInfo(res.data.data.user)
-                setIsLoading(false)
-                const tweets = res.data.data.pagination.data
-                if(tweets){
-                    setAllProfileUserTweets(prevTweets => ([...prevTweets, ...tweets]))
+    const getAllUserTweets = (pageURL: string, usernameChanged = false) => {
+        if (isFirstRenderLoading || usernameChanged) {
+            setUserInfoLoading(true) // Only set loading on first render
+        }
+        setIsFetching(true);
+        setIsLoading(true);
+        ApiClient()
+            .get(pageURL)
+            .then((res) => {
+                setUserInfo(res.data.data.user);
+                const tweets = res.data.data.pagination.data;
+                if (tweets) {
+                    setAllProfileUserTweets((prevTweets) => [...prevTweets, ...tweets]);
                 }
-                setPageURL(res.data.data.pagination.next_page_url)
+                setPageURL(res.data.data.pagination.next_page_url);
             })
-            .catch(err => {
-                console.log(err)
+            .catch((err) => {
+                console.log(err);
             })
-            .finally(() => setIsLoading(false))
-    }
+            .finally(() => {
+                setIsFetching(false);
+                setIsLoading(false);
+                if (isFirstRenderLoading || usernameChanged) {
+                    setUserInfoLoading(false)
+                    setIsFirstRenderLoading(false); // Mark first render as done
+                }
+            });
+    };
 
     useEffect(() => {
             setPageURL(null);
-            getAllUserTweets(`users/${username}`)
+            getAllUserTweets(`users/${username}`, true)
     }, [username]);
 
     useEffect(() => {
@@ -88,6 +102,7 @@ function Profile() {
     // Get the tweets which is suitable to the button which is clicked
     const getSuitableTweets = (pageURL: string) => {
         setNavigateSectionsLoading(true)
+        setIsFetching(true)
         setPageURL(null)
         ApiClient().get(pageURL)
             .then(res => {
@@ -100,7 +115,10 @@ function Profile() {
             .catch(err => {
                 console.log(err)
             })
-            .finally(() => setNavigateSectionsLoading(false))
+            .finally(() => {
+                setNavigateSectionsLoading(false)
+                setIsFetching(false)
+            })
     }
 
     const lastTweetRef = useRef<HTMLDivElement>(null)
@@ -215,9 +233,9 @@ function Profile() {
     // Detect when scroll to last element
     useEffect( () => {
         const observer = new IntersectionObserver(entries => {
-            if(entries[0].isIntersecting && isActive.posts && pageURL) {
+            if(entries[0].isIntersecting && isActive.posts && pageURL && !isFetching) {
                 getAllUserTweets(pageURL)
-            } else if (entries[0].isIntersecting && (isActive.likes || isActive.replies) && pageURL) {
+            } else if (entries[0].isIntersecting && (isActive.likes || isActive.replies) && pageURL && !isFetching) {
                 getSuitableTweets(pageURL)
             }
         }, {
@@ -236,7 +254,7 @@ function Profile() {
             }
         };
 
-    }, [pageURL])
+    }, [pageURL, isFetching])
 
     if(isModalOpen || isCommentOpen || isShowEditInfoModal) {
         document.body.style.backgroundColor = '#1d252d'
@@ -299,22 +317,22 @@ function Profile() {
             }
 
             <header
-                style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
+                style={{ width: `${headerWidth}px` }}
                 className={`flex items-center border ${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} ${scroll >= 23 ? 'backdrop-blur-md border-r' : 'backdrop-blur-none border-r-0'} w-full fixed z-[500] py-2 gap-x-3 px-4 border-zinc-700/70`}>
                 <div onClick={goBack} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                     <RiArrowLeftLine className={`size-5`}/>
                 </div>
                 <div className={`w-full`}>
                     <h1 className={`font-semibold text-xl`}>
-                        {!isLoading && (userInfo?.user_info.display_name ? userInfo.user_info.display_name : userInfo?.user_info.username)}
-                        {isLoading &&
+                        {!userInfoLoading && (userInfo?.user_info.display_name ? userInfo.user_info.display_name : userInfo?.user_info.username)}
+                        {userInfoLoading &&
                             <Skeleton styles={`h-[25px] w-48`}/>
                         }
                     </h1>
-                    {!isLoading &&
+                    {!userInfoLoading &&
                         <div className={`text-[#71767b] text-sm`}>{userInfo?.user_info.tweets_count && userInfo.user_info.tweets_count <= 1 ? `${userInfo.user_info.tweets_count} post` : `${userInfo?.user_info.tweets_count} posts`}</div>
                     }
-                    {isLoading &&
+                    {userInfoLoading &&
                         <Skeleton styles={`h-[16px] w-28 mt-2`}/>
                     }
                 </div>
@@ -323,12 +341,12 @@ function Profile() {
             <div className={`${isModalOpen || isCommentOpen || isShowEditInfoModal ? 'opacity-20 pointer-events-none' : ''} `}>
 
                 {/* Middle section */}
-                <div className={`text-neutral-200 min-h-svh border-r border-l border-zinc-700/70 ${isLoading ? 'max-h-[35.95rem]' : ''} `}>
+                <div className={`text-neutral-200 min-h-svh border-r border-l border-zinc-700/70`}>
                     {/* Cover image */}
                     <div className={`h-[66px]`}></div>
-                    <div className={`h-[14rem] w-full relative `}>
+                    <div className={`h-[14rem] w-full relative`}>
                         {
-                            (!isLoading && userInfo?.user_info.cover) &&
+                            (!userInfoLoading && userInfo?.user_info.cover) &&
                                 <img
                                     src={userInfo?.user_info.cover}
                                     alt="cover"
@@ -336,10 +354,10 @@ function Profile() {
                                 />
                         }
                         {
-                            (!isLoading && !userInfo?.user_info.cover) &&
+                            (!userInfoLoading && !userInfo?.user_info.cover) &&
                             <div className={`w-full h-full bg-[#333639]`}></div>
                         }
-                        {isLoading &&
+                        {userInfoLoading &&
                             <div
                                 className="absolute animate-pulse flex items-center justify-center w-full h-full bg-[#333639]">
                                 <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
@@ -354,21 +372,21 @@ function Profile() {
                         <div className={`px-4 h-[16rem]`}>
                             <div className={`flex justify-between`}>
                                 <div className={`relative -translate-y-1/2 w-[9rem] h-[9rem] rounded-full border-4 border-black`}>
-                                    {(!isLoading && userInfo?.user_info.avatar) &&
+                                    {(!userInfoLoading && userInfo?.user_info.avatar) &&
                                         <img
                                             src={userInfo?.user_info.avatar}
                                             alt="avatar"
-                                            className={`object-cover w-full h-full rounded-full ${isLoading ? 'invisible' : ''}`}
+                                            className={`object-cover w-full h-full rounded-full ${userInfoLoading ? 'invisible' : ''}`}
                                         />
                                     }
-                                    {(!isLoading && !userInfo?.user_info.avatar) &&
+                                    {(!userInfoLoading && !userInfo?.user_info.avatar) &&
                                         <img
                                             src={`/profile-default-svgrepo-com.svg`}
                                             alt="default-avatar"
-                                            className={`object-cover w-full h-full rounded-full bg-[#121416] ${isLoading ? 'invisible' : ''}`}
+                                            className={`object-cover w-full h-full rounded-full bg-[#121416] ${userInfoLoading ? 'invisible' : ''}`}
                                         />
                                     }
-                                    {(isLoading && !userInfo?.user_info.avatar) &&
+                                    {(userInfoLoading && !userInfo?.user_info.avatar) &&
                                         <div
                                             className={`absolute animate-pulse top-0 flex items-center justify-center w-full h-full rounded-full bg-[#24272b]`}>
                                             <svg className="w-10 h-10 text-gray-200 dark:text-gray-600" aria-hidden="true"
@@ -380,46 +398,46 @@ function Profile() {
                                     }
                                 </div>
 
-                                {(username === user?.user_info?.username && !isLoading) &&
+                                {(username === user?.user_info?.username && !userInfoLoading) &&
                                     <button
                                         onClick={toggleModel}
                                         className={` px-6 py-2 border border-gray-600 rounded-full h-fit mt-4 hover:bg-neutral-700/30 font-semibold`}>Edit profile
                                     </button>
                                 }
-                                {(username !== user?.user_info?.username && !isLoading) &&
+                                {(username !== user?.user_info?.username && !userInfoLoading) &&
                                     <button
                                         disabled={isFollowedBtnDisabled}
                                         onClick={handleFollow}
                                         className={`${isFollowed ? 'bg-[#2a3139] text-neutral-200 hover:bg-[#323b45]' : 'bg-neutral-100 hover:bg-gray-200'} z-50 text-black mt-4 px-6 max-h-10 transition font-semibold flex justify-center items-center rounded-full cursor-pointer`}>{isFollowed ? 'Following' : 'Follow'}
                                     </button>
                                 }
-                                {isLoading &&
+                                {userInfoLoading &&
                                     <Skeleton styles={`h-[50px] w-40 mt-4`}/>
                                 }
                             </div>
                             <div className={`-translate-y-12`}>
                                 <h1 className={`font-semibold text-xl`}>
-                                    {userInfo?.user_info.display_name && !isLoading ? userInfo.user_info.display_name : !isLoading && userInfo?.user_info.username ? userInfo.user_info.username : ''}
-                                    {isLoading &&
+                                    {userInfo?.user_info.display_name && !userInfoLoading ? userInfo.user_info.display_name : !userInfoLoading && userInfo?.user_info.username ? userInfo.user_info.username : ''}
+                                    {userInfoLoading &&
                                         <Skeleton styles={`h-[25px] w-48`}/>
                                     }
                                 </h1>
-                                {!isLoading && <h1 className={`text-[#71767b]`}>@{userInfo?.user_info.username}</h1>}
-                                {isLoading && <Skeleton styles={`h-[16px] w-40 mt-1`}/>}
+                                {!userInfoLoading && <h1 className={`text-[#71767b]`}>@{userInfo?.user_info.username}</h1>}
+                                {userInfoLoading && <Skeleton styles={`h-[16px] w-40 mt-1`}/>}
 
-                                {(!isLoading && userInfo?.user_info.bio) && <div className={`font-semibold mt-3`}>{userInfo.user_info.bio}</div>}
-                                {isLoading && <Skeleton styles={`h-[16px] w-96 mt-4`}/>}
+                                {(!userInfoLoading && userInfo?.user_info.bio) && <div className={`font-semibold mt-3`}>{userInfo.user_info.bio}</div>}
+                                {userInfoLoading && <Skeleton styles={`h-[16px] w-96 mt-4`}/>}
 
-                                {!isLoading && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
+                                {!userInfoLoading && <div className={`text-[#71767b] flex gap-x-2 items-center mt-4`}>
                                     <CgCalendarDates/>
                                     <span>Joined</span>
                                     <div>{userInfo?.user_info.created_at}</div>
                                 </div>}
-                                {isLoading &&
+                                {userInfoLoading &&
                                     <Skeleton styles={`h-[16px] w-52 mt-6`}/>
                                 }
 
-                                {!isLoading &&
+                                {!userInfoLoading &&
                                     <div className={`text-[#71767b] flex gap-x-6 mt-3`}>
                                         <div className={`flex gap-x-1`}>
                                             <span className={`text-neutral-200`}>{userInfo?.user_info.following_number}</span>
@@ -431,7 +449,7 @@ function Profile() {
                                         </div>
                                     </div>
                                 }
-                                {isLoading &&
+                                {userInfoLoading &&
                                     <Skeleton styles={`h-[16px] w-52 mt-6`}/>
                                 }
                             </div>
@@ -474,8 +492,8 @@ function Profile() {
                     </div>
 
                     {/* All user tweets */}
-                    {(isLoading || navigateSectionsLoading) && <SpinLoader styles={`translate-y-20`}/>}
-                    {!isLoading && tweets}
+                    {tweets}
+                    {(isLoading || navigateSectionsLoading) && <SpinLoader styles={`py-10`}/>}
 
                 </div>
 

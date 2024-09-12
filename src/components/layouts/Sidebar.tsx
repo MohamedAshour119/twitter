@@ -154,39 +154,39 @@ function Sidebar() {
             >
                 <div className={`flex items-center gap-x-2 xl:pl-3`}>
 
-                    {user?.user_info.avatar &&
+                    {user?.user_info?.avatar &&
                         <img className={`size-11 rounded-full object-cover`}
                              src={user?.user_info?.avatar}
                              alt="avatar"
                         />
                     }
-                    {!user?.user_info.avatar &&
+                    {!user?.user_info?.avatar &&
                         <img className={`size-11 object-cover bg-[#121416] rounded-full`}
                              src={`/profile-default-svgrepo-com.svg`}
                              alt={`default avatar`}
                         />
                     }
 
-                    <div className={`hidden md:flex lg:hidden xl:flex xl:flex-col md:flex-col lg:flex-row ${!user?.user_info.id ? 'gap-y-1' : ''} `}>
+                    <div className={`hidden md:flex lg:hidden xl:flex xl:flex-col md:flex-col lg:flex-row ${!user?.user_info?.id ? 'gap-y-1' : ''} `}>
 
                         <div className={`font-semibold`}>
                             {user?.user_info?.display_name ? user?.user_info?.display_name : user?.user_info?.username}
                         </div>
 
-                        {!user?.user_info.display_name && !user?.user_info.username &&
+                        {!user?.user_info?.display_name && !user?.user_info?.username &&
                             <Skeleton styles={`h-[20px] w-12`}/>
                         }
 
-                        <div className={`text-neutral-500`}>{user?.user_info.username && '@'}{user?.user_info?.username}</div>
-                        {!user?.user_info.username &&
+                        <div className={`text-neutral-500`}>{user?.user_info?.username && '@'}{user?.user_info?.username}</div>
+                        {!user?.user_info?.username &&
                             <Skeleton styles={`h-[20px] w-16`}/>
                         }
                     </div>
                 </div>
 
                 <div className={`hidden md:block lg:hidden xl:block xl:pr-3`}>
-                    {user?.user_info.username && <HiOutlineDotsHorizontal/>}
-                    {!user?.user_info.username && <Skeleton styles={`h-4 w-8`}/>}
+                    {user?.user_info?.username && <HiOutlineDotsHorizontal/>}
+                    {!user?.user_info?.username && <Skeleton styles={`h-4 w-8`}/>}
                 </div>
             </div>
         </div>
