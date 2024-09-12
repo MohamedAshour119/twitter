@@ -43,6 +43,7 @@ function Explore() {
     const [searchLoading, setSearchLoading] = useState(false);
     const explorePageRef = useRef<HTMLDivElement>(null)
     const [headerWidth, setHeaderWidth] = useState(explorePageRef.current?.getBoundingClientRect().width);
+    const [isResultsNotExists, setIsResultsNotExists] = useState(false);
 
     useEffect(() => {
         const storedResults = localStorage.getItem('tweets_results')
@@ -86,6 +87,8 @@ function Explore() {
                 }
                 localStorage.setItem('tweets_results', JSON.stringify(res.data.data.results))
                 localStorage.setItem('tweets_results_next_page_url', JSON.stringify(res.data.data.results_next_page_url))
+                const results = res.data.data.results
+                results.length === 0 ? setIsResultsNotExists(true) : setIsResultsNotExists(false)
             })
             .finally(() => {
                 setIsFetching(false)
@@ -104,6 +107,7 @@ function Explore() {
                 setResultsNextPageUrl(JSON.parse(nextPageUrl || ''))
                 setSearchLoading(false)
                 setIsSearchForSpecificKeywordClicked(false)
+                setDisplayNotResultsFound(isResultsNotExists)
             }, 500)
         }
     }
@@ -245,14 +249,14 @@ function Explore() {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         if (debounceValue !== '' && !searchLoading) {
             setShowExplorePageHashtags(false)
-            setDisplayNotResultsFound(false)
+            setDisplayNotResultsFound(isResultsNotExists)
             e.preventDefault()
             setResultsNextPageUrl('')
             setResults([])
             handleClickOnSearchKeyword()
             setIsOpen(false)
             setSearchValue('')
-            inputRef.current?.blur() // To disable auto focus after 'handleSubmit' called
+            inputRef.current?.blur() // To disable autofocus after 'handleSubmit' called
         }
     }
 
@@ -377,7 +381,7 @@ function Explore() {
 
                         {displayNotResultsFound && !loadingExplorePage && !isSidebarSearchLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
-                                No {results.length === 0 ? 'results found' : 'tweets,'}! {results.length !== 0 ? 'come back later' : ''}
+                                No {results.length === 0 ? 'results found' : ''}!
                                 <CgSmileSad  className={`size-20 text-sky-500`}/>
                             </div>
                         }

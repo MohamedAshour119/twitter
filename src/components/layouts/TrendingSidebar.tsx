@@ -108,7 +108,7 @@ function TrendingSidebar(props: Props) {
     }
 
     useEffect(() => {
-        if((hashtags?.length <= 1 && !isLoading) || isHashtagDeleted) {
+        if((hashtags?.length === 0 && !isLoading) || isHashtagDeleted) {
             getHashtags()
         }
     }, [hashtags?.length]);

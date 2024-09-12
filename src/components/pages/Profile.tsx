@@ -50,9 +50,10 @@ function Profile() {
     const toggleModel = () => {
         setIsShowEditInfoModal(!isShowEditInfoModal)
     }
-    
+
     // Get all user tweets
     const getAllUserTweets = (pageURL: string) => {
+        setIsLoading(true)
         ApiClient().get(pageURL)
             .then(res => {
                 setUserInfo(res.data.data.user)
@@ -66,6 +67,7 @@ function Profile() {
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setIsLoading(false))
     }
 
     useEffect(() => {
@@ -280,7 +282,6 @@ function Profile() {
             window.removeEventListener('resize', updateWidth);
         };
     }, []);
-
 
     return (
         <div

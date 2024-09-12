@@ -21,6 +21,9 @@ interface Props extends  TweetInfo {
     userInfo?: UserInfo
     setUserInfo?: Dispatch<SetStateAction<UserInfo | undefined>>
     deleteComment?: () => void
+    styles?: string
+    hashtagsTweets?: TweetInfo[]
+    setHashtagsTweets?: Dispatch<SetStateAction<TweetInfo[]>>
 }
 const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
     const {
@@ -218,7 +221,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
 
         const hashtags = tweetText?.match(/#[\u0600-\u06FFa-zA-Z][\u0600-\u06FFa-zA-Z0-9_]*[^\s]/g);
         if(!props.comment_to) {
-            ApiClient().post(`/delete-tweet/${props.id}/true`, hashtags)
+            ApiClient().post(`/delete-tweet/${props.id}/false`, hashtags)
                 .then(() => {
                     if (props.setUserInfo) {
                         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -231,6 +234,8 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
 
                     const filteredUserTweets = props.allProfileUserTweets?.filter(singleTweet => singleTweet.id !== props.id)
                     props.setAllProfileUserTweets && filteredUserTweets && props.setAllProfileUserTweets(filteredUserTweets)
+                    const filteredHashtagTweets = props.hashtagsTweets?.filter(singleTweet => singleTweet.id !== props.id)
+                    props.setHashtagsTweets && filteredHashtagTweets && props.setHashtagsTweets(filteredHashtagTweets)
                     toast.success(`Tweet deleted successfully`, toastStyle)
 
                 })
@@ -352,14 +357,14 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
         >
             <div className={`flex gap-x-2`}>
                 <Link to={`/users/${conditionWithoutRetweets ? props.user?.user_info.username : props.userInfo?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
-                    {userInfo?.user_info.avatar &&
+                    {(userInfo?.user_info.avatar || props.user?.user_info.avatar) &&
                         <img
                             className={`size-11 object-cover rounded-full select-none`}
                             src={conditionWithRetweets ? props.main_tweet.user.user_info.avatar : conditionWithoutRetweets ? props.user?.user_info.avatar : props.userInfo?.user_info.avatar}
                             alt="avatar"
                         />
                     }
-                    {!userInfo?.user_info.avatar &&
+                    {(!userInfo?.user_info.avatar && !props.user?.user_info.avatar) &&
                         <img
                             className={`size-11 object-cover rounded-full select-none`}
                             src={`/profile-default-svgrepo-com.svg`}
@@ -425,7 +430,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
     return (
         <div
             ref={ref}
-            className={`border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} relative group`}>
+            className={`${props.styles} border-b border-zinc-700/70 gap-x-2 grid ${isRetweeted ? 'grid-cols-1' : ''} relative group`}>
 
             {((props.main_tweet && props.main_tweet?.is_pinned) || (!props.main_tweet && props.is_pinned) && location?.pathname === `/users/${username}`) &&
                 <div className={` group-hover:bg-zinc-800/20 transition`}>

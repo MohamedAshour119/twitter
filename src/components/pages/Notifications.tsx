@@ -1,4 +1,3 @@
-import {Link} from "react-router-dom";
 import {RiArrowLeftLine} from "react-icons/ri";
 import Model from "../layouts/Model.tsx";
 import {useContext, useEffect, useRef, useState} from "react";
@@ -16,6 +15,7 @@ function Notifications() {
         isCommentOpen,
         user,
         setUser,
+        goBack,
     } = useContext(AppContext)
 
     const [isActive, setIsActive] = useState({
@@ -165,9 +165,9 @@ function Notifications() {
                 style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
                 className={`flex flex-col border ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none' : ''} border-x-0 backdrop-blur-md w-full fixed z-[500] gap-x-3 text-neutral-200 pt-1 border-zinc-700/70`}>
                 <div className={`flex items-center gap-x-3 font-semibold text-xl px-4`}>
-                    <Link to={'/home'} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
+                    <div onClick={goBack} className={`hover:bg-[#0a0c0e] flex justify-center items-center p-2 rounded-full transition cursor-pointer`}>
                         <RiArrowLeftLine className={`size-5`}/>
-                    </Link>
+                    </div>
                     <div className={`w-full`}>Notifications</div>
                 </div>
 

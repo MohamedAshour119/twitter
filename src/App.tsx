@@ -214,7 +214,7 @@ function App() {
 
     useEffect(() => {
         // Redirect to home if user exists and when trying to access '/'
-        if (token && (location.pathname === '/')) {
+        if (token && location.pathname === '/') {
             navigate('/home');
         }
     }, [location.pathname, navigate, token]);
