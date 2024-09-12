@@ -7,6 +7,7 @@ import {EditUserProfile, FormErrorsDefaultValues, UserInfo} from "../../Interfac
 import ApiClient from "../ApiClient.tsx";
 import {toast} from "react-toastify";
 import {toastStyle} from "../helper/ToastifyStyle.tsx";
+import {TweetContext} from "../appContext/TweetContext.tsx";
 
 interface Props {
     setIsShowEditInfoModal: Dispatch<SetStateAction<boolean>>
@@ -16,8 +17,9 @@ interface Props {
 function EditProfileModal(props: Props) {
 
     const { user, setUser, formErrors, setFormErrors } = useContext(AppContext)
+    const { setUserInfo } = useContext(TweetContext)
 
-    const [userInfo, setUserInfo] = useState<EditUserProfile>({
+    const [editUserInfo, setEditUserInfo] = useState<EditUserProfile>({
         display_name: user?.user_info.display_name ? user.user_info.display_name : '',
         bio: user?.user_info.bio ? user.user_info.bio : '',
         password: '',
@@ -43,14 +45,14 @@ function EditProfileModal(props: Props) {
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, files } = e.target as HTMLInputElement & { files: FileList };
         if (name !== 'avatar' && name !== 'cover') {
-            setUserInfo(prevUserInfo => ({
+            setEditUserInfo(prevUserInfo => ({
                 ...prevUserInfo,
                 [name]: value
             }));
         } else if (name === 'avatar') {
             if (files && files.length > 0) {
                 const file = files[0];
-                setUserInfo(prevUserInfo => ({
+                setEditUserInfo(prevUserInfo => ({
                     ...prevUserInfo,
                     avatar: file
                 }));
@@ -58,7 +60,7 @@ function EditProfileModal(props: Props) {
         } else {
             if (files && files.length > 0) {
                 const file = files[0];
-                setUserInfo(prevUserInfo => ({
+                setEditUserInfo(prevUserInfo => ({
                     ...prevUserInfo,
                     cover: file
                 }));
@@ -69,13 +71,13 @@ function EditProfileModal(props: Props) {
     const saveRequest = () => {
 
         const formData = new FormData();
-        formData.append('display_name', userInfo.display_name);
-        formData.append('bio', userInfo.bio);
-        formData.append('password', userInfo.password);
-        formData.append('password_confirmation', userInfo.password_confirmation);
-        userInfo.birth_date === 'undefined-undefined-undefined' ? formData.append('birth_date', '') : formData.append('birth_date', userInfo.birth_date)
-        formData.append('avatar', userInfo.avatar as Blob)
-        formData.append('cover', userInfo.cover as Blob)
+        formData.append('display_name', editUserInfo.display_name);
+        formData.append('bio', editUserInfo.bio);
+        formData.append('password', editUserInfo.password);
+        formData.append('password_confirmation', editUserInfo.password_confirmation);
+        editUserInfo.birth_date === 'undefined-undefined-undefined' ? formData.append('birth_date', '') : formData.append('birth_date', editUserInfo.birth_date)
+        formData.append('avatar', editUserInfo.avatar as Blob)
+        formData.append('cover', editUserInfo.cover as Blob)
 
         ApiClient().post(`/update-user`, formData)
             .then((res) => {
@@ -83,6 +85,7 @@ function EditProfileModal(props: Props) {
                     ...prevState,
                     ...res.data.data
                 }))
+                setUserInfo(res.data.data)
                 addAnimation()
                 props.setUserInfo(res.data.data)
             })
@@ -103,7 +106,7 @@ function EditProfileModal(props: Props) {
 
     // Remove uploaded image
     const removeUploadedFile = () => {
-        setUserInfo(prevState => ({
+        setEditUserInfo(prevState => ({
             ...prevState,
             cover: ''
         }))
@@ -113,10 +116,10 @@ function EditProfileModal(props: Props) {
         setFormErrors(FormErrorsDefaultValues)
     }, [props.isShowEditInfoModal]);
 
-    const checkIfAnyChangesHappened = userInfo.display_name !== '' || userInfo.bio !== '' || userInfo.birth_date !== 'undefined-undefined-undefined' || userInfo.avatar !== '' || userInfo.cover !== '' || userInfo.password !== '' || userInfo.password_confirmation !== ''
+    const checkIfAnyChangesHappened = editUserInfo.display_name !== '' || editUserInfo.bio !== '' || editUserInfo.birth_date !== 'undefined-undefined-undefined' || editUserInfo.avatar !== '' || editUserInfo.cover !== '' || editUserInfo.password !== '' || editUserInfo.password_confirmation !== ''
 
     const handleSubmit = () => {
-        console.log(userInfo)
+        console.log(editUserInfo)
         if (checkIfAnyChangesHappened) {
             saveRequest()
         }
@@ -150,7 +153,7 @@ function EditProfileModal(props: Props) {
                             <p className={'text-red-500 font-semibold'}>{formErrors?.cover}</p>}
                         <div className={`bg-[#333639] rounded h-48 relative`}>
                             {
-                                user?.user_info.cover && !userInfo.cover &&
+                                user?.user_info.cover && !editUserInfo.cover &&
                                 <img
                                     src={user.user_info.cover}
                                     alt="cover"
@@ -159,15 +162,15 @@ function EditProfileModal(props: Props) {
                             }
 
                             {/* Preview uploaded image */}
-                            {userInfo?.cover &&
+                            {editUserInfo?.cover &&
                                 <div
-                                    className={`${!userInfo.cover ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 bg-[#333639] rounded h-48'}`}>
+                                    className={`${!editUserInfo.cover ? 'invisible' : 'visible border-b w-full pb-3 border-zinc-700/70 bg-[#333639] rounded h-48'}`}>
                                     <div onClick={removeUploadedFile}
                                          className="absolute right-2 top-2 p-1 cursor-pointer hover:bg-neutral-700 bg-neutral-600/30 flex justify-center items-center rounded-full transition">
                                         <HiMiniXMark className={`size-6`}/>
                                     </div>
                                     <img className={`w-full object-cover h-48 brightness-75`}
-                                         src={userInfo.cover ? URL.createObjectURL(userInfo.cover as File) : ''}
+                                         src={editUserInfo.cover ? URL.createObjectURL(editUserInfo.cover as File) : ''}
                                          alt="cover"/>
                                 </div>
 
@@ -179,7 +182,7 @@ function EditProfileModal(props: Props) {
                                     type="file"
                                     className={`hidden`}
                                     name={'cover'}
-                                    value={userInfo.cover ? '' : undefined}
+                                    value={editUserInfo.cover ? '' : undefined}
                                     onChange={handleInputChange}
                                 />
                             </label>
@@ -187,21 +190,21 @@ function EditProfileModal(props: Props) {
                         {/*  Avatar  */}
 
                         <div className={`absolute top-2/3 left-2 border-4 border-black rounded-full`}>
-                            {user?.user_info.avatar && !userInfo.avatar &&
+                            {user?.user_info.avatar && !editUserInfo.avatar &&
                                 <img src={user?.user_info.avatar}
                                      alt="avatar"
                                      className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}
                                 />
                             }
 
-                            {userInfo.avatar &&
+                            {editUserInfo.avatar &&
                                 <img className={`object-cover w-32 h-32 rounded-full brightness-75 ${!user ? 'invisible' : ''}`}
-                                     src={userInfo.avatar ? URL.createObjectURL(userInfo.avatar as File) : ''}
+                                     src={editUserInfo.avatar ? URL.createObjectURL(editUserInfo.avatar as File) : ''}
                                      alt="cover"
                                 />
                             }
 
-                            {(!user?.user_info.avatar && !userInfo.avatar) &&
+                            {(!user?.user_info.avatar && !editUserInfo.avatar) &&
                                 <img src={`/profile-default-svgrepo-com.svg`}
                                      alt="default-avatar"
                                      className={`object-cover w-32 h-32 rounded-full brightness-75 bg-[#121416] ${!user ? 'invisible' : ''}`}
@@ -215,7 +218,7 @@ function EditProfileModal(props: Props) {
                                     type="file"
                                     className={`hidden`}
                                     name={'avatar'}
-                                    value={userInfo.avatar ? '' : undefined}
+                                    value={editUserInfo.avatar ? '' : undefined}
                                     onChange={handleInputChange}
                                 />
                             </label>
@@ -231,7 +234,7 @@ function EditProfileModal(props: Props) {
                         <input
                             maxLength={30}
                             name={`display_name`}
-                            value={userInfo.display_name}
+                            value={editUserInfo.display_name}
                             onChange={handleInputChange}
                             className={`${formErrors?.display_name?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ' border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} h-14 w-full border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                             type="text"
@@ -244,7 +247,7 @@ function EditProfileModal(props: Props) {
                         <textarea
                             maxLength={250}
                             name={`bio`}
-                            value={userInfo.bio}
+                            value={editUserInfo.bio}
                             onChange={handleInputChange}
                             className={`${formErrors?.bio?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ' border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} resize-none min-h-48 w-full border rounded bg-transparent py-3 px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                             placeholder="Bio"
@@ -258,13 +261,13 @@ function EditProfileModal(props: Props) {
                             <div className={`mt-5 font-semibold`}>Birth date</div>
                             <div className={`text-neutral-200 text-xl`}>{user?.user_info.birth_date}</div>
 
-                            <ReactSelect userInfo={userInfo} setUserInfo={setUserInfo}/>
+                            <ReactSelect userInfo={editUserInfo} setUserInfo={setEditUserInfo}/>
                         </div>
                         <div className={`mt-5 font-semibold text-zinc-500`}>Security</div>
                         <input
                             maxLength={30}
                             name={`password`}
-                            value={userInfo.password}
+                            value={editUserInfo.password}
                             onChange={handleInputChange}
                             className={`${formErrors?.password?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ' border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} h-14 w-full border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                             type="password"
@@ -276,7 +279,7 @@ function EditProfileModal(props: Props) {
                         <input
                             maxLength={30}
                             name={`password_confirmation`}
-                            value={userInfo.password_confirmation}
+                            value={editUserInfo.password_confirmation}
                             onChange={handleInputChange}
                             className={`${formErrors?.password_confirmation?.length > 0 ? 'border-red-600 focus:placeholder:text-red-600 focus:border-red-600 ring-red-600' : ' border-zinc-600 focus:placeholder:text-sky-600 ring-sky-600 focus:border-sky-600'} h-14 w-full border rounded bg-transparent px-3 placeholder:text-zinc-500 placeholder:absolute focus:outline-0 focus:ring-1 `}
                             type="password"

@@ -41,6 +41,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
         setComments,
         showTweet,
         setShowTweet,
+        userInfo,
     } = useContext(TweetContext)
 
 
@@ -351,11 +352,20 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
         >
             <div className={`flex gap-x-2`}>
                 <Link to={`/users/${conditionWithoutRetweets ? props.user?.user_info.username : props.userInfo?.user_info.username}`} className={`md:w-[10%] w-[14%]`}>
-                    <img
-                        className={`size-11 object-cover rounded-full select-none`}
-                        src={conditionWithRetweets ? props.main_tweet.user.user_info.avatar : conditionWithoutRetweets ? props.user?.user_info.avatar : props.userInfo?.user_info.avatar}
-                        alt=""
-                    />
+                    {userInfo?.user_info.avatar &&
+                        <img
+                            className={`size-11 object-cover rounded-full select-none`}
+                            src={conditionWithRetweets ? props.main_tweet.user.user_info.avatar : conditionWithoutRetweets ? props.user?.user_info.avatar : props.userInfo?.user_info.avatar}
+                            alt="avatar"
+                        />
+                    }
+                    {!userInfo?.user_info.avatar &&
+                        <img
+                            className={`size-11 object-cover rounded-full select-none`}
+                            src={`/profile-default-svgrepo-com.svg`}
+                            alt="avatar"
+                        />
+                    }
                 </Link>
                 <div className={`flex gap-x-2 justify-between items-start w-full`}>
                     <div className={`flex sm:gap-x-2 gap-x-5 xxs:gap-x-2`}>
