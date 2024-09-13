@@ -127,7 +127,7 @@ function Profile() {
         if (!(tweetInfo.retweet_to && !tweetInfo.main_tweet)) {
             return (
                 <Tweet
-                    key={index}
+                    key={tweetInfo.id}
                     allProfileUserTweets={allProfileUserTweets}
                     setAllProfileUserTweets={setAllProfileUserTweets}
                     {...tweetInfo}
