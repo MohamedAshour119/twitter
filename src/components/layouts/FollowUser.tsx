@@ -11,8 +11,8 @@ interface Prop {
 }
 function FollowUser({suggestedUsersToFollow, styles}: Prop) {
 
-    const [isFollowed, setIsFollowed] = useState(false)
-    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(suggestedUsersToFollow.user_info.is_followed)
+    const [isFollowed, setIsFollowed] = useState(suggestedUsersToFollow.user_info.is_followed)
+    const [isFollowedBtnDisabled, setIsFollowedBtnDisabled] = useState(false)
 
     const checkDisplayName = suggestedUsersToFollow.user_info.display_name ? suggestedUsersToFollow.user_info.display_name : suggestedUsersToFollow.user_info.username
     const handleFollow = () => {
@@ -26,8 +26,7 @@ function FollowUser({suggestedUsersToFollow, styles}: Prop) {
                     setIsFollowedBtnDisabled(false);
                 })
                 .catch(error => {
-                    toast.error(`Error occurs!, try again`, toastStyle)
-                    console.log(error)
+                    toast.error(error.response.data.message, toastStyle)
                     setIsFollowedBtnDisabled(false);
                 });
         } else {

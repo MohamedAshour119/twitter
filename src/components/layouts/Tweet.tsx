@@ -133,10 +133,10 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
             user: {
                 user_info: {
                     id: props.user_id,
-                    username: props.user.user_info.username,
-                    avatar: props.user.user_info.avatar,
-                    display_name: props.user.user_info.display_name,
-                    is_followed: props.user.user_info.is_followed,
+                    username: props.user?.user_info.username || '',
+                    avatar: props.user?.user_info.avatar || '',
+                    display_name: props.user?.user_info.display_name || '',
+                    is_followed: props.user?.user_info.is_followed ?? false,
                 }
             },
 

@@ -203,8 +203,7 @@ function Profile() {
                     setIsFollowedBtnDisabled(false);
                 })
                 .catch(error => {
-                    toast.error(`Error occurs!, try again`, toastStyle)
-                    console.error('Follow request failed:', error);
+                    toast.error(error.response.data.message, toastStyle)
                     setIsFollowedBtnDisabled(false);
                 })
         } else {

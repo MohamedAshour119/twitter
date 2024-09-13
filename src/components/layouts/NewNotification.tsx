@@ -2,7 +2,6 @@ import {useContext, useEffect, useRef, useState} from "react";
 import {AppContext} from "../appContext/AppContext.tsx";
 import {HiOutlineDotsHorizontal} from "react-icons/hi";
 import {Link} from "react-router-dom";
-import {HiMiniXMark} from "react-icons/hi2";
 import {IoCheckmarkDoneOutline} from "react-icons/io5";
 import ApiClient from "../ApiClient.tsx";
 import {Notification} from "../../Interfaces.tsx";
@@ -20,8 +19,11 @@ function NewNotification(props: Props) {
     const popUpWindow = useRef<HTMLDivElement>(null)
     useEffect( () => {
         const handleOutside = (e: MouseEvent) => {
-            if(!popUpWindow.current?.contains(e.target as Node)){
-                setNotificationMenuOpen(false)
+            if(popUpWindow.current && !popUpWindow.current?.contains(e.target as Node)){
+                popUpWindow.current.classList.add('animate-fade-out')
+                setTimeout(() => {
+                    setNotificationMenuOpen(false)
+                }, 300)
             }
         }
         document.addEventListener('mousedown', handleOutside)
@@ -80,13 +82,9 @@ function NewNotification(props: Props) {
                 }
                 <div>
                     <Link
-                        onTouchStart={() => setDisableLink(true)}
-                        onTouchEnd={() => setDisableLink(true)}
-                        onMouseEnter={() => setDisableLink(true)}
-                        onMouseLeave={() => setDisableLink(false)}
                         to={`/users/${props.user?.username}`}
                         className={`text-sky-500 font-semibold hover:text-sky-600 transition`}>
-                        {props.user?.username + ' '}
+                        {props.user?.display_name ? props.user?.display_name + ' ' :  props.user?.username + ' '}
                     </Link>
                     {props.type === 'tweet' ? 'posted a new tweet, check it out' : `followed you!`}
                 </div>
@@ -94,12 +92,12 @@ function NewNotification(props: Props) {
             <div className={`flex items-center gap-x-1 w-[15%] xxs:w-auto`}>
                 <div>{props.created_at}</div>
                 <div
-                    onClick={() => setNotificationMenuOpen(true)}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        setNotificationMenuOpen(true);
+                    }}
                     className={`hover:bg-sky-600/20 hover:text-sky-500 cursor-pointer flex justify-center items-center p-2 rounded-full transition`}
-                    onMouseEnter={() => setDisableLink(true)}
-                    onMouseLeave={() => setDisableLink(false)}
-                    onTouchStart={() => setDisableLink(true)}
-                    onTouchEnd={() => setDisableLink(true)}
                 >
                     <HiOutlineDotsHorizontal/>
                 </div>
@@ -109,23 +107,17 @@ function NewNotification(props: Props) {
             {notificationMenuOpen &&
                 <div
                     ref={popUpWindow}
-                    onMouseEnter={() => setDisableLink(true)}
-                    onMouseLeave={() => setDisableLink(false)}
-                    onTouchStart={() => setDisableLink(true)}
-                    onTouchEnd={() => setDisableLink(true)}
-                    className={`shadow-[0_0_5px_-1px_white] z-[300] bg-black flex flex-col gap-y-3 justify-self-end border border-neutral-700/70 py-4 px-4 rounded-lg absolute w-[21rem] right-2 top-2 shadow-[-2px_2px_12px_#4f4e4e]ooo`}>
-                    <div
-                        onClick={() => setNotificationMenuOpen(false)}
-                        className="absolute -right-4 -top-4 cursor-pointer bg-neutral-950 hover:bg-neutral-900 text-2xl flex justify-center items-center rounded-full h-9 w-9 transition">
-                        <HiMiniXMark/>
-                    </div>
+                    className={`${notificationMenuOpen ? 'animate-fade-in' : ''} tweet-drop-down-clip-path z-50 bg-[#0a0c0e] flex flex-col gap-y-3 justify-self-end py-4 px-4 pr-8 absolute w-[21rem] right-16 top-4`}
+                >
 
                     <button
-                        onTouchStart={() => setDisableLink(true)}
-                        onTouchEnd={() => setDisableLink(true)}
-                        onClick={markNotificationAsRead}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            markNotificationAsRead()
+                        }}
                         disabled={!notificationMenuOpen}
-                        className={`flex gap-x-4 bg-neutral-950 py-3 px-6 text-left rounded-lg hover:bg-neutral-800 transition ${!notificationMenuOpen ? 'cursor-default' : 'cursor-pointer'}`}>
+                        className={`flex font-semibold items-center gap-x-3 bg-[#111315] py-3 px-6 text-left rounded-lg hover:bg-[#1a1d20] transition cursor-pointer`}>
                         <span>Mark as read</span>
                         <IoCheckmarkDoneOutline className={`size-6`}/>
                     </button>

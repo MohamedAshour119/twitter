@@ -19,11 +19,11 @@ export interface Tweet {
 
     user: {
         user_info: {
-            id: number
-            username: string
-            avatar: string
-            display_name: string
-            is_followed: boolean
+            id: number | undefined
+            username: string | undefined
+            avatar: string | undefined
+            display_name: string | undefined
+            is_followed: boolean | undefined
         };
     }
 }
@@ -80,6 +80,7 @@ export interface Notification {
     followed_id: number | null
     created_at: string
     user: {
+        display_name: string
         username: string
         avatar: string
     }
