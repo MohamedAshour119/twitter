@@ -199,13 +199,10 @@ const TweetProvider = ({children}: TweetProviderProps) => {
         }
 
         if(location.pathname === `/tweets/${showTweet.slug}` || isCommentOpen){
-            console.log(slug)
-            console.log(showTweet.slug)
             ApiClient().post(`/addComment`, formData)
                 .then(res => {
                     makeInputEmpty()
                     if (showTweet.slug === slug) {
-                        console.log('caled')
                         setComments(prevComments => ([
                             res.data.data.tweet,
                             ...prevComments,

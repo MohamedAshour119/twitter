@@ -9,6 +9,7 @@ import {RiArrowLeftLine} from "react-icons/ri";
 import {TweetInfo} from "../../Interfaces.tsx";
 import Tweet from "../layouts/Tweet.tsx";
 import {TweetContext} from "../appContext/TweetContext.tsx";
+import SpinLoader from "../helper/SpinLoader.tsx";
 
 function ShowTweet() {
     const {
@@ -30,11 +31,18 @@ function ShowTweet() {
     const [displayTweet, setDisplayTweet] = useState<TweetInfo>()
     const [pageURL, setPageURL] = useState('')
     const [isFetching, setIsFetching] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
 
     const showTweetPageRef = useRef<HTMLDivElement>(null)
     const [headerWidth, setHeaderWidth] = useState(showTweetPageRef.current?.getBoundingClientRect().width);
 
+    useEffect(() => {
+        setComments([])
+    }, []);
+
     const getTweet = () => {
+        setIsLoading(true)
         ApiClient().get(`/tweets/${slug}`)
             .then(res => {
                 setShowTweet(res.data.data.tweet)
@@ -46,6 +54,7 @@ function ShowTweet() {
             .catch(err => {
                 console.log(err)
             })
+            .finally(() => setIsLoading(false))
     }
 
     useEffect( () => {
@@ -127,7 +136,7 @@ function ShowTweet() {
             className={`min-h-svh border border-y-0 border-zinc-700/70 ${isCommentOpen || isModalOpen ? 'overflow-y-hidden' : ''} `}>
             <header
                 style={{ width: `${headerWidth && headerWidth - 2.1}px` }}
-                className={`w-full grid grid-cols-1 ${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} gap-x-3 px-4 border border-x-0 border-zinc-700/70`}>
+                className={`fixed z-[200] grid grid-cols-1 ${isModalOpen || isCommentOpen ? 'opacity-20 pointer-events-none ' : 'backdrop-blur-sm'} border border-x-0 border-zinc-700/70`}>
                 {/* Header but only on small screens */}
                 <div className={`flex sm:hidden justify-between px-6 py-5 pb-1`}>
                     <img className={`size-11 rounded-full object-cover`}
@@ -146,13 +155,15 @@ function ShowTweet() {
                 </div>
             </header>
                 {/* Middle content */}
-                <div className={`${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} text-neutral-200 w-full relative`}>
-                    {
-                        displayTweet &&
+                <div className={`${isCommentOpen || isModalOpen ? 'opacity-20 pointer-events-none' : ''} mt-16 text-neutral-200 w-full relative`}>
+                    {displayTweet &&
                         <Tweet {...displayTweet!}/>
                     }
                     {displayComments}
                 </div>
+                {isLoading &&
+                    <SpinLoader styles={`translate-y-40 sm:translate-y-32`}/>
+                }
 
             {/* Tweet model  */}
             <Model/>

@@ -220,19 +220,14 @@ function UserHomePage({pageUrl, notFoundMsg, is_loading}: Props) {
             <div
                 className={`${(isModalOpen || isCommentOpen) ? 'opacity-20 pointer-events-none mt-16' : ''} `}>
                 {/* Middle content */}
-                <div
-                    className={`text-neutral-200 w-full relative`}>
-
-                    {isLoading &&
-                        <SpinLoader styles={`translate-y-40 sm:translate-y-32`}/>
-                    }
-
+                <div className={`text-neutral-200 w-full relative`}>
                     {!isLoading && <TweetTextAreaAndPreview/>}
-
                     {/*  All Tweets  */}
-                    <div className={`${tweets.length > 0 ? 'pb-[4.5rem]' : ''} `}>
+                    <div className={`${tweets.length > 0 ? 'sm:pb-[2rem] pb-[4.5rem]' : ''} `}>
                         {displayRandomTweets}
-
+                        {isLoading &&
+                            <SpinLoader styles={`${!pageURL ? 'translate-y-40 sm:translate-y-32' : 'py-10'}`}/>
+                        }
                         {displayNotFoundMsg && tweets.length === 0 && !isLoading &&
                             <div className={`px-10 py-5 pt-40 flex flex-col gap-y-3 items-center text-3xl `}>
                                 No tweets!, come back later

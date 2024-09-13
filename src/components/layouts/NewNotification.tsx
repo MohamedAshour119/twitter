@@ -12,10 +12,7 @@ interface Props extends Notification {
 function NewNotification(props: Props) {
 
     const {setUser} = useContext(AppContext)
-
     const [notificationMenuOpen, setNotificationMenuOpen] = useState(false)
-    const [disableLink, setDisableLink] = useState(false)
-
     const popUpWindow = useRef<HTMLDivElement>(null)
     useEffect( () => {
         const handleOutside = (e: MouseEvent) => {

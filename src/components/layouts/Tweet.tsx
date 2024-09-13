@@ -66,7 +66,7 @@ const Tweet = forwardRef<HTMLDivElement, Props>((props: Props, ref) => {
         } else {
             setCommentsCount(!props.main_tweet ? props.comments_count : props.main_tweet.comments_count)
         }
-    }, [showTweet.comments_count]);
+    }, [showTweet?.comments_count, props?.comments_count, props?.main_tweet?.comments_count]);
 
     // Handle tweet reaction
     const handleReaction = () => {
